@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "MiraAndTheMirrorStaff",
+	"Description": "Plugin for \"Mira and the Mirror Staff.\"",
+	"Category": "Other",
+	"CreatedBy": "Jared Spear",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "MiraAndTheMirrorStaff",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
