@@ -17,6 +17,14 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "ArcadeFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "MiraAndTheMirrorStaff",
+			"Enabled": true,
 		}
 	]
 }
