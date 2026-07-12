@@ -34,11 +34,11 @@ void UMIR_HealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 int32 UMIR_HealthComponent::GetHealth()
 {
-	return int32();
+	return Health;
 }
 
 void UMIR_HealthComponent::SetHealth(int32 NewHealth)
 {
-	Health = std::clamp(NewHealth, 0, 100);
+	Health = FMath::Clamp(NewHealth, 0, 100);
 }
 

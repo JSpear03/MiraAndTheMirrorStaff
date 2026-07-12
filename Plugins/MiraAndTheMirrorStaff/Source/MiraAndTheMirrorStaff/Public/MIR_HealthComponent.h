@@ -12,6 +12,12 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_HealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	// ===== VARIABLES =====
+
+	// Represents the owner's health, where every two units is equivalent to one heart.
+	UPROPERTY(EditAnywhere, Category = "Stats")
+		int32 Health = 10;
+
 public:	
 	// Sets default values for this component's properties
 	UMIR_HealthComponent();
@@ -22,15 +28,10 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	// ===== VARIABLES =====
-
-	// Represents the owner's health, where every two units is equivalent to one heart.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		int32 Health = 10;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
+		FActorComponentTickFunction* ThisTickFunction) override;
 	
-	// ===== FUNCTIONS =====
+	// ===== CUSTOM FUNCTIONS =====
 
 	/**
 	* Gets the owner's `Health` variable.

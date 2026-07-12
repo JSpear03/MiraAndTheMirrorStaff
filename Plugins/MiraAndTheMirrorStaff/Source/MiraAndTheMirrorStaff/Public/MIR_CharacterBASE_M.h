@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MIR_CharacterBASE_M.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_CharacterBASE_M : public ACharacter
 {
 	GENERATED_BODY()
@@ -30,4 +30,9 @@ public:
 	// The character's Health Component, which handles health calculations.
 	UPROPERTY(EditAnywhere, Category = "Health")
 		class UMIR_HealthComponent* HealthComponent;
+
+	// The Base Character's Element component, which represents the element system. 
+	// Useful for calculcating the character's elemental weakenesses and strengths. 
+	UPROPERTY(EditAnywhere, Category = "Element")
+		class UMIR_ElementComponent* ElementComponent; 
 };
