@@ -7,7 +7,8 @@
 #include "MIR_PlayerChar.generated.h"
 
 /**
- * 
+ * The character that the player will control in this game.
+ * Implements gameplay-context inputs, etc.
  */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
