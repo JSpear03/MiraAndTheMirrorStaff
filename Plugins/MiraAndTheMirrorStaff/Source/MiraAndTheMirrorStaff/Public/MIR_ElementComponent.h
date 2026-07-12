@@ -13,15 +13,15 @@ struct FElementMap
 
 	// Name of the element. 
 	UPROPERTY(EditAnywhere, Category = "ElementMap")
-	FString ElementName;
+		FString ElementName;
 
 	// List of element strengths for the name. 
 	UPROPERTY(EditAnywhere, Category = "ElementMap")
-	TArray<FString> ElementStrengths;
+		TArray<FString> ElementStrengths;
 
 	// List of element weaknesses for the name. 
 	UPROPERTY(EditAnywhere, Category = "ElementMap")
-	TArray<FString> ElementWeaknesses;
+		TArray<FString> ElementWeaknesses;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
