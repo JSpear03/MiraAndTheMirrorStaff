@@ -3,3 +3,8 @@
 
 #include "MIR_PlayerChar.h"
 
+// Sets default values.
+AMIR_PlayerChar::AMIR_PlayerChar()
+{
+	ManaComponent = CreateDefaultSubobject<UMIR_ManaComponent>(TEXT("Mana Component"));
+}
