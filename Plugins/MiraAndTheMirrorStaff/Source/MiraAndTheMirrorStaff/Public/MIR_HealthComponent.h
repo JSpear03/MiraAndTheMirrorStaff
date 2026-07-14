@@ -14,6 +14,10 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_HealthComponent : public UActorComponent
 
 	// ===== VARIABLES =====
 
+	// Maximum amount of health. 
+	UPROPERTY(EditAnywhere, Category = "Stats")
+		int32 MaxHealth = 100;
+
 	// Represents the owner's health, where every two units is equivalent to one heart.
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		int32 Health = 10;
@@ -48,4 +52,13 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 		void SetHealth(int32 NewHealth);
+
+
+	// Increases Health. 
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+		void HealthRecovery(int32 Amount);
+
+	// Decreases Health. 
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+		void HealthReduction(int32 Amount);
 };
