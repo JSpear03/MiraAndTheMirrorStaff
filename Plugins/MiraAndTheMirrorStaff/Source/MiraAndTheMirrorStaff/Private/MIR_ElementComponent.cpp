@@ -31,15 +31,20 @@ void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void UMIR_ElementComponent::SetElementMap(FString Name, TArray<FString> Strengths, TArray<FString> Weaknesses)
+void UMIR_ElementComponent::SetElementMap(FString Name, FColor Color, FString Symbol, 
+	FString Strength, FString Weakness, TArray<FString> Neutrals, FString Property)
 {
-	FElementMap NewMap;
+	FElementMap NewElementMap;
 
-	NewMap.ElementName = Name;
-	NewMap.ElementStrengths = Strengths;
-	NewMap.ElementWeaknesses = Weaknesses;
+	NewElementMap.ElementName = Name;
+	NewElementMap.MainColor = Color;
+	NewElementMap.ElementSymbol = Symbol;
+	NewElementMap.ElementStrength = Strength;
+	NewElementMap.ElementWeakness = Weakness;
+	NewElementMap.ElementalNeutralities = Neutrals;
+	NewElementMap.ElementProperty = Property;
 
-	ElementMap.Add(NewMap);
+	ElementMap.Add(NewElementMap);
 }
 
 TArray<FElementMap> UMIR_ElementComponent::GetElementMap()
@@ -47,7 +52,7 @@ TArray<FElementMap> UMIR_ElementComponent::GetElementMap()
 	return ElementMap;
 }
 
-// TODO: Add calculation for damage. 
+// TODO: Add calculation for damage, which could be done in the base character. 
 int32 UMIR_ElementComponent::CalculateDamage()
 {
 	return int32();
