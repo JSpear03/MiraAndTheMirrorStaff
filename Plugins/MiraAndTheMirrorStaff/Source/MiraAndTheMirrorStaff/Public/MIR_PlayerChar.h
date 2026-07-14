@@ -16,11 +16,22 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, Category = "Copied Magic")
+		FString StoredMagicType;
+
 public:
 	// Represents the game's Mana system.
 	UPROPERTY(EditAnywhere, Category = "Mana")
-	UMIR_ManaComponent* ManaComponent;
+		UMIR_ManaComponent* ManaComponent;
 
 	// Sets default values for Player Character's properties.
 	AMIR_PlayerChar();
+
+	// Stored Magic setter.
+	UFUNCTION(BlueprintCallable)
+		void SetStoredMagic(FString MagicType);
+
+	// Stored Magic getter.
+	UFUNCTION(BlueprintCallable)
+		FString GetStoredMagic();
 };
