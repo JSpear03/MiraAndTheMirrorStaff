@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "MIR_CharacterBASE_M.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "MIR_ManaComponent.h"
 #include "MIR_PlayerChar.generated.h"
 
@@ -18,6 +20,12 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 
 	UPROPERTY(EditAnywhere, Category = "Copied Magic")
 		FString StoredMagicType;
+
+	UPROPERTY(EditAnywhere, Category = "Camera")
+		USpringArmComponent* SpringArm;
+
+	UPROPERTY(EditAnywhere, Category = "Camera")
+		UCameraComponent* CameraComponent;
 
 public:
 	// Represents the game's Mana system.

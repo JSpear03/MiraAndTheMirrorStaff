@@ -6,8 +6,21 @@
 // Sets default values.
 AMIR_PlayerChar::AMIR_PlayerChar()
 {
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	ManaComponent = CreateDefaultSubobject<UMIR_ManaComponent>(TEXT("Mana Component"));
-}
+
+	SpringArm->SetupAttachment(RootComponent); 
+
+	// Attaches camera to the end of the spring arm. 
+	CameraComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName); 
+
+	// Allows the player's yaw to match the camera yaw. 
+	// Needs to be turned off, since the point of view might be third person.
+	bUseControllerRotationYaw = false; 
+
+	SpringArm->bUsePawnControlRotation = true;  // Allows rotation of the spring arm. 
+} 
 
 void AMIR_PlayerChar::SetStoredMagic(FString MagicType)
 {
