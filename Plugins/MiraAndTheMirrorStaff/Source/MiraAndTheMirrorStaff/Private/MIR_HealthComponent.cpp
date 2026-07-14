@@ -6,8 +6,8 @@
 // Sets default values for this component's properties
 UMIR_HealthComponent::UMIR_HealthComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  
+	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
@@ -39,6 +39,16 @@ int32 UMIR_HealthComponent::GetHealth()
 
 void UMIR_HealthComponent::SetHealth(int32 NewHealth)
 {
-	Health = FMath::Clamp(NewHealth, 0, 100);
+	Health = FMath::Clamp(NewHealth, 0, MaxHealth);
+}
+
+void UMIR_HealthComponent::HealthRecovery(int32 Amount)
+{
+	SetHealth(Health + Amount);
+}
+
+void UMIR_HealthComponent::HealthReduction(int32 Amount)
+{
+	SetHealth(Health - Amount);
 }
 
