@@ -44,9 +44,31 @@ void UMIR_ManaComponent::ManaReduction(int32 Amount)
 
 void UMIR_ManaComponent::ManaCooldown() const
 {
-	if (ManaPower == 0)
+	if (ManaPower > 0)
 	{
-		// TODO: Implement cooldown when mana power is 0. 
+		return;
+	}
+
+	// Checks if world is set to prevent crashes.
+	if (GetWorld())
+	{
+		FTimerHandle CooldownTimerHandler;
+
+		GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandler, this, 
+			&UMIR_ManaComponent::CooldownRecovery, 1, true, 2);
 	}
 }
+
+void UMIR_ManaComponent::CooldownRecovery()
+{
+	if (ManaPower != MaxManaPower)
+	{
+		ManaRecovery(10);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	}
+}
+
 

@@ -14,11 +14,11 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_ManaComponent : public UActorComponent
 
 	// Maximum amount of Mana Power.
 	UPROPERTY(EditAnywhere, Category = "Mana Power")
-	int32 MaxManaPower = 100;
+		int32 MaxManaPower = 200;
 
 	// Current Mana Power.
 	UPROPERTY(EditAnywhere, Category = "Mana Power")
-	int32 ManaPower;  
+		int32 ManaPower = 100;  
 
 public:	
 	// Sets default values for this component's properties
@@ -30,17 +30,24 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
+		FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Increases mana power. 
 	UFUNCTION(BlueprintCallable, Category = "Mana Power")
-	void ManaRecovery(int32 Amount);
+		void ManaRecovery(int32 Amount);
 
 	// Decreases mana power.
 	UFUNCTION(BlueprintCallable, Category = "Mana Power")
-	void ManaReduction(int32 Amount);
+		void ManaReduction(int32 Amount);
 
-	// When Mana Power reaches 0, it recovers all mana slowly. 
+	// Sets up timer for cooldown. 
 	UFUNCTION(BlueprintCallable, Category = "Mana Power")
-	void ManaCooldown() const;
+		void ManaCooldown() const;
+
+private:
+	// Called for cooldown.
+	// Repeatedly increases mana, if mana does not reach the max value. 
+	UFUNCTION()
+		void CooldownRecovery();
 };
