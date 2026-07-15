@@ -49,14 +49,16 @@ void UMIR_ManaComponent::ManaCooldown() const
 		return;
 	}
 
+	// TODO: Find a solution to Set timer error in output. 
+
 	// Checks if world is set to prevent crashes.
-	if (GetWorld())
+	/*if (GetWorld())
 	{
 		FTimerHandle CooldownTimerHandler;
 
 		GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandler, this, 
 			&UMIR_ManaComponent::CooldownRecovery, 1, true, 2);
-	}
+	}*/
 }
 
 void UMIR_ManaComponent::CooldownRecovery()
