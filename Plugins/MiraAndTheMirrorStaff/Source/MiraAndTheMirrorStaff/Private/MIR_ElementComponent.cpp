@@ -52,9 +52,3 @@ TArray<FElementMap> UMIR_ElementComponent::GetElementMap()
 	return ElementMap;
 }
 
-// TODO: Add calculation for damage, which could be done in the base character. 
-int32 UMIR_ElementComponent::CalculateDamage()
-{
-	return int32();
-}
-

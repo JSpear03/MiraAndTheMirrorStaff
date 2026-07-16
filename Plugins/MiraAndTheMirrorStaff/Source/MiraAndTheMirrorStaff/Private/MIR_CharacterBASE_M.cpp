@@ -46,3 +46,23 @@ void AMIR_CharacterBASE_M::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 }
 
+void AMIR_CharacterBASE_M::CalculateDamage(FString AttackerElement, FString RecieverElement, 
+	int32 AttackerDamageValue)
+{
+	int32 Modifier = 0;  // By default, zero represents what the attacker element is weak against.
+
+	if (AttackerElement == "Nothing" || RecieverElement == "Nothing"  // Netural Against
+		|| AttackerElement == RecieverElement)
+	{
+		Modifier = 1;
+	}
+	else if ((AttackerElement == "Flame" && RecieverElement == "Ice") ||  // Strong against
+		(AttackerElement == "Ice" && RecieverElement == "Thunder") || 
+		(AttackerElement == "Thunder" && RecieverElement == "Flame"))
+	{
+		Modifier = 2;
+	}
+
+	HealthComponent->HealthReduction(Modifier * AttackerDamageValue);
+}
+

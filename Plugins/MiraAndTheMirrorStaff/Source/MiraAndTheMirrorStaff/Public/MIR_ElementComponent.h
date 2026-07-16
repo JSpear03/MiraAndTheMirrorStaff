@@ -71,8 +71,4 @@ public:
 	// Gets the current element map. 
 	UFUNCTION(BlueprintCallable)
 		TArray<FElementMap> GetElementMap();
-
-	// Returns the calculated damage.
-	UFUNCTION(BlueprintCallable, Category = "Elements")
-		int32 CalculateDamage();
 };

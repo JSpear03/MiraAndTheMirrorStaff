@@ -35,4 +35,9 @@ public:
 	// Useful for calculcating the character's elemental weakenesses and strengths. 
 	UPROPERTY(EditAnywhere, Category = "Element")
 		class UMIR_ElementComponent* ElementComponent; 
+
+	// Decreases health based on the calculated damage. 
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		void CalculateDamage(FString AttackerElement, FString RecieverElement, 
+			int32 AttackerDamageValue);
 };
