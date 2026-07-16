@@ -27,6 +27,7 @@ public class MiraAndTheMirrorStaff : ModuleRules
 			{
 				"Core",
 				"ArcadeFramework",
+				"EnhancedInput"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
