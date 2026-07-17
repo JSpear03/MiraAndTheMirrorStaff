@@ -21,5 +21,6 @@ public:
 	AMIR_MagicAOE();
 
 	// Expands the spell's radius over time using linear interpolation.
-	void SpellExpansion(float InitRadius, float MaxRadius, float LerpTime, float DeltaTime);
+	UFUNCTION(BlueprintCallable, Category = "Magic|Collision")
+		void SpellExpansion(float InitRadius, float MaxRadius, float LerpTime, float DeltaTime);
 };

@@ -18,7 +18,4 @@ AMIR_MagicMelee::AMIR_MagicMelee()
 
 	// Set the Magic Attack Type Component to Melee with Damage and Mana Consumption values (placeholder)
 	AttackTypeComponent->SetAttackType(TEXT("Melee"), 4, 5);
-
-    // TODO: Add a way to set the Element for the spell when the component is further developed.
-    // This functionality might be best deferred to the player character when casting the spell.
 }

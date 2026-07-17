@@ -16,9 +16,6 @@ AMIR_MagicAOE::AMIR_MagicAOE()
 
     // Set the Magic Attack Type Component to AOE with Damage and Mana Consumption values (placeholder)
     AttackTypeComponent->SetAttackType(TEXT("AOE"), 4, 5);
-
-    // TODO: Add a way to set the Element for the spell when the component is further developed.
-    // This functionality might be best deferred to the player character when casting the spell.
 }
 
 // Potential function to allow the AOE spell to expand its radius over time
