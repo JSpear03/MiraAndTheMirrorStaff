@@ -2,6 +2,7 @@
 
 
 #include "MIR_ManaComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 UMIR_ManaComponent::UMIR_ManaComponent()
@@ -32,7 +33,7 @@ void UMIR_ManaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// ...
 }
 
-void UMIR_ManaComponent::ManaRecovery(int32 Amount)
+void UMIR_ManaComponent::ManaRecovery(int32 Amount) 
 {
 	ManaPower = FMath::Clamp(ManaPower + Amount, 0, MaxManaPower);
 }
@@ -42,35 +43,33 @@ void UMIR_ManaComponent::ManaReduction(int32 Amount)
 	ManaPower = FMath::Clamp(ManaPower - Amount, 0, MaxManaPower);
 }
 
-void UMIR_ManaComponent::ManaCooldown() const
+void UMIR_ManaComponent::ManaCooldown() 
 {
 	if (ManaPower > 0)
 	{
 		return;
 	}
 
-	// TODO: Find a solution to Set timer error in output. 
+	FTimerHandle CooldownTimerHandle;
+	int32 HealthAmount = 10;
 
-	// Checks if world is set to prevent crashes.
-	/*if (GetWorld())
-	{
-		FTimerHandle CooldownTimerHandler;
+	// When called after timer reached a certain amount of seconds, a little bit of mana is recovered.. 
+	const FTimerDelegate& CooldownDelegate = FTimerDelegate::CreateLambda([this, HealthAmount] 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Fired Cooldown"));
 
-		GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandler, this, 
-			&UMIR_ManaComponent::CooldownRecovery, 1, true, 2);
-	}*/
-}
+			if (ManaPower != MaxManaPower)
+			{
+				ManaRecovery(HealthAmount);
+			}
+		}
+	);
 
-void UMIR_ManaComponent::CooldownRecovery()
-{
-	if (ManaPower != MaxManaPower)
-	{
-		ManaRecovery(10);
-	}
-	else
-	{
-		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
-	}
+	const UWorld* World = GetWorld();
+	FTimerManager& TimerManager = World->GetTimerManager();
+
+	// Repeats the delegate every second.
+	TimerManager.SetTimer(CooldownTimerHandle, CooldownDelegate, 1, true);
 }
 
 
