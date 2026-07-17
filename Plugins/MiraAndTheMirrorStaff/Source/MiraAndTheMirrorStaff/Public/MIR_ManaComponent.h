@@ -7,7 +7,7 @@
 #include "MIR_ManaComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MIRAANDTHEMIRRORSTAFF_API UMIR_ManaComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -18,7 +18,7 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_ManaComponent : public UActorComponent
 
 	// Current Mana Power.
 	UPROPERTY(EditAnywhere, Category = "Mana Power")
-		int32 ManaPower = 100;  
+		int32 ManaPower = 0;  
 
 public:	
 	// Sets default values for this component's properties
@@ -43,11 +43,5 @@ public:
 
 	// Sets up timer for cooldown. 
 	UFUNCTION(BlueprintCallable, Category = "Mana Power")
-		void ManaCooldown() const;
-
-private:
-	// Called for cooldown.
-	// Repeatedly increases mana, if mana does not reach the max value. 
-	UFUNCTION()
-		void CooldownRecovery();
+		void ManaCooldown();
 };
