@@ -15,10 +15,11 @@ AMIR_MagicRanged::AMIR_MagicRanged()
     // Placeholder value for the main damaging collision of the ranged spell.
     CollisionComponent->InitSphereRadius(10.0f);
 
-    // Set the Magic Attack Type Component to Melee with Damage and Mana Consumption values (placeholder)
+    // Set the Magic Attack Type Component to Ranged with Damage and Mana Consumption values (placeholder)
     AttackTypeComponent->SetAttackType(TEXT("Ranged"), 4, 5);
 
     // TODO: Add a way to set the Element for the spell when the component is further developed.
+    // This functionality might be best deferred to the player character when casting the spell.
 
     // Create a larger collision sphere for the ranged ice spell, representing the area it freezes water.
 	IceCollision = CreateDefaultSubobject<USphereComponent>(TEXT("IceCollision"));
