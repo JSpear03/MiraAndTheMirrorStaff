@@ -10,7 +10,26 @@ UMIR_ElementComponent::UMIR_ElementComponent()
 	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	// Default values for Flame ELement.
+	FlameElement.ElementName = "Flame";
+	FlameElement.ElementStrength = "Ice";
+	FlameElement.ElementWeakness = "Thunder";
+	FlameElement.ElementalNeutralities = {"Nothing", "Flame"};
+	FlameElement.ElementProperty = "Burn";
+
+	// Default values for Ice Element.
+	IceElement.ElementName = "Ice";
+	IceElement.ElementStrength = "Thunder";
+	IceElement.ElementWeakness = "Flame";
+	IceElement.ElementalNeutralities = { "Nothing", "Ice" };
+	IceElement.ElementProperty = "Freeze";
+
+	// Default values for Thunder Element. 
+	ThunderElement.ElementName = "Thunder";
+	ThunderElement.ElementStrength = "Flame";
+	ThunderElement.ElementWeakness = "Ice";
+	ThunderElement.ElementalNeutralities = { "Nothing", "Thunder" };
+	ThunderElement.ElementProperty = "Electrocute";
 }
 
 
@@ -31,24 +50,12 @@ void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void UMIR_ElementComponent::SetElementMap(FString Name, FColor Color, FString Symbol, 
-	FString Strength, FString Weakness, TArray<FString> Neutrals, FString Property)
+void UMIR_ElementComponent::AddStructToElement(FElementMap NewElementType)
 {
-	FElementMap NewElementMap;
-
-	NewElementMap.ElementName = Name;
-	NewElementMap.MainColor = Color;
-	NewElementMap.ElementSymbol = Symbol;
-	NewElementMap.ElementStrength = Strength;
-	NewElementMap.ElementWeakness = Weakness;
-	NewElementMap.ElementalNeutralities = Neutrals;
-	NewElementMap.ElementProperty = Property;
-
-	ElementMap.Add(NewElementMap);
+	ElementMap.Add(NewElementType);
 }
 
 TArray<FElementMap> UMIR_ElementComponent::GetElementMap()
 {
 	return ElementMap;
 }
-

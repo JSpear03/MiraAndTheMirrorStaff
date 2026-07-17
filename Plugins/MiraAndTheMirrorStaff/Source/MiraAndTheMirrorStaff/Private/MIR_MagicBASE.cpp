@@ -23,6 +23,12 @@ AMIR_MagicBASE::AMIR_MagicBASE()
 
 	// The base Magic Element Component (Fire, Ice, Lightning, None)
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
+
+    // Adds elements to the map. 
+    ElementComponent->AddStructToElement(ElementComponent->NothingElement);
+    ElementComponent->AddStructToElement(ElementComponent->FlameElement);
+    ElementComponent->AddStructToElement(ElementComponent->IceElement);
+    ElementComponent->AddStructToElement(ElementComponent->ThunderElement);
 }
 
 // Called when the game starts or when spawned

@@ -16,6 +16,12 @@ AMIR_CharacterBASE_M::AMIR_CharacterBASE_M()
 	
 	// Creates Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
+
+	// Adds elements to the map. 
+	ElementComponent->AddStructToElement(ElementComponent->NothingElement);
+	ElementComponent->AddStructToElement(ElementComponent->FlameElement);
+	ElementComponent->AddStructToElement(ElementComponent->IceElement);
+	ElementComponent->AddStructToElement(ElementComponent->ThunderElement);
 }
 
 // Called when the game starts or when spawned
