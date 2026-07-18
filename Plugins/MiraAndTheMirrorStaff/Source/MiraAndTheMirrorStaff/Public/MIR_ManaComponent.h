@@ -14,11 +14,11 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_ManaComponent : public UActorComponent
 
 	// Maximum amount of Mana Power.
 	UPROPERTY(EditAnywhere, Category = "Mana Power")
-		int32 MaxManaPower = 200;
+		int32 MaxManaPower = 16;
 
 	// Current Mana Power.
 	UPROPERTY(EditAnywhere, Category = "Mana Power")
-		int32 ManaPower = 0;  
+		int32 ManaPower = 8;  
 
 public:	
 	// Sets default values for this component's properties
@@ -44,4 +44,6 @@ public:
 	// Sets up timer for cooldown. 
 	UFUNCTION(BlueprintCallable, Category = "Mana Power")
 		void ManaCooldown();
+
+	void ClearCooldownTimer(FTimerHandle CurrentTimerHandle);
 };

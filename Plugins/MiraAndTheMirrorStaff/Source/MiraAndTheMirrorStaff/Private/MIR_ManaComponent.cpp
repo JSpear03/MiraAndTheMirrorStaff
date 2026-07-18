@@ -51,16 +51,24 @@ void UMIR_ManaComponent::ManaCooldown()
 	}
 
 	FTimerHandle CooldownTimerHandle;
-	int32 HealthAmount = 10;
+	int32 ManaAmount = 1;
 
 	// When called after timer reached a certain amount of seconds, a little bit of mana is recovered.. 
-	const FTimerDelegate& CooldownDelegate = FTimerDelegate::CreateLambda([this, HealthAmount] 
+	const FTimerDelegate& CooldownDelegate = FTimerDelegate::CreateLambda([this, ManaAmount, &CooldownTimerHandle] 
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Fired Cooldown"));
 
 			if (ManaPower != MaxManaPower)
 			{
-				ManaRecovery(HealthAmount);
+				UE_LOG(LogTemp, Warning, TEXT("Recover Mana"));
+
+				ManaRecovery(ManaAmount);
+			}
+			else 
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Clear Timer"));
+
+				ClearCooldownTimer(CooldownTimerHandle);
 			}
 		}
 	);
@@ -72,4 +80,11 @@ void UMIR_ManaComponent::ManaCooldown()
 	TimerManager.SetTimer(CooldownTimerHandle, CooldownDelegate, 1, true);
 }
 
+void UMIR_ManaComponent::ClearCooldownTimer(FTimerHandle CurrentTimerHandle)
+{
+	const UWorld* World = GetWorld();
+	FTimerManager& TimerManager = World->GetTimerManager();
+
+	TimerManager.ClearTimer(CurrentTimerHandle);
+}
 

@@ -29,7 +29,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 
 public:
 	// Represents the game's Mana system.
-	UPROPERTY(EditAnywhere, Category = "Mana")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mana")
 		UMIR_ManaComponent* ManaComponent;
 
 	// Sets default values for Player Character's properties.
