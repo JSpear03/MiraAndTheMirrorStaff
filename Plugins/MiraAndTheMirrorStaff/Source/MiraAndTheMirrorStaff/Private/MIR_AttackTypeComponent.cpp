@@ -10,7 +10,20 @@ UMIR_AttackTypeComponent::UMIR_AttackTypeComponent()
 	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	// Melee attack default values. 
+	MeleeAttackType.AttackTypeName = "Melee";
+	MeleeAttackType.Damage = 2;
+	MeleeAttackType.ManaConsumption = 2;
+
+	// Ranged attack default values.
+	RangedAttackType.AttackTypeName = "Ranged";
+	RangedAttackType.Damage = 1;
+	RangedAttackType.ManaConsumption = 1;
+
+	// Aoe attack default values
+	AOEAttackType.AttackTypeName = "AOE";
+	AOEAttackType.Damage = 4;
+	AOEAttackType.ManaConsumption = 3;
 }
 
 
@@ -32,15 +45,8 @@ void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UMIR_AttackTypeComponent::SetAttackType(FString NewName, int32 NewDamage, 
-	int32 NewManaConsumption)
+void UMIR_AttackTypeComponent::AddStructToAttack(FAttackType NewAttackType)
 {
-	FAttackType NewAttackType;
-
-	NewAttackType.AttackTypeName = NewName;
-	NewAttackType.Damage = NewDamage;
-	NewAttackType.ManaConsumption = NewManaConsumption;
-
 	AttackTypes.Add(NewAttackType);
 }
 

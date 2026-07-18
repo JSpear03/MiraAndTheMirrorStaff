@@ -16,6 +16,6 @@ AMIR_MagicMelee::AMIR_MagicMelee()
 	// and have the collision component follow the staff's tip for melee attacks.
     CollisionComponent->InitSphereRadius(5.0f);
 
-	// Set the Magic Attack Type Component to Melee with Damage and Mana Consumption values (placeholder)
-	AttackTypeComponent->SetAttackType(TEXT("Melee"), 4, 5);
+    // TODO: Use AttackTypeComponent to add the Melee struct object with the new method. 
+
 }
