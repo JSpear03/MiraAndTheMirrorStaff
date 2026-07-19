@@ -15,12 +15,12 @@ UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_EnemyBASE : public AMIR_CharacterBASE_M
 {
 	GENERATED_BODY()
-
-	// Implements copy ability. 
-	UPROPERTY(EditAnywhere, Category = "Copy")
-		UMIR_CopiableComponent* CopiableComponent;
 	
 public:
+	// Implements copy ability. 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Copy")
+		UMIR_CopiableComponent* CopiableComponent;
+
 	// Sets default values for Base Enemy. 
 	AMIR_EnemyBASE();
 };

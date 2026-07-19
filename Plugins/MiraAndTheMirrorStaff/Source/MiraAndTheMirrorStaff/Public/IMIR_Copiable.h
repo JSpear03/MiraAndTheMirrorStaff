@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "MIR_PlayerChar.h"
-#include "MIR_Copiable.generated.h"
+#include "IMIR_Copiable.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UMIR_Copiable : public UInterface
+class UIMIR_Copiable : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,12 +17,12 @@ class UMIR_Copiable : public UInterface
 /**
  *  Interface for the Copiable Component to check if player can copy magic. 
  */
-class MIRAANDTHEMIRRORSTAFF_API IMIR_Copiable
+class MIRAANDTHEMIRRORSTAFF_API IIMIR_Copiable
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	// When called, the function stores copied magic for the player.
-	virtual void CopyMagic(AMIR_PlayerChar* CurrentPlayer, FString MagicToCopy);   
+	void CopyMagic(AMIR_PlayerChar* CurrentPlayer, FString MagicToCopy);   
 };
