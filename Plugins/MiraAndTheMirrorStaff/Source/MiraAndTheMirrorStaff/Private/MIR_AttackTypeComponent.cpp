@@ -9,23 +9,7 @@ UMIR_AttackTypeComponent::UMIR_AttackTypeComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  
 	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// Melee attack default values. 
-	MeleeAttackType.AttackTypeName = "Melee";
-	MeleeAttackType.Damage = 2;
-	MeleeAttackType.ManaConsumption = 2;
-
-	// Ranged attack default values.
-	RangedAttackType.AttackTypeName = "Ranged";
-	RangedAttackType.Damage = 1;
-	RangedAttackType.ManaConsumption = 1;
-
-	// Aoe attack default values
-	AOEAttackType.AttackTypeName = "AOE";
-	AOEAttackType.Damage = 4;
-	AOEAttackType.ManaConsumption = 3;
 }
-
 
 // Called when the game starts
 void UMIR_AttackTypeComponent::BeginPlay()
@@ -36,7 +20,6 @@ void UMIR_AttackTypeComponent::BeginPlay()
 	
 }
 
-
 // Called every frame
 void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -45,13 +28,8 @@ void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UMIR_AttackTypeComponent::AddStructToAttack(FAttackType NewAttackType)
+TArray<FString> UMIR_AttackTypeComponent::GetAttackNames()
 {
-	AttackTypes.Add(NewAttackType);
-}
-
-TArray<FAttackType> UMIR_AttackTypeComponent::GetAttackType()
-{
-	return AttackTypes;
+	return {"None", "Melee", "Ranged", "AOE"};
 }
 
