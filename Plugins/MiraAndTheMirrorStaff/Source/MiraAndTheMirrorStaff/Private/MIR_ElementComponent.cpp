@@ -9,27 +9,6 @@ UMIR_ElementComponent::UMIR_ElementComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  
 	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// Default values for Flame ELement.
-	FlameElement.ElementName = "Flame";
-	FlameElement.ElementStrength = "Ice";
-	FlameElement.ElementWeakness = "Thunder";
-	FlameElement.ElementalNeutralities = {"Nothing", "Flame"};
-	FlameElement.ElementProperty = "Burn";
-
-	// Default values for Ice Element.
-	IceElement.ElementName = "Ice";
-	IceElement.ElementStrength = "Thunder";
-	IceElement.ElementWeakness = "Flame";
-	IceElement.ElementalNeutralities = { "Nothing", "Ice" };
-	IceElement.ElementProperty = "Freeze";
-
-	// Default values for Thunder Element. 
-	ThunderElement.ElementName = "Thunder";
-	ThunderElement.ElementStrength = "Flame";
-	ThunderElement.ElementWeakness = "Ice";
-	ThunderElement.ElementalNeutralities = { "Nothing", "Thunder" };
-	ThunderElement.ElementProperty = "Electrocute";
 }
 
 
@@ -50,12 +29,12 @@ void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void UMIR_ElementComponent::AddStructToElement(FElementMap NewElementType)
+TArray<FString> UMIR_ElementComponent::GetElementNames()
 {
-	ElementMap.Add(NewElementType);
+	return {"RangedNothing", "Nothing", "Flame", "Ice", "Thunder"};
 }
 
-TArray<FElementMap> UMIR_ElementComponent::GetElementMap()
+TArray<FString> UMIR_ElementComponent::GetElementProperties()
 {
-	return ElementMap;
+	return {"None", "Burn", "Freeze", "Electrocute"};
 }

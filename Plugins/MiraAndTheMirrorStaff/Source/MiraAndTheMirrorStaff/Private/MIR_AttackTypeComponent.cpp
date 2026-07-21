@@ -30,6 +30,5 @@ void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 TArray<FString> UMIR_AttackTypeComponent::GetAttackNames()
 {
-	return {"None", "Melee", "Ranged", "AOE"};
+	return { "None", "Melee", "Ranged", "AOE" };
 }
-

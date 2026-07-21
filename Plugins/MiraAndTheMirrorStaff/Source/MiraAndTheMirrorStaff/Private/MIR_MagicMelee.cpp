@@ -15,7 +15,4 @@ AMIR_MagicMelee::AMIR_MagicMelee()
     // For actual implementation, it might be best to use a capsule attached to the end of Mira's staff/dagger
 	// and have the collision component follow the staff's tip for melee attacks.
     CollisionComponent->InitSphereRadius(5.0f);
-
-    // TODO: Use AttackTypeComponent to add the Melee struct object with the new method. 
-
 }

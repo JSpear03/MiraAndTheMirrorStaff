@@ -15,8 +15,6 @@ AMIR_MagicRanged::AMIR_MagicRanged()
     // Placeholder value for the main damaging collision of the ranged spell.
     CollisionComponent->InitSphereRadius(10.0f);
 
-    // TODO: Use AttackTypeComponent to add the Ranged struct object with the new method. 
-
     // Create a larger collision sphere for the ranged ice spell, representing the area it freezes water.
 	IceCollision = CreateDefaultSubobject<USphereComponent>(TEXT("IceCollision"));
 	IceCollision->InitSphereRadius(20.0f);

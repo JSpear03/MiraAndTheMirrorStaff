@@ -13,8 +13,6 @@ AMIR_MagicAOE::AMIR_MagicAOE()
 
     // Placeholder value for the main damaging collision of the AOE spell.
     CollisionComponent->InitSphereRadius(50.0f);
-
-    // TODO: Use AttackTypeComponent to add the AOE struct object with the new method. 
 }
 
 // Potential function to allow the AOE spell to expand its radius over time
