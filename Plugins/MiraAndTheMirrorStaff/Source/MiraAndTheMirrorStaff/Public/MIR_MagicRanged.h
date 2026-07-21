@@ -20,9 +20,6 @@ public:
 	// Sets default values for this actor's properties
 	AMIR_MagicRanged();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Magic|Collision")
-		class USphereComponent* IceCollision;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Magic|Movement")
 		class UProjectileMovementComponent* ProjectileMovement;
 };
