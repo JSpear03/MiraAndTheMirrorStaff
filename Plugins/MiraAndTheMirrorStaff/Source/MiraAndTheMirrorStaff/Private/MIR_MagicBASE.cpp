@@ -18,6 +18,11 @@ AMIR_MagicBASE::AMIR_MagicBASE()
     CollisionComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
     RootComponent = CollisionComponent;
 
+    // The Ice Collision Component and its init values (the root component of the spell actor)
+    IceCollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("IceCollisionComponent"));
+    IceCollisionComponent->InitSphereRadius(15.0f);
+    IceCollisionComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+    IceCollisionComponent->SetupAttachment(RootComponent);
 	// The base Magic Attack Type Component
 	AttackTypeComponent = CreateDefaultSubobject<UMIR_AttackTypeComponent>(TEXT("AttackTypeComponent"));
 

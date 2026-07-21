@@ -14,7 +14,13 @@ AMIR_MagicAOE::AMIR_MagicAOE()
     // Placeholder value for the main damaging collision of the AOE spell.
     CollisionComponent->InitSphereRadius(50.0f);
 
-    // TODO: Use AttackTypeComponent to add the AOE struct object with the new method. 
+    // Use an identically sized collision sphere for the AOE ice spell, representing the area it freezes water.
+    IceCollisionComponent->InitSphereRadius(50.0f);
+
+    // Add the AOE struct object with the new method. Uses settled consumption values, placeholder for damage.
+    AttackTypeComponent->AttackType.AttackTypeName = "AOE";
+    AttackTypeComponent->AttackType.Damage = 4;
+    AttackTypeComponent->AttackType.ManaConsumption = 3;
 }
 
 // Potential function to allow the AOE spell to expand its radius over time

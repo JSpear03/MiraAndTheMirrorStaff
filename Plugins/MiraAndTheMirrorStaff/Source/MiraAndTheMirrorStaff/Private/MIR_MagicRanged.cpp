@@ -15,11 +15,13 @@ AMIR_MagicRanged::AMIR_MagicRanged()
     // Placeholder value for the main damaging collision of the ranged spell.
     CollisionComponent->InitSphereRadius(10.0f);
 
-    // TODO: Use AttackTypeComponent to add the Ranged struct object with the new method. 
+    // Placeholder value for a larger collision sphere for the ranged ice spell, representing the area it freezes water.
+    IceCollisionComponent->InitSphereRadius(20.0f);
 
-    // Create a larger collision sphere for the ranged ice spell, representing the area it freezes water.
-	IceCollision = CreateDefaultSubobject<USphereComponent>(TEXT("IceCollision"));
-	IceCollision->InitSphereRadius(20.0f);
+    // Add the Ranged struct object with the new method. Uses settled consumption values, placeholder for damage.
+	AttackTypeComponent->AttackType.AttackTypeName = "Ranged";
+	AttackTypeComponent->AttackType.Damage = 4;
+	AttackTypeComponent->AttackType.ManaConsumption = 1;
 
 	// The ProjectileMovementComponent is responsible for moving the projectile in a straight line at a constant speed.
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));

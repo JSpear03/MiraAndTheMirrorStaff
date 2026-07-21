@@ -16,6 +16,11 @@ AMIR_MagicMelee::AMIR_MagicMelee()
 	// and have the collision component follow the staff's tip for melee attacks.
     CollisionComponent->InitSphereRadius(5.0f);
 
-    // TODO: Use AttackTypeComponent to add the Melee struct object with the new method. 
+	// Use a larger collision sphere for the melee ice spell, representing the area it freezes water.
+	IceCollisionComponent->InitSphereRadius(10.0f);
 
+    // Add the Melee struct object with the new method. Uses settled consumption values, placeholder for damage.
+	AttackTypeComponent->AttackType.AttackTypeName = "Melee";
+	AttackTypeComponent->AttackType.Damage = 4;
+	AttackTypeComponent->AttackType.ManaConsumption = 2;
 }

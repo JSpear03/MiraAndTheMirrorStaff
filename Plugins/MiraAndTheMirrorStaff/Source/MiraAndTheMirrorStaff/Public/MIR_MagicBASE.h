@@ -34,4 +34,8 @@ public:
 	// Creates the overridable Collision Component for the spell.
 	UPROPERTY(EditAnywhere, Category = "Magic|Collision")
         class USphereComponent* CollisionComponent;
+
+    // Creates the overridable Collision Component for the ice freeze hitbox on spells.
+    UPROPERTY(EditAnywhere, Category = "Magic|Collision")
+	    class USphereComponent* IceCollisionComponent;
 };
