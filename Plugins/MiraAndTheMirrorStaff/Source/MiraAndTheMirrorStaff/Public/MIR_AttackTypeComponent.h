@@ -44,7 +44,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
 		FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
 	// Returns a list of the attack names.
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 		TArray<FString> GetAttackNames();
 };
