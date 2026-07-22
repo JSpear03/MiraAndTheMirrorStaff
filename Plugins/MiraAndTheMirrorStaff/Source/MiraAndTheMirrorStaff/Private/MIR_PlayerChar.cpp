@@ -20,6 +20,8 @@ AMIR_PlayerChar::AMIR_PlayerChar()
 	bUseControllerRotationYaw = false; 
 
 	SpringArm->bUsePawnControlRotation = true;  // Allows rotation of the spring arm. 
+
+	ElementComponent->ElementType.ElementName = "Ranged Nothing";
 } 
 
 void AMIR_PlayerChar::SetStoredMagic(FString MagicType)

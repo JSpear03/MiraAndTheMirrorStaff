@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "MIR_HealthComponent.h"
+#include "MIR_ElementComponent.h"
 #include "MIR_CharacterBASE_M.generated.h"
 
 UCLASS(Blueprintable)
@@ -28,13 +30,13 @@ public:
 
 
 	// The character's Health Component, which handles health calculations.
-	UPROPERTY(EditAnywhere, Category = "Health")
-		class UMIR_HealthComponent* HealthComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+		UMIR_HealthComponent* HealthComponent;
 
 	// The Base Character's Element component, which represents the element system. 
 	// Useful for calculcating the character's elemental weakenesses and strengths. 
-	UPROPERTY(EditAnywhere, Category = "Element")
-		class UMIR_ElementComponent* ElementComponent; 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element")
+		UMIR_ElementComponent* ElementComponent; 
 
 	// Decreases health based on the calculated damage. 
 	UFUNCTION(BlueprintCallable, Category = "Damage")

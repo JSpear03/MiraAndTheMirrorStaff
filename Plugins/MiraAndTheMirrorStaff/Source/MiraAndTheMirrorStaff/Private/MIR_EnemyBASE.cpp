@@ -7,5 +7,7 @@
 AMIR_EnemyBASE::AMIR_EnemyBASE()
 {
 	CopiableComponent = CreateDefaultSubobject<UMIR_CopiableComponent>(TEXT("Copiable Component"));
+
+	ElementComponent->ElementType.ElementalNeutralities = { "Nothing", "Flame", "Ice", "Thunder" };
 }
 

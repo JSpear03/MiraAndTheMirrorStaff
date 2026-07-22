@@ -31,7 +31,7 @@ void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 TArray<FString> UMIR_ElementComponent::GetElementNames()
 {
-	return {"RangedNothing", "Nothing", "Flame", "Ice", "Thunder"};
+	return {"Ranged Nothing", "Nothing", "Flame", "Ice", "Thunder"};
 }
 
 TArray<FString> UMIR_ElementComponent::GetElementProperties()

@@ -2,8 +2,6 @@
 
 
 #include "MIR_CharacterBASE_M.h"
-#include "MIR_HealthComponent.h"
-#include "MIR_ElementComponent.h"
 
 // Sets default values
 AMIR_CharacterBASE_M::AMIR_CharacterBASE_M()
@@ -16,6 +14,8 @@ AMIR_CharacterBASE_M::AMIR_CharacterBASE_M()
 	
 	// Creates Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
+
+	ElementComponent->ElementType.ElementalNeutralities = {"Nothing", "Flame", "Ice", "Thunder"};
 }
 
 // Called when the game starts or when spawned
