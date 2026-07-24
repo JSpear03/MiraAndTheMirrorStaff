@@ -11,3 +11,22 @@ AMIR_EnemyBASE::AMIR_EnemyBASE()
 	ElementComponent->ElementType.ElementalNeutralities = { "Nothing", "Flame", "Ice", "Thunder" };
 }
 
+void AMIR_EnemyBASE::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OnEnemyDied.AddDynamic(this, &AMIR_EnemyBASE::EnemyDied);
+}
+
+// Called every frame.
+void AMIR_EnemyBASE::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (HealthComponent->GetHealth() == 0 && bCanRunBroadcast)
+	{
+		bCanRunBroadcast = false;
+		
+		OnEnemyDied.Broadcast();
+	}
+}
