@@ -2,6 +2,7 @@
 
 
 #include "MIR_PlayerChar.h"
+#include "MIR_EnemyBASE.h"
 
 // Sets default values.
 AMIR_PlayerChar::AMIR_PlayerChar()
@@ -22,7 +23,57 @@ AMIR_PlayerChar::AMIR_PlayerChar()
 	SpringArm->bUsePawnControlRotation = true;  // Allows rotation of the spring arm. 
 
 	ElementComponent->ElementType.ElementName = "Ranged Nothing";
-} 
+}
+
+void AMIR_PlayerChar::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OnActorHit.AddDynamic(this, &AMIR_PlayerChar::HitEvent);
+}
+
+void AMIR_PlayerChar::HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
+	const FHitResult& Hit)
+{
+	bool bIsChildOfEnemy = OtherActor->GetClass()->IsChildOf<AMIR_EnemyBASE>();
+
+	// Reduces health by one, when collided with enemy. 
+	if (bIsChildOfEnemy && bCanGetHit)
+	{
+		AMIR_EnemyBASE* CurrentEnemy = Cast<AMIR_EnemyBASE>(OtherActor);
+
+		bCanGetHit = false;
+
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("No Touchy!"));
+		HealthComponent->HealthReduction(CurrentEnemy->ContactDamage);
+
+		StartCooldownTimer();
+	}
+}
+
+void AMIR_PlayerChar::StartCooldownTimer()
+{
+	FTimerHandle CooldownTimerHandle;
+	const UWorld* World = GetWorld();
+	FTimerManager& TimerManager = World->GetTimerManager();
+
+	const FTimerDelegate& CooldownTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager, &CooldownTimerHandle]
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Fire Player Cooldown"));
+
+			TimerManager.ClearTimer(CooldownTimerHandle);
+
+			SetCanGetHit(true);
+		}
+	);
+
+	TimerManager.SetTimer(CooldownTimerHandle, CooldownTimerDelegate, CooldownSeconds, false);
+}
+
+void AMIR_PlayerChar::SetCanGetHit(bool bGetHit)
+{
+	bCanGetHit = bGetHit;
+}
 
 void AMIR_PlayerChar::SetStoredMagic(FString MagicType)
 {

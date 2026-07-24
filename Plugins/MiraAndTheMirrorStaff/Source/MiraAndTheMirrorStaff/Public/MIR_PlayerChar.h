@@ -21,20 +21,46 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 	UPROPERTY(EditAnywhere, Category = "Copied Magic")
 		FString StoredMagicType;
 
-	UPROPERTY(EditAnywhere, Category = "Camera")
-		USpringArmComponent* SpringArm;
-
-	UPROPERTY(EditAnywhere, Category = "Camera")
-		UCameraComponent* CameraComponent;
+	UPROPERTY()
+		bool bCanGetHit = true;
 
 public:
+	// Used as part of a timer to set the value of bCanGetHit. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown")
+		int32 CooldownSeconds = 2;
+
+	// Used for the position of the camera. 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+		USpringArmComponent* SpringArm;
+
+	// Displays the gameplay. 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+		UCameraComponent* CameraComponent;
+
 	// Represents the game's Mana system.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mana")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mana")
 		UMIR_ManaComponent* ManaComponent;
 
 	// Sets default values for Player Character's properties.
 	AMIR_PlayerChar();
 
+protected:
+	// Sets default values
+	virtual void BeginPlay() override;
+
+	// Called when player contacts an object. 
+	UFUNCTION()
+		void HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
+			const FHitResult& Hit);
+
+private:
+	// Stars the timer for the hit event cooldown.
+	void StartCooldownTimer();
+
+	// Sets bCanGetHit to true or false.
+	void SetCanGetHit(bool bGetHit);
+
+public:
 	// Stored Magic setter.
 	UFUNCTION(BlueprintCallable)
 		void SetStoredMagic(FString MagicType);
