@@ -11,13 +11,13 @@ struct FAttackType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "Assigned Attack Type", meta = (GetOptions = "GetAttackNames"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Assigned Attack Type", meta = (GetOptions = "GetAttackNames"))
 		FString AttackTypeName = "None";
 
-	UPROPERTY(EditAnywhere, Category = "Assigned Attack Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Assigned Attack Type")
 		int32 Damage = 0;
 
-	UPROPERTY(EditAnywhere, Category = "Assigned Attack Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Assigned Attack Type")
 		int32 ManaConsumption = 0;
 };
 
