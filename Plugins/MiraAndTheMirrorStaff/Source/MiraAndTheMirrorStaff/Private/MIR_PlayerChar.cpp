@@ -91,10 +91,13 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 	switch (KeyItem)
 	{
 	case EMIR_KeyItem::MirrorStaff:
+		bHasMirrorStaff = true;
 		break;
 	case EMIR_KeyItem::SkyboundShoes:
+		bHasSkyboundShoes = true;
 		break;
 	case EMIR_KeyItem::SpiritStole:
+		bHasSpiritStole = true;
 		break;
 	case EMIR_KeyItem::KeyGemstone:
 		KeyGemstoneCount++;

@@ -116,7 +116,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void PauseMenu();
 
-	// Adds the Map Mneu widget to the viewport. 
+	// Adds the Map Menu widget to the viewport. 
 	UFUNCTION(BlueprintImplementableEvent)
 		void OpenMap();
 };

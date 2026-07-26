@@ -34,9 +34,20 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 		bool bCanGetHit = true;
 
 public:
+	// Key item flags. Set to true when obtained so any logic gates
+	// involving their inputs (Jump, Dash, etc.) can succeed.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	bool bHasMirrorStaff = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	bool bHasSkyboundShoes = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	bool bHasSpiritStole = false;
+
 	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
-		int32 KeyGemstoneCount = 0;
+	int32 KeyGemstoneCount = 0;
 
 	// Used as part of a timer to set the value of bCanGetHit. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown")

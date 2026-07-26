@@ -3,9 +3,11 @@
 
 #include "MIR_ArcadeController.h"
 #include "EnhancedInputComponent.h"
+#include "IMIR_Interactable.h"
+#include "MIR_PlayerChar.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "MIR_PlayerChar.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -68,49 +70,49 @@ void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 // TODO: Comment out the interface once we have the Interactable interface.
 void AMIR_ArcadeController::UseInteract()
 {
-	//AMIR_PlayerChar* PlayerCharacter =
-	//	Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	AMIR_PlayerChar* PlayerCharacter =
+		Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	//if (!PlayerCharacter)
-	//{
-	//	return;
-	//}
+	if (!PlayerCharacter)
+	{
+		return;
+	}
 
-	//// Object types that Interactable assets can be (static and movable props).
-	//TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	//ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
-	//ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+	// Object types that Interactable assets can be (static and movable props).
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
 
-	//TArray<AActor*> IgnoredActors;
-	//IgnoredActors.Add(PlayerCharacter);
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(PlayerCharacter);
 
-	//// Finds all actors within the Interact range of the player.
-	//TArray<AActor*> NearbyActors;
-	//UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerCharacter->GetActorLocation(),
-	//	InteractRange, ObjectTypes, AActor::StaticClass(), IgnoredActors, NearbyActors);
+	// Finds all actors within the Interact range of the player.
+	TArray<AActor*> NearbyActors;
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerCharacter->GetActorLocation(),
+		InteractRange, ObjectTypes, AActor::StaticClass(), IgnoredActors, NearbyActors);
 
-	//AActor* ClosestInteractable = nullptr;
-	//float ClosestDistance = TNumericLimits<float>::Max();
+	AActor* ClosestInteractable = nullptr;
+	float ClosestDistance = TNumericLimits<float>::Max();
 
-	//for (AActor* NearbyActor : NearbyActors)
-	//{
-	//	// Only assets that implement the Interactable Interface can respond.
-	//	if (NearbyActor->Implements<UIMIR_Interactable>())
-	//	{
-	//		float Distance = PlayerCharacter->GetDistanceTo(NearbyActor);
+	for (AActor* NearbyActor : NearbyActors)
+	{
+		// Only assets that implement the Interactable Interface can respond.
+		if (NearbyActor->Implements<UIMIR_Interactable>())
+		{
+			float Distance = PlayerCharacter->GetDistanceTo(NearbyActor);
 
-	//		if (Distance < ClosestDistance)
-	//		{
-	//			ClosestInteractable = NearbyActor;
-	//			ClosestDistance = Distance;
-	//		}
-	//	}
-	//}
+			if (Distance < ClosestDistance)
+			{
+				ClosestInteractable = NearbyActor;
+				ClosestDistance = Distance;
+			}
+		}
+	}
 
-	//if (ClosestInteractable)
-	//{
-	//	IIMIR_Interactable::Execute_OnInteract(ClosestInteractable, PlayerCharacter);
-	//}
+	/*if (ClosestInteractable)
+	{
+		IIMIR_Interactable::Execute_OnInteract(ClosestInteractable, PlayerCharacter);
+	}*/
 }
 
 void AMIR_ArcadeController::StartPlayerJumping()
