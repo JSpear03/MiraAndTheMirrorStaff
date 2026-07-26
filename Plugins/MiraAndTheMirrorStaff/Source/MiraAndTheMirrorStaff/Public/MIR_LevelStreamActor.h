@@ -33,11 +33,11 @@ protected:
 					 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	// The level to load during Level Streaming.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Streaming|Level")
 	TSoftObjectPtr<UWorld> LevelToLoad;
 
 	// A currently loaded level via Level Streaming.
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category = "Streaming|Level")
 	ULevelStreamingDynamic* LoadedLevel = nullptr;
 
 public:	
@@ -46,6 +46,7 @@ public:
 
 private:
 	// Overlap volume to trigger Level Streaming.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"),
+			  Category = "Streaming|Volume")
 	UBoxComponent* OverlapVolume;
 };

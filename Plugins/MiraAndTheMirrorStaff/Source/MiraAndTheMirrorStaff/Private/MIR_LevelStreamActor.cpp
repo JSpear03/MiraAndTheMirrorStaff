@@ -45,10 +45,13 @@ void AMIR_LevelStreamActor::OverlapBegins(UPrimitiveComponent* OverlappedCompone
 
 	if (OtherActor == MyCharacter && !LevelToLoad.IsNull())
 	{
+		// Austin's code (unused).
 		FSoftObjectPath levelloadpath = UWorld::RemovePIEPrefix(LevelToLoad.ToSoftObjectPath().GetLongPackageName());
 		FString levelPath = levelloadpath.ToString();
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, FString::Printf(TEXT("Level will load! %s"), *levelPath));
 		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this, TSoftObjectPtr<UWorld>(levelloadpath), this->GetActorLocation());
+
+		//LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this, LevelToLoad, this->GetActorLocation());
 	}
 	else
 	{
@@ -61,7 +64,7 @@ void AMIR_LevelStreamActor::OverlapEnds(UPrimitiveComponent* OverlappedComponent
 	// The currently possessed player character.
 	ACharacter* MyCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 
-	if (OtherActor == MyCharacter && LevelToLoad != nullptr)
+	if (OtherActor == MyCharacter && !LevelToLoad.IsNull())
 	{
 		UArcadeFunctions::ArcadeUnloadStreamLevel(this, LoadedLevel);
 		LoadedLevel = nullptr;
