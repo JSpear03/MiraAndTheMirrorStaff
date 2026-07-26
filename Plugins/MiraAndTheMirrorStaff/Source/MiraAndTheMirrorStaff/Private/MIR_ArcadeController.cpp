@@ -109,10 +109,10 @@ void AMIR_ArcadeController::UseInteract()
 		}
 	}
 
-	/*if (ClosestInteractable)
+	if (ClosestInteractable)
 	{
 		IIMIR_Interactable::Execute_OnInteract(ClosestInteractable, PlayerCharacter);
-	}*/
+	}
 }
 
 void AMIR_ArcadeController::StartPlayerJumping()
