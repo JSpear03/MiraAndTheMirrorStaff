@@ -3,6 +3,8 @@
 
 #include "MIR_PlayerChar.h"
 #include "MIR_EnemyBASE.h"
+#include "MIR_RespawnPoint.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values.
 AMIR_PlayerChar::AMIR_PlayerChar()
@@ -105,4 +107,38 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 	default:
 		break;
 	}
+}
+
+void AMIR_PlayerChar::ApplyHazardDamage(int32 Damage)
+{
+	// Hazards share the same invincibility window as enemy contact,
+	// so standing on spikes can't drain health every frame.
+	if (!bCanGetHit)
+	{
+		return;
+	}
+
+	bCanGetHit = false;
+	HealthComponent->HealthReduction(Damage);
+	StartCooldownTimer();
+}
+
+void AMIR_PlayerChar::SetLastRespawnPoint(AMIR_RespawnPoint* RespawnPoint)
+{
+	LastRespawnPoint = RespawnPoint;
+}
+
+void AMIR_PlayerChar::RespawnAtLastPoint()
+{
+	if (!LastRespawnPoint)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("RespawnAtLastPoint: no respawn point set. Place an AMIR_RespawnPoint trigger at the room entrance."));
+		return;
+	}
+
+	// Falling momentum would otherwise carry through the teleport and
+	// slide the player straight back into the hazard.
+	GetCharacterMovement()->StopMovementImmediately();
+	SetActorLocation(LastRespawnPoint->GetActorLocation(), false, nullptr, ETeleportType::TeleportPhysics);
 }

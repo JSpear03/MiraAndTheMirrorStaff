@@ -9,6 +9,8 @@
 #include "MIR_ManaComponent.h"
 #include "MIR_PlayerChar.generated.h"
 
+class AMIR_RespawnPoint;
+
 UENUM(BlueprintType)
 enum class EMIR_KeyItem : uint8
 {
@@ -32,6 +34,10 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 
 	UPROPERTY()
 		bool bCanGetHit = true;
+
+	// The most recently activated respawn point. Damaging hazards teleport the player here.
+	UPROPERTY()
+		AMIR_RespawnPoint* LastRespawnPoint = nullptr;
 
 public:
 	// Key item flags. Set to true when obtained so any logic gates
@@ -104,4 +110,16 @@ public:
 	// Grants item from treasure.
 	UFUNCTION(BlueprintCallable)
 		void GrantKeyItem(EMIR_KeyItem KeyItem);
+
+	// Reduces health from hazard contact, respecting the invincibility cooldown.
+	UFUNCTION(BlueprintCallable, Category = "Hazard")
+		void ApplyHazardDamage(int32 Damage);
+
+	// Last Respawn Point setter. Called by a respawn point's trigger when overlapped.
+	UFUNCTION(BlueprintCallable, Category = "Hazard")
+		void SetLastRespawnPoint(AMIR_RespawnPoint* RespawnPoint);
+
+	// Teleports the player to their last activated respawn point.
+	UFUNCTION(BlueprintCallable, Category = "Hazard")
+		void RespawnAtLastPoint();
 };
