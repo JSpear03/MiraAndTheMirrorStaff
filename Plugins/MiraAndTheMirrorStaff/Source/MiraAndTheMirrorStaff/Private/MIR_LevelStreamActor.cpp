@@ -23,9 +23,13 @@ void AMIR_LevelStreamActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (LevelToLoad != nullptr)
+	if (!LevelToLoad.IsNull())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("Level is/was valid(?)."));
+		if (LevelToLoad.IsValid())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("Level is validated!"));
+		}
 	}
 	else
 	{
@@ -39,9 +43,16 @@ void AMIR_LevelStreamActor::OverlapBegins(UPrimitiveComponent* OverlappedCompone
 	// The currently possessed player character.
 	ACharacter* MyCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 
-	if (OtherActor == MyCharacter && LevelToLoad != nullptr)
+	if (OtherActor == MyCharacter && !LevelToLoad.IsNull())
 	{
-		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this, LevelToLoad, this->GetActorLocation());
+		FSoftObjectPath levelloadpath = UWorld::RemovePIEPrefix(LevelToLoad.ToSoftObjectPath().GetLongPackageName());
+		FString levelPath = levelloadpath.ToString();
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, FString::Printf(TEXT("Level will load! %s"), *levelPath));
+		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this, TSoftObjectPtr<UWorld>(levelloadpath), this->GetActorLocation());
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("Level will NOT load!"));
 	}
 }
 

@@ -34,7 +34,7 @@ protected:
 
 	// The level to load during Level Streaming.
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UWorld> LevelToLoad = nullptr;
+	TSoftObjectPtr<UWorld> LevelToLoad;
 
 	// A currently loaded level via Level Streaming.
 	UPROPERTY(VisibleInstanceOnly)
