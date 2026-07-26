@@ -9,6 +9,15 @@
 #include "MIR_ManaComponent.h"
 #include "MIR_PlayerChar.generated.h"
 
+UENUM(BlueprintType)
+enum class EMIR_KeyItem : uint8
+{
+	MirrorStaff,
+	SkyboundShoes,
+	SpiritStole,
+	KeyGemstone
+};
+
 /**
  * The character that the player will control in this game.
  * Implements gameplay-context inputs, etc.
@@ -25,6 +34,10 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 		bool bCanGetHit = true;
 
 public:
+	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+		int32 KeyGemstoneCount = 0;
+
 	// Used as part of a timer to set the value of bCanGetHit. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown")
 		int32 CooldownSeconds = 2;
@@ -40,6 +53,14 @@ public:
 	// Represents the game's Mana system.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mana")
 		UMIR_ManaComponent* ManaComponent;
+
+	// Checks if player can jump with Skybound Shoes
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
+		bool bCanJump = false;
+
+	// Checks if player can dash with Spirit Stole. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+		bool bCanDash = false;
 
 	// Sets default values for Player Character's properties.
 	AMIR_PlayerChar();
@@ -68,4 +89,8 @@ public:
 	// Stored Magic getter.
 	UFUNCTION(BlueprintCallable)
 		FString GetStoredMagic();
+
+	// Grants item from treasure.
+	UFUNCTION(BlueprintCallable)
+		void GrantKeyItem(EMIR_KeyItem KeyItem);
 };

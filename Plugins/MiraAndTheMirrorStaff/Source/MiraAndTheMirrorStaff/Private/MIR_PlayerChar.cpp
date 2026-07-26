@@ -84,3 +84,22 @@ FString AMIR_PlayerChar::GetStoredMagic()
 {
 	return StoredMagicType;
 }
+
+// Leave most of the cases blank for now.
+void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
+{
+	switch (KeyItem)
+	{
+	case EMIR_KeyItem::MirrorStaff:
+		break;
+	case EMIR_KeyItem::SkyboundShoes:
+		break;
+	case EMIR_KeyItem::SpiritStole:
+		break;
+	case EMIR_KeyItem::KeyGemstone:
+		KeyGemstoneCount++;
+		break;
+	default:
+		break;
+	}
+}
