@@ -67,7 +67,11 @@ void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 	PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);  // Movement on the X Axis.
 }
 
-// TODO: Comment out the interface once we have the Interactable interface.
+void AMIR_ArcadeController::UseSubAttack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Use dagger"));
+}
+
 void AMIR_ArcadeController::UseInteract()
 {
 	AMIR_PlayerChar* PlayerCharacter =
@@ -149,4 +153,9 @@ void AMIR_ArcadeController::StopDashing()
 	UCharacterMovementComponent* CharacterMovement = PlayerCharacter->GetCharacterMovement();
 
 	CharacterMovement->MaxWalkSpeed = 600;
+}
+
+void AMIR_ArcadeController::AllowMainAttack()
+{
+	bCanUseMainAttack = true;
 }

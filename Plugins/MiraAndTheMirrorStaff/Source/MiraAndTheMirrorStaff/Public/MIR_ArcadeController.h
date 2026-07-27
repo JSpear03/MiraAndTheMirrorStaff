@@ -60,8 +60,13 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 		meta = (AllowPrivateAccess = "true"))
 		float InteractRange = 250.0f;
 
-
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
+		bool bCanUseMainAttack = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
+		int32 MainAttackCooldown = 2;
+
 	// Called to setup input actions. 
 	virtual void SetupInputComponent() override;
 
@@ -80,9 +85,7 @@ protected:
 		void UseMirrorStaff();
 
 	// Called to attack with dagger.
-	UFUNCTION(BlueprintImplementableEvent)
-
-		void UseSubAttack();
+	void UseSubAttack();
 
 	// Discards the current copied magic. 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -119,4 +122,8 @@ protected:
 	// Adds the Map Menu widget to the viewport. 
 	UFUNCTION(BlueprintImplementableEvent)
 		void OpenMap();
+
+	// Sets Can Use Main Attack to true, so player can use the Main Attack input. 
+	UFUNCTION(BlueprintCallable)
+		void AllowMainAttack();
 };
