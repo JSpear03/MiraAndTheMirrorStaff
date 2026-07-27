@@ -13,31 +13,31 @@ struct FElement
 	GENERATED_BODY()
 
 	// Name of the element. 
-	UPROPERTY(EditAnywhere, Category = "Element", meta = (GetOptions = "GetElementNames"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
 		FString ElementName = "Nothing";
 
 	// Sets the color of the element.
-	UPROPERTY(EditAnywhere, Category = "Element")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element")
 		UMaterial* MainColor = nullptr;
 
 	// What represents the element. 
-	UPROPERTY(EditAnywhere, Category = "Element")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element")
 		UTexture2D* ElementSymbol;
 
 	// What the current element is strong against (x2 multiplier). 
-	UPROPERTY(EditAnywhere, Category = "Element", meta = (GetOptions = "GetElementNames"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
 		FString ElementStrength = "Nothing";
 
 	// What the current element is weak against (x0 multiplier). 
-	UPROPERTY(EditAnywhere, Category = "Element", meta = (GetOptions = "GetElementNames"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
 		FString ElementWeakness = "Nothing";
 
 	// List of elements that the element name is neutral against. (x1 multiplier)
-	UPROPERTY(EditAnywhere, Category = "Element", meta = (GetOptions = "GetElementNames"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
 		TArray<FString> ElementalNeutralities;
 
 	// The type of action the element does. 
-	UPROPERTY(EditAnywhere, Category = "Element", meta = (GetOptions = "GetElementProperties"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementProperties"))
 		FString ElementProperty = "None";
 
 };

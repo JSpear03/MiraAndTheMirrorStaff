@@ -9,6 +9,17 @@
 #include "MIR_ManaComponent.h"
 #include "MIR_PlayerChar.generated.h"
 
+class AMIR_RespawnPoint;
+
+UENUM(BlueprintType)
+enum class EMIR_KeyItem : uint8
+{
+	MirrorStaff,
+	SkyboundShoes,
+	SpiritStole,
+	KeyGemstone
+};
+
 /**
  * The character that the player will control in this game.
  * Implements gameplay-context inputs, etc.
@@ -21,20 +32,73 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 	UPROPERTY(EditAnywhere, Category = "Copied Magic")
 		FString StoredMagicType;
 
-	UPROPERTY(EditAnywhere, Category = "Camera")
-		USpringArmComponent* SpringArm;
+	UPROPERTY()
+		bool bCanGetHit = true;
 
-	UPROPERTY(EditAnywhere, Category = "Camera")
-		UCameraComponent* CameraComponent;
+	// The most recently activated respawn point. Damaging hazards teleport the player here.
+	UPROPERTY()
+		AMIR_RespawnPoint* LastRespawnPoint = nullptr;
 
 public:
+	// Key item flags. Set to true when obtained so any logic gates
+	// involving their inputs (Jump, Dash, etc.) can succeed.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	bool bHasMirrorStaff = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	bool bHasSkyboundShoes = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	bool bHasSpiritStole = false;
+
+	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	int32 KeyGemstoneCount = 0;
+
+	// Used as part of a timer to set the value of bCanGetHit. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown")
+		int32 CooldownSeconds = 2;
+
+	// Used for the position of the camera. 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+		USpringArmComponent* SpringArm;
+
+	// Displays the gameplay. 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+		UCameraComponent* CameraComponent;
+
 	// Represents the game's Mana system.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mana")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mana")
 		UMIR_ManaComponent* ManaComponent;
+
+	// Checks if player can jump with Skybound Shoes
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
+		bool bCanJump = false;
+
+	// Checks if player can dash with Spirit Stole. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+		bool bCanDash = false;
 
 	// Sets default values for Player Character's properties.
 	AMIR_PlayerChar();
 
+protected:
+	// Sets default values
+	virtual void BeginPlay() override;
+
+	// Called when player contacts an object. 
+	UFUNCTION()
+		void HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
+			const FHitResult& Hit);
+
+private:
+	// Stars the timer for the hit event cooldown.
+	void StartCooldownTimer();
+
+	// Sets bCanGetHit to true or false.
+	void SetCanGetHit(bool bGetHit);
+
+public:
 	// Stored Magic setter.
 	UFUNCTION(BlueprintCallable)
 		void SetStoredMagic(FString MagicType);
@@ -42,4 +106,20 @@ public:
 	// Stored Magic getter.
 	UFUNCTION(BlueprintCallable)
 		FString GetStoredMagic();
+
+	// Grants item from treasure.
+	UFUNCTION(BlueprintCallable)
+		void GrantKeyItem(EMIR_KeyItem KeyItem);
+
+	// Reduces health from hazard contact, respecting the invincibility cooldown.
+	UFUNCTION(BlueprintCallable, Category = "Hazard")
+		void ApplyHazardDamage(int32 Damage);
+
+	// Last Respawn Point setter. Called by a respawn point's trigger when overlapped.
+	UFUNCTION(BlueprintCallable, Category = "Hazard")
+		void SetLastRespawnPoint(AMIR_RespawnPoint* RespawnPoint);
+
+	// Teleports the player to their last activated respawn point.
+	UFUNCTION(BlueprintCallable, Category = "Hazard")
+		void RespawnAtLastPoint();
 };

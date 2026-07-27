@@ -3,8 +3,11 @@
 
 #include "MIR_ArcadeController.h"
 #include "EnhancedInputComponent.h"
+#include "IMIR_Interactable.h"
+#include "MIR_PlayerChar.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -14,35 +17,40 @@ void AMIR_ArcadeController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent);
-	ETriggerEvent Triggered, Started, Completed;
+	ETriggerEvent ETriggered, EStarted, ECompleted;
 
-	Triggered = ETriggerEvent::Triggered;
-	Started = ETriggerEvent::Started;
-	Completed = ETriggerEvent::Completed;
+	ETriggered = ETriggerEvent::Triggered;
+	EStarted = ETriggerEvent::Started;
+	ECompleted = ETriggerEvent::Completed;
 
 	if (EnhancedInput)
 	{
 		// Triggered Bindings.
-		EnhancedInput->BindAction(Move, Triggered, this, &AMIR_ArcadeController::MoveCharacter);
-		EnhancedInput->BindAction(MainAttack, Triggered, this, &AMIR_ArcadeController::UseMainAttack);
-		EnhancedInput->BindAction(RangedCopy, Triggered, this, &AMIR_ArcadeController::UseMirrorStaff);
-		EnhancedInput->BindAction(SubAttack, Triggered, this, &AMIR_ArcadeController::UseSubAttack);
-		EnhancedInput->BindAction(Discard, Triggered, this, &AMIR_ArcadeController::DiscardCopiedMagic);
-		EnhancedInput->BindAction(RangedCopy, Triggered, this, &AMIR_ArcadeController::UseMirrorStaff);
+		EnhancedInput->BindAction(Move, ETriggered, this, &AMIR_ArcadeController::MoveCharacter);
+		EnhancedInput->BindAction(MainAttack, ETriggered, this, &AMIR_ArcadeController::UseMainAttack);
+		EnhancedInput->BindAction(RangedCopy, ETriggered, this, &AMIR_ArcadeController::UseMirrorStaff);
+		EnhancedInput->BindAction(SubAttack, ETriggered, this, &AMIR_ArcadeController::UseSubAttack);
+		EnhancedInput->BindAction(Discard, ETriggered, this, &AMIR_ArcadeController::DiscardCopiedMagic);
+		EnhancedInput->BindAction(RangedCopy, ETriggered, this, &AMIR_ArcadeController::UseMirrorStaff);
 		
 		// Started Bindings.
-		EnhancedInput->BindAction(Interact, Started, this, &AMIR_ArcadeController::UseInteract);
-		EnhancedInput->BindAction(PauseAction, Started, this, &AMIR_ArcadeController::PauseMenu);
-		EnhancedInput->BindAction(MapAction, Started, this, &AMIR_ArcadeController::OpenMap);
+		EnhancedInput->BindAction(Interact, EStarted, this, &AMIR_ArcadeController::UseInteract);
+		EnhancedInput->BindAction(PauseAction, EStarted, this, &AMIR_ArcadeController::PauseMenu);
+		EnhancedInput->BindAction(MapAction, EStarted, this, &AMIR_ArcadeController::OpenMap);
 
 		// Jump Bindings.
-		EnhancedInput->BindAction(Jump, Started, this, &AMIR_ArcadeController::StartPlayerJumping);
-		EnhancedInput->BindAction(Jump, Completed, this, &AMIR_ArcadeController::StopPlayerJumping);
+		EnhancedInput->BindAction(Jump, EStarted, this, &AMIR_ArcadeController::StartPlayerJumping);
+		EnhancedInput->BindAction(Jump, ECompleted, this, &AMIR_ArcadeController::StopPlayerJumping);
 
 		// Dash Bindings.
-		EnhancedInput->BindAction(Dash, Started, this, &AMIR_ArcadeController::StartDashing);
-		EnhancedInput->BindAction(Dash, Completed, this, &AMIR_ArcadeController::StopDashing);
+		EnhancedInput->BindAction(Dash, EStarted, this, &AMIR_ArcadeController::StartDashing);
+		EnhancedInput->BindAction(Dash, ECompleted, this, &AMIR_ArcadeController::StopDashing);
 	}
+}
+
+void AMIR_ArcadeController::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
@@ -59,37 +67,65 @@ void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 	PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);  // Movement on the X Axis.
 }
 
-void AMIR_ArcadeController::UseMainAttack()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::FromHex("#08FFA7FF"), TEXT("Attack With Staff"));
-}
-
-void AMIR_ArcadeController::UseMirrorStaff()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::FromHex("#0879FFFF"), 
-		TEXT("Use Mirror Staff for copying."));
-}
-
 void AMIR_ArcadeController::UseSubAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::FromHex("#63626DFF"), 
-		TEXT("Attack with Dagger."));
-}
-
-void AMIR_ArcadeController::DiscardCopiedMagic()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::FromHex("#FF401AFF"), 
-		TEXT("Discard Copied Magic"));
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Use dagger"));
 }
 
 void AMIR_ArcadeController::UseInteract()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::FromHex("#00D4FFFF"), 
-		TEXT("Press [F] to Interact and pay respects."));
+	AMIR_PlayerChar* PlayerCharacter =
+		Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (!PlayerCharacter)
+	{
+		return;
+	}
+
+	// Object types that Interactable assets can be (static and movable props).
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(PlayerCharacter);
+
+	// Finds all actors within the Interact range of the player.
+	TArray<AActor*> NearbyActors;
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerCharacter->GetActorLocation(),
+		InteractRange, ObjectTypes, AActor::StaticClass(), IgnoredActors, NearbyActors);
+
+	AActor* ClosestInteractable = nullptr;
+	float ClosestDistance = TNumericLimits<float>::Max();
+
+	for (AActor* NearbyActor : NearbyActors)
+	{
+		// Only assets that implement the Interactable Interface can respond.
+		if (NearbyActor->Implements<UIMIR_Interactable>())
+		{
+			float Distance = PlayerCharacter->GetDistanceTo(NearbyActor);
+
+			if (Distance < ClosestDistance)
+			{
+				ClosestInteractable = NearbyActor;
+				ClosestDistance = Distance;
+			}
+		}
+	}
+
+	if (ClosestInteractable)
+	{
+		IIMIR_Interactable::Execute_OnInteract(ClosestInteractable, PlayerCharacter);
+	}
 }
 
 void AMIR_ArcadeController::StartPlayerJumping()
 {
+	if (!IsPlayerJumping())
+	{
+		return;
+	}
+
 	UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->Jump();
 }
 
@@ -100,6 +136,11 @@ void AMIR_ArcadeController::StopPlayerJumping()
 
 void AMIR_ArcadeController::StartDashing()
 {
+	if (!IsPlayerDashing())
+	{
+		return;
+	}
+
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	UCharacterMovementComponent* CharacterMovement = PlayerCharacter->GetCharacterMovement();
 
@@ -112,4 +153,9 @@ void AMIR_ArcadeController::StopDashing()
 	UCharacterMovementComponent* CharacterMovement = PlayerCharacter->GetCharacterMovement();
 
 	CharacterMovement->MaxWalkSpeed = 600;
+}
+
+void AMIR_ArcadeController::AllowMainAttack()
+{
+	bCanUseMainAttack = true;
 }
