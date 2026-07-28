@@ -32,3 +32,12 @@ void UMIR_CopiableComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	// ...
 }
+
+void UMIR_CopiableComponent::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer, 
+	const FString& MagicToCopy)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Purple, MagicToCopy);
+
+	CurrentPlayer->SetStoredMagic(MagicToCopy);
+}
+

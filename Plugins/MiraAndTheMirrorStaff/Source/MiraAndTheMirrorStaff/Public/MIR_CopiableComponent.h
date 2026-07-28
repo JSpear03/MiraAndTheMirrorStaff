@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "IMIR_Copiable.h"
 #include "MIR_CopiableComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MIRAANDTHEMIRRORSTAFF_API UMIR_CopiableComponent : public UActorComponent
+class MIRAANDTHEMIRRORSTAFF_API UMIR_CopiableComponent : public UActorComponent, public IIMIR_Copiable
 {
 	GENERATED_BODY()
 
@@ -22,5 +23,9 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
+		FActorComponentTickFunction* ThisTickFunction) override;
+
+	// Sets new copied magic for player. 
+	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer, const FString& MagicToCopy) override;
 };
