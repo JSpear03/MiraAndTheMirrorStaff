@@ -14,15 +14,15 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_HealthComponent : public UActorComponent
 
 	// ===== VARIABLES =====
 
-	// Maximum amount of health. 
-	UPROPERTY(EditAnywhere, Category = "Stats")
-		int32 MaxHealth = 100;
-
 	// Represents the owner's health, where every two units is equivalent to one heart.
 	UPROPERTY(EditAnywhere, Category = "Stats")
-		int32 Health = 10;
+		int32 Health = 8;
 
 public:	
+	// Maximum amount of health. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		int32 MaxHealth = 16;
+
 	// Sets default values for this component's properties
 	UMIR_HealthComponent();
 
