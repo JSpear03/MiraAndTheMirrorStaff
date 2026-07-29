@@ -2,6 +2,7 @@
 
 
 #include "MIR_CopiableComponent.h"
+#include "MIR_PlayerChar.h"
 
 // Sets default values for this component's properties
 UMIR_CopiableComponent::UMIR_CopiableComponent()
@@ -33,9 +34,15 @@ void UMIR_CopiableComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-void UMIR_CopiableComponent::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer, 
+void UMIR_CopiableComponent::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
 	const FString& MagicToCopy)
 {
+	// Reachable from Blueprint through Execute_CopyMagic, so the player cannot be assumed valid.
+	if (!CurrentPlayer)
+	{
+		return;
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Purple, MagicToCopy);
 
 	CurrentPlayer->SetStoredMagic(MagicToCopy);

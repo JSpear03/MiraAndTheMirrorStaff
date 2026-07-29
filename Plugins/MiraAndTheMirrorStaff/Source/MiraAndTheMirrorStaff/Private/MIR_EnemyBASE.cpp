@@ -3,9 +3,9 @@
 
 #include "MIR_EnemyBASE.h"
 #include "MIR_MagicBASE.h"
+#include "MIR_PlayerChar.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values.
@@ -33,8 +33,13 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	AMIR_MagicBASE* CurrentMagic;
 	FString CopiedMagic;
 
+	if (!OtherActor || !PlayerCharacter)
+	{
+		return;
+	}
+
 	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>();
-	
+
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Overlap found"));
 
 	if (!bIsChildOfMagic)
@@ -47,18 +52,20 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	CurrentMagic = Cast<AMIR_MagicBASE>(OtherActor);
 	CopiedMagic = CurrentMagic->ElementComponent->ElementType.ElementName;
 
+	// This enemy is the copy source, so it is the interface receiver. Execute_CopyMagic is a
+	// static function: the object it dispatches on is the first argument, not the "->" prefix.
+	IIMIR_Copiable::Execute_CopyMagic(this, PlayerCharacter, CopiedMagic);
+}
 
-	/*if (UKismetSystemLibrary::DoesImplementInterface(OtherActor, UIMIR_Copiable::StaticClass()))
+void AMIR_EnemyBASE::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
+	const FString& MagicToCopy)
+{
+	if (!CurrentPlayer || !CopiableComponent)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Test execution"));
-		CopiableComponent->Execute_CopyMagic(OtherActor, PlayerCharacter, CopiedMagic);
-	}*/
-
-	if (CurrentMagic->Implements<UIMIR_Copiable>())  // Also tried with other actor. 
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Test execution"));
-		CopiableComponent->Execute_CopyMagic(CurrentMagic, PlayerCharacter, CopiedMagic);
+		return;
 	}
+
+	IIMIR_Copiable::Execute_CopyMagic(CopiableComponent, CurrentPlayer, MagicToCopy);
 }
 
 // Called every frame.

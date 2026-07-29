@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "MIR_PlayerChar.h"
 #include "IMIR_Copiable.generated.h"
 
+class AMIR_PlayerChar;
+
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, Blueprintable)
 class UIMIR_Copiable : public UInterface
 {
 	GENERATED_BODY()
