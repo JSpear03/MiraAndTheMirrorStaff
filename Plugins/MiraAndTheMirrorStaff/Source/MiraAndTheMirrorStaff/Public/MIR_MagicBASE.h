@@ -11,6 +11,9 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicBASE : public AActor
 {
     GENERATED_BODY()
 
+    UPROPERTY(EditAnywhere, Category = "Magic|Mesh")
+        USkeletalMeshComponent* Mesh;
+
 public:
     // Sets default values for this actor's properties
     AMIR_MagicBASE();

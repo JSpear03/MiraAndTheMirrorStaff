@@ -28,6 +28,10 @@ AMIR_MagicBASE::AMIR_MagicBASE()
 
 	// The base Magic Element Component (Fire, Ice, Lightning, None)
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
+
+    // Allows for testing collisions. 
+    Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal MeshComponent"));
+    Mesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

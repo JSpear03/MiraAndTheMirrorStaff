@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Components/Image.h"
 #include "MIR_ElementComponent.generated.h"
 
 USTRUCT(BlueprintType)  

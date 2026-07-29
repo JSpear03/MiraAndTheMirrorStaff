@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MIR_CharacterBASE_M.h"
+#include "IMIR_Copiable.h"
 #include "MIR_CopiableComponent.h"
 #include "MIR_EnemyBASE.generated.h"
 
@@ -14,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemyDied);
  *  Includes logic such as spawning dust, as well as checking if enemy's magic can be copied.
  */
 UCLASS()
-class MIRAANDTHEMIRRORSTAFF_API AMIR_EnemyBASE : public AMIR_CharacterBASE_M
+class MIRAANDTHEMIRRORSTAFF_API AMIR_EnemyBASE : public AMIR_CharacterBASE_M, public IIMIR_Copiable
 {
 	GENERATED_BODY()
 
@@ -42,9 +43,20 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
+			const FHitResult& SweepResult);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Interface entry point. Any system that wants this enemy's magic (the Mirror Staff's ranged
+	// copy, for example) calls IIMIR_Copiable::Execute_CopyMagic on the enemy Actor, and the
+	// enemy hands the work to its Copiable Component.
+	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
+		const FString& MagicToCopy) override;
 
 	// Called when enemy delgate is broadcasted.
 	UFUNCTION(BlueprintImplementableEvent)
