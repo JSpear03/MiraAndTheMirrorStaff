@@ -6,6 +6,7 @@
 #include "MIR_CharacterBASE_M.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "MIR_ManaComponent.h"
 #include "MIR_PlayerChar.generated.h"
 
@@ -39,21 +40,22 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 	UPROPERTY()
 		AMIR_RespawnPoint* LastRespawnPoint = nullptr;
 
+
 public:
 	// Key item flags. Set to true when obtained so any logic gates
 	// involving their inputs (Jump, Dash, etc.) can succeed.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
-	bool bHasMirrorStaff = false;
+		bool bHasMirrorStaff = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
-	bool bHasSkyboundShoes = false;
+		bool bHasSkyboundShoes = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
-	bool bHasSpiritStole = false;
+		bool bHasSpiritStole = false;
 
 	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
-	int32 KeyGemstoneCount = 0;
+		int32 KeyGemstoneCount = 0;
 
 	// Used as part of a timer to set the value of bCanGetHit. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown")
@@ -78,6 +80,15 @@ public:
 	// Checks if player can dash with Spirit Stole. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
 		bool bCanDash = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
+		UArrowComponent* MeleeArrow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
+		UArrowComponent* RangedArrow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
+		UArrowComponent* AOEArrow;
 
 	// Sets default values for Player Character's properties.
 	AMIR_PlayerChar();

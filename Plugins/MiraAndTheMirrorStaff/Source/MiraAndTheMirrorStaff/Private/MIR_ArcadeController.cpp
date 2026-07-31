@@ -55,6 +55,21 @@ void AMIR_ArcadeController::BeginPlay()
 
 void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 {
+	//ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	//FRotator ControllerRotation = PlayerCharacter->GetControlRotation();
+	//FVector ActionVector, ForwardVector, RightVector;
+
+	//ActionVector = ActionValue.Get<FVector>();
+
+	//ControllerRotation = UKismetMathLibrary::MakeRotFromX(ActionVector);
+
+	//PlayerCharacter->SetActorRotation(ControllerRotation, ETeleportType::None);
+
+	//ForwardVector = UKismetMathLibrary::GetForwardVector(ControllerRotation);
+	//RightVector = UKismetMathLibrary::GetRightVector(ControllerRotation);
+
+	//PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y Axis.
+	//PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);  // Movement on the X Axis. 
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	FRotator ControllerRotation = PlayerCharacter->GetControlRotation();
 	FVector ActionVector, ForwardVector, RightVector;
@@ -65,6 +80,8 @@ void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 
 	PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y Axis.
 	PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);  // Movement on the X Axis.
+
+
 }
 
 void AMIR_ArcadeController::UseSubAttack()
