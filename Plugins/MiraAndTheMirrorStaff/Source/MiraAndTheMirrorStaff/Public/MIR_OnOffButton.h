@@ -26,6 +26,9 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_OnOffButton : public AActor, public IIMIR_B
 	UPROPERTY(EditAnywhere, Category = "Button")
 		bool bDidTurnOn = false;
 
+	// Linked actor for On/Off button.
+	UPROPERTY(EditAnywhere, Category = "Link")
+		AActor* LinkedActor = nullptr;
 	
 public:	
 	// Sets default values for this actor's properties
