@@ -25,15 +25,17 @@ void AMIR_LevelStreamActor::BeginPlay()
 
 	if (!LevelToLoad.IsNull())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("Level is/was valid(?)."));
 		if (LevelToLoad.IsValid())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("Level is validated!"));
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level is validated!"));
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level isn't null!"));
 		}
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("Level is not valid."));
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level is null."));
 	}
 	
 }
@@ -45,17 +47,15 @@ void AMIR_LevelStreamActor::OverlapBegins(UPrimitiveComponent* OverlappedCompone
 
 	if (OtherActor == MyCharacter && !LevelToLoad.IsNull())
 	{
-		// Austin's code (unused).
-		FSoftObjectPath levelloadpath = UWorld::RemovePIEPrefix(LevelToLoad.ToSoftObjectPath().GetLongPackageName());
-		FString levelPath = levelloadpath.ToString();
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, FString::Printf(TEXT("Level will load! %s"), *levelPath));
+		// Austin's code.
+		FSoftObjectPath levelloadpath = UWorld::RemovePIEPrefix(LevelToLoad.ToSoftObjectPath().GetLongPackageName());  // The filepath of the level to load.
+		FString levelPath = levelloadpath.ToString();  // Current level path as a string.
+		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, FString::Printf(TEXT("Level will load! %s"), *levelPath));
 		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this, TSoftObjectPtr<UWorld>(levelloadpath), this->GetActorLocation());
-
-		//LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this, LevelToLoad, this->GetActorLocation());
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("Level will NOT load!"));
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Level will NOT load!"));
 	}
 }
 
