@@ -39,7 +39,7 @@ int32 UMIR_HealthComponent::GetHealth()
 
 void UMIR_HealthComponent::SetHealth(int32 NewHealth)
 {
-	Health = FMath::Clamp(NewHealth, 0, MaxHealth);
+	Health = FMath::Clamp(NewHealth, 0, TotalHealth);
 }
 
 void UMIR_HealthComponent::HealthRecovery(int32 Amount)
@@ -50,5 +50,12 @@ void UMIR_HealthComponent::HealthRecovery(int32 Amount)
 void UMIR_HealthComponent::HealthReduction(int32 Amount)
 {
 	SetHealth(Health - Amount);
+}
+
+void UMIR_HealthComponent::IncreaseTotalHealth(int32 BonusHealth)
+{
+	TotalHealth = FMath::Clamp(TotalHealth + BonusHealth, 0, MaxHealth);
+
+	SetHealth(TotalHealth);  // Sets current health to full health. 
 }
 

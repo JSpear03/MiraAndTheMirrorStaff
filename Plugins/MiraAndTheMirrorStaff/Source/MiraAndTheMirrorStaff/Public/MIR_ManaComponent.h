@@ -15,11 +15,15 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_ManaComponent : public UActorComponent
 public:	
 	// Maximum amount of Mana Power.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mana Power")
-	int32 MaxManaPower = 16;
+		int32 MaxManaPower = 16;
+
+	// Represents amount of mana power shown in the viewport.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mana Power")
+		int32 TotalManaPower = 8;
 
 	// Current Mana Power.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mana Power")
-	int32 ManaPower = 8;
+		int32 ManaPower = 8;
 
 	// Sets default values for this component's properties
 	UMIR_ManaComponent();
@@ -47,5 +51,13 @@ public:
 
 	// Clears current timer.
 	void ClearCooldownTimer(FTimerHandle CurrentTimerHandle);
+
+	/*
+	* Increases the amount of TotalManaPower.
+	* 
+	* @param: BonusManaPower is the amount recieved from the ManaUp item.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Mana Power")
+		void IncreaseTotalManaPower(int32 BonusManaPower);
 
 };

@@ -12,13 +12,15 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_HealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	// ===== VARIABLES =====
-
 	// Represents the owner's health, where every two units is equivalent to one heart.
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		int32 Health = 8;
 
 public:	
+	// Represents the maximum amount of health shown on screen. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		int32 TotalHealth = 8;
+
 	// Maximum amount of health. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		int32 MaxHealth = 16;
@@ -35,8 +37,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
 		FActorComponentTickFunction* ThisTickFunction) override;
 	
-	// ===== CUSTOM FUNCTIONS =====
-
 	/**
 	* Gets the owner's `Health` variable.
 	*/
@@ -54,11 +54,19 @@ public:
 		void SetHealth(int32 NewHealth);
 
 
-	// Increases Health. 
+	// Increases curent Health up to the Total Health. 
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 		void HealthRecovery(int32 Amount);
 
-	// Decreases Health. 
+	// Decreases Current Health. 
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 		void HealthReduction(int32 Amount);
+
+	/*
+	* Increase the amount of hearts in viewport.
+	* 
+	* @param BonusHealth is the amount recieved from the HealthUp item.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+		void IncreaseTotalHealth(int32 BonusHealth);
 };
