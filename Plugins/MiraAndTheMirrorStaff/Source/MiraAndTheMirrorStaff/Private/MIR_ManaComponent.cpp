@@ -35,12 +35,12 @@ void UMIR_ManaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UMIR_ManaComponent::ManaRecovery(int32 Amount) 
 {
-	ManaPower = FMath::Clamp(ManaPower + Amount, 0, MaxManaPower);
+	ManaPower = FMath::Clamp(ManaPower + Amount, 0, TotalManaPower);
 }
 
 void UMIR_ManaComponent::ManaReduction(int32 Amount)
 {
-	ManaPower = FMath::Clamp(ManaPower - Amount, 0, MaxManaPower);
+	ManaPower = FMath::Clamp(ManaPower - Amount, 0, TotalManaPower);
 }
 
 void UMIR_ManaComponent::ManaCooldown() 
@@ -56,9 +56,7 @@ void UMIR_ManaComponent::ManaCooldown()
 	// When called after timer reached a certain amount of seconds, a little bit of mana is recovered.. 
 	const FTimerDelegate& CooldownDelegate = FTimerDelegate::CreateLambda([this, ManaAmount, &CooldownTimerHandle] 
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Fired Cooldown"));
-
-			if (ManaPower != MaxManaPower)
+			if (ManaPower != TotalManaPower)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Recover Mana"));
 
@@ -86,5 +84,12 @@ void UMIR_ManaComponent::ClearCooldownTimer(FTimerHandle CurrentTimerHandle)
 	FTimerManager& TimerManager = World->GetTimerManager();
 
 	TimerManager.ClearTimer(CurrentTimerHandle);
+}
+
+void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
+{
+	TotalManaPower = FMath::Clamp(TotalManaPower, 0, MaxManaPower);
+
+	ManaPower = TotalManaPower;  // Puts mana at full power.
 }
 
