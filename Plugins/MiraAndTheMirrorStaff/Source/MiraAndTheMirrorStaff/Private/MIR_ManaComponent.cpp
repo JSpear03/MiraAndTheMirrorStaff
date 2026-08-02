@@ -88,7 +88,7 @@ void UMIR_ManaComponent::ClearCooldownTimer(FTimerHandle CurrentTimerHandle)
 
 void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
 {
-	TotalManaPower = FMath::Clamp(TotalManaPower, 0, MaxManaPower);
+	TotalManaPower = FMath::Clamp(TotalManaPower + BonusManaPower, 0, MaxManaPower);
 
 	ManaPower = TotalManaPower;  // Puts mana at full power.
 }
