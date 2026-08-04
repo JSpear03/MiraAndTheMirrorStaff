@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "EMIR_Elements.h"
+#include "SMIR_ElementData.h"
 #include "MIR_ElementComponent.generated.h"
 
 USTRUCT(BlueprintType)  
@@ -11,7 +13,7 @@ struct FElement
 {
 	GENERATED_BODY()
 
-	// Name of the element. 
+	// Name of the element.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
 		FString ElementName = "Nothing";
 
@@ -19,9 +21,9 @@ struct FElement
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element")
 		UMaterial* MainColor = nullptr;
 
-	// What represents the element. 
+	// What represents the element.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element")
-		UTexture2D* ElementSymbol;
+		UTexture2D* ElementSymbol = nullptr;
 
 	// What the current element is strong against (x2 multiplier). 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
@@ -31,7 +33,7 @@ struct FElement
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
 		FString ElementWeakness = "Nothing";
 
-	// List of elements that the element name is neutral against. (x1 multiplier)
+	// List of elements that the element name is neutral against (x1 multiplier).
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
 		TArray<FString> ElementalNeutralities;
 
@@ -57,6 +59,14 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	// Sets Attack Type information for a magic class.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element|Name")
+		EElements EThisAttackType = EElements::Nothing;
+
+	// Determines working data for the specified Attack Type (via enum).
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element|Data")
+		FDefaultElementStruct ElementStruct;
 
 public:	
 	// Called every frame

@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "EMIR_AttackTypes.h"
+#include "SMIR_AttackTypeData.h"
 #include "MIR_AttackTypeComponent.generated.h"
 
 USTRUCT(BlueprintType)
-struct FAttackType 
+struct FAttackType
 {
 	GENERATED_BODY()
 
@@ -38,6 +40,14 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	// Sets Attack Type information for a magic class.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type|Name")
+		EAttackTypes EThisAttackType = EAttackTypes::Melee;
+
+	// Determines working data for the specified Attack Type (via enum).
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type|Data")
+		FDefaultTypeStruct AttackTypeStruct;
 
 public:	
 	// Called every frame
