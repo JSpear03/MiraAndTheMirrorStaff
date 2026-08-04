@@ -25,27 +25,3 @@ void AMIR_PuzzleAssetsIndirectBASE::Tick(float DeltaTime)
 
 }
 
-void AMIR_PuzzleAssetsIndirectBASE::ActivateIndirect_Implementation(AMIR_PlayerChar* PlayerCharacter)
-{
-	if (!PlayerCharacter)
-	{
-		return;
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Executed turn on for Indirect."));
-
-	bDidTurnOn = true;
-}
-
-void AMIR_PuzzleAssetsIndirectBASE::DeactivateIndirect_Implementation(AMIR_PlayerChar* PlayerCharacter)
-{
-	if (!PlayerCharacter)
-	{
-		return;
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Executed turn off for Indirect."));
-
-	bDidTurnOn = false;
-}
-
