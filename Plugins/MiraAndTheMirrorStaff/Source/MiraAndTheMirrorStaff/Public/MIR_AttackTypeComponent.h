@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "EMIR_AttackTypes.h"
+//#include "EMIR_AttackTypes.h"
 #include "SMIR_AttackTypeData.h"
 #include "MIR_AttackTypeComponent.generated.h"
 
@@ -52,12 +52,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	// Sets Attack Type information for a magic class.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type|Name")
-		EAttackTypes EThisAttackType = EAttackTypes::None;
-
 	// Determines working data for the specified Attack Type (via enum).
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type|Data")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details")
 		FDefaultTypeStruct AttackTypeStruct = DefaultTypeStruct;
 
 public:	
@@ -66,28 +62,27 @@ public:
 		FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Returns the `AttackTypeName` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Attack Type|Data", meta = (KeyWords = "Get Name", ReturnDisplayName = "Name",
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Name", ReturnDisplayName = "Name",
 			  ToolTip = "Returns the `AttackTypeName` member variable."))
 		EAttackTypes GetAttackTypeName() const { return AttackTypeStruct.AttackTypeName; }
 
 	// Returns the `Damage` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Attack Type|Data", meta = (KeyWords = "Get Damage", ReturnDisplayName = "Damage",
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Damage", ReturnDisplayName = "Damage",
 			  ToolTip = "Returns the `Damage` member variable."))
 		int32 GetDamage() const { return AttackTypeStruct.Damage; }
 
 	// Returns the `ManaConsumption` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Attack Type|Data", meta = (KeyWords = "Get Mana", ReturnDisplayName = "ManaConsumption",
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Mana", ReturnDisplayName = "ManaConsumption",
 			  ToolTip = "Returns the `ManaConsumption` member variable."))
 		int32 GetManaConsumption() const { return AttackTypeStruct.ManaConsumption; }
 
 	/**
-	 * @brief Sets both the `EThisAttackType` and `AttackTypeStruct` member variables.
+	 * @brief Sets the `AttackTypeStruct` member variable based on an Enum.
 	 * 
-	 * Upon setting the `EThisAttackType` variable with the passed parameter,
-	 * said variable is passed to a `switch` statement, which checks each
+	 * The Enum parameter is passed to a `switch` statement, which checks each
 	 * case to then set the `AttackTypeStruct` appropriately.
 	 * 
-	 * @param ENewAttackType The new Attack Type for the AttackTypeComponent.
+	 * @param ENewAttackType A specifier to determine the new struct for the `AttackTypeStruct`.
 	 * 
 	 * @returns N/A
 	 */

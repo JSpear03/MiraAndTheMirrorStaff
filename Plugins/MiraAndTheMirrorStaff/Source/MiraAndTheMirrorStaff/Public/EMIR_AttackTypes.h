@@ -16,10 +16,10 @@
 UENUM(BlueprintType)
 enum class EAttackTypes : uint8
 {
-	None   UMETA(DisplayName = "None"),
-	Melee  UMETA(DisplayName = "Melee"),
-	Ranged UMETA(DisplayName = "Ranged"),
-	AoE    UMETA(DisplayName = "AoE")
+	None   UMETA(DisplayName = "None",   ToolTip = "A default value that is not meant to be used in game."),
+	Melee  UMETA(DisplayName = "Melee",  ToolTip = "Specifies close-ranged, physical attacks."),
+	Ranged UMETA(DisplayName = "Ranged", ToolTip = "Specifies long-ranged, projectile-based attacks."),
+	AoE    UMETA(DisplayName = "AoE",    ToolTip = "Specifies close- to mid-ranged, explosive attacks.")
 };
 
 

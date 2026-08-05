@@ -50,10 +50,8 @@ void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType)
 {
-	EThisAttackType = ENewAttackType;
-
 	// Set up AttackTypeStruct.
-	switch (EThisAttackType)
+	switch (ENewAttackType)
 	{
 	case EAttackTypes::None:  // Configure Component for None
 		AttackTypeStruct = DefaultTypeStruct;
