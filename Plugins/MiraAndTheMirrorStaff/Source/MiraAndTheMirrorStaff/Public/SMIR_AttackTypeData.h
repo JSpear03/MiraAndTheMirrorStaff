@@ -15,14 +15,19 @@ struct FDefaultTypeStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EAttackTypes AttackTypeName = EAttackTypes::Melee;
+	// The name of this Attack Type.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ToolTip = "The name of this Attack Type."))
+		EAttackTypes AttackTypeName = EAttackTypes::None;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 Damage = 0;
+	// The damage value associated with this Attack Type.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 4, UIMin = 0, UIMax = 4,
+			  ToolTip = "The damage value associated with this Attack Type."))
+		int32 Damage = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 ManaConsumption = 0;
+	// The mana-consumption value associated with this Attack Type.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 8, UIMin = 0, UIMax = 8,
+			  ToolTip = "The mana-consumption value associated with this Attack Type."))
+		int32 ManaConsumption = 0;
 
 };
 
@@ -35,6 +40,7 @@ struct FMeleeStruct : public FDefaultTypeStruct
 {
 	GENERATED_BODY()
 
+	// FMeleeStruct constructor sets default values for each variable.
 	FMeleeStruct()
 	{
 		AttackTypeName = EAttackTypes::Melee;
@@ -52,6 +58,7 @@ struct FRangedStruct : public FDefaultTypeStruct
 {
 	GENERATED_BODY()
 
+	// FRangedStruct constructor sets default values for each variable.
 	FRangedStruct()
 	{
 		AttackTypeName = EAttackTypes::Ranged;
@@ -69,6 +76,7 @@ struct FAoEStruct : public FDefaultTypeStruct
 {
 	GENERATED_BODY()
 
+	// FAoEStruct constructor sets default values for each variable.
 	FAoEStruct()
 	{
 		AttackTypeName = EAttackTypes::AoE;

@@ -8,6 +8,7 @@
 
 /**
  * An Enumeration of all Attack Types used in the game.
+ * - None: A default value that is not meant to be used in game.
  * - Melee: Close-ranged attacks; typically swords.
  * - Ranged: Projectile-based attacks.
  * - AoE: Close- to mid-ranged attacks; an explosion around the summoner.
@@ -15,6 +16,7 @@
 UENUM(BlueprintType)
 enum class EAttackTypes : uint8
 {
+	None   UMETA(DisplayName = "None"),
 	Melee  UMETA(DisplayName = "Melee"),
 	Ranged UMETA(DisplayName = "Ranged"),
 	AoE    UMETA(DisplayName = "AoE")

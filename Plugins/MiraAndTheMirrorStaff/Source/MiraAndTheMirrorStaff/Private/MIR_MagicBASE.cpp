@@ -23,8 +23,10 @@ AMIR_MagicBASE::AMIR_MagicBASE()
     IceCollisionComponent->InitSphereRadius(15.0f);
     IceCollisionComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
     IceCollisionComponent->SetupAttachment(RootComponent);
+
 	// The base Magic Attack Type Component
 	AttackTypeComponent = CreateDefaultSubobject<UMIR_AttackTypeComponent>(TEXT("AttackTypeComponent"));
+    AttackTypeComponent->SetAttackTypeDetails();
 
 	// The base Magic Element Component (Fire, Ice, Lightning, None)
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
