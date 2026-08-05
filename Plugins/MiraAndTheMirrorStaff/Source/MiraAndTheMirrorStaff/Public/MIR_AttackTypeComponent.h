@@ -53,7 +53,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Determines working data for the specified Attack Type (via enum).
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Struct"))
 		FDefaultTypeStruct AttackTypeStruct = DefaultTypeStruct;
 
 public:	
@@ -75,6 +75,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Mana", ReturnDisplayName = "ManaConsumption",
 			  ToolTip = "Returns the `ManaConsumption` member variable."))
 		int32 GetManaConsumption() const { return AttackTypeStruct.ManaConsumption; }
+	
+	// Returns the `AttackTypeProperty` member variable.
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Property", ReturnDisplayName = "Property",
+			  ToolTip = "Returns the `AttackTypeProperty` member variable."))
+		EAttackProperties GetAttackTypeProperty() const { return AttackTypeStruct.AttackTypeProperty; }
 
 	/**
 	 * @brief Sets the `AttackTypeStruct` member variable based on an Enum.

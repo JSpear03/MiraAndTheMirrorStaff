@@ -16,19 +16,22 @@ struct FDefaultTypeStruct
 	GENERATED_BODY()
 
 	// The name of this Attack Type.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ToolTip = "The name of this Attack Type."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Attack Type."))
 		EAttackTypes AttackTypeName = EAttackTypes::None;
 
 	// The damage value associated with this Attack Type.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 4, UIMin = 0, UIMax = 4,
-			  ToolTip = "The damage value associated with this Attack Type."))
+			  DisplayName = "Damage", ToolTip = "The damage value associated with this Attack Type."))
 		int32 Damage = 0;
 
 	// The mana-consumption value associated with this Attack Type.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 8, UIMin = 0, UIMax = 8,
-			  ToolTip = "The mana-consumption value associated with this Attack Type."))
+			  DisplayName = "ManaConsumption", ToolTip = "The mana-consumption value associated with this Attack Type."))
 		int32 ManaConsumption = 0;
 
+	// The property of this Attack Type.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property", ToolTip = "The property of this Attack Type."))
+		EAttackProperties AttackTypeProperty = EAttackProperties::None;
 };
 
 
@@ -46,6 +49,7 @@ struct FMeleeStruct : public FDefaultTypeStruct
 		AttackTypeName = EAttackTypes::Melee;
 		Damage = 2;
 		ManaConsumption = 2;
+		AttackTypeProperty = EAttackProperties::Cut;
 	}
 };
 
@@ -64,6 +68,7 @@ struct FRangedStruct : public FDefaultTypeStruct
 		AttackTypeName = EAttackTypes::Ranged;
 		Damage = 1;
 		ManaConsumption = 1;
+		AttackTypeProperty = EAttackProperties::None;
 	}
 };
 
@@ -82,6 +87,7 @@ struct FAoEStruct : public FDefaultTypeStruct
 		AttackTypeName = EAttackTypes::AoE;
 		Damage = 4;
 		ManaConsumption = 3;
+		AttackTypeProperty = EAttackProperties::None;
 	}
 };
 
