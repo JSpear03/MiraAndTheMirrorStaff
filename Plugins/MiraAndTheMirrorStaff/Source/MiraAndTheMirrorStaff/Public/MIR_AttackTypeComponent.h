@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-//#include "EMIR_AttackTypes.h"
 #include "SMIR_AttackTypeData.h"
 #include "MIR_AttackTypeComponent.generated.h"
 

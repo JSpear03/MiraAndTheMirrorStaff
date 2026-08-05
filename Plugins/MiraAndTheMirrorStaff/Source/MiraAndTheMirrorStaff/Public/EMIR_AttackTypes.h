@@ -31,7 +31,7 @@ enum class EAttackTypes : uint8
 UENUM(BlueprintType)
 enum class EAttackProperties : uint8
 {
-	None  UMETA(DisplayName = "None", ToolTip = "A default value that is not meant to be used in-game."),
+	None  UMETA(DisplayName = "None", ToolTip = "Specifies no Attack Type properties."),
 	Cut   UMETA(DisplayName = "Cut",  ToolTip = "Specifies a cutting property, used to destroy things like vines."),
 };
 

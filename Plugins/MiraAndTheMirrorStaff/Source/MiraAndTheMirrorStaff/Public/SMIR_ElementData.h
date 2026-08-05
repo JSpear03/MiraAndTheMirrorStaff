@@ -15,28 +15,38 @@ struct FDefaultElementStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EElements ElementName = EElements::Nothing;
+	// The name of this Element.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Element."))
+		EElements ElementName = EElements::Nothing;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UMaterial* MainColor = nullptr;
+	// The Material, which specifies a main color, used by this Element.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "MainColor",
+			  ToolTip = "The Material, which specifies a main color, used by this Element."))
+		UMaterial* MainColor = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UTexture2D* ElementSymbol = nullptr;
+	// The symbol of this Element, which would be used in the Gameplay UI.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Symbol",
+			  ToolTip = "The symbol of this Element, which would be used in the Gameplay UI."))
+		UTexture2D* ElementSymbol = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<EElements> ElementStrength = { EElements::Nothing };
+	// The Element that *this* Element applies double damage (2×) against.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Strength",
+			  ToolTip = "One or more Elements that *this* Element applies double damage (2×) against."))
+		EElements ElementStrength = EElements::Nothing;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<EElements> ElementWeakness = { EElements::Nothing };
+	// The Elements that *this* Element applies zero damage (0×) against.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Weakness",
+			  ToolTip = "One or more Elements that *this* Element applies zero damage (0×) against."))
+		EElements ElementWeakness = EElements::Nothing;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<EElements> ElementNeutralities = { EElements::Nothing };
+	// One or more Elements that *this* Element applies default damage (1×) against.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Neutralities",
+			  ToolTip = "One or more Elements that *this* Element applies default damage (1×) against."))
+		TArray<EElements> ElementNeutralities = { EElements::Nothing };
 
-	// Represents the Element's properties (its interactions with the game world).
-	// Replace with a Tag(?) at some point.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FString ElementProperty = "None";
+	// The property of this Element.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property", ToolTip = "The property of this Element."))
+		EElementProperties ElementProperty = EElementProperties::None;
 };
 
 
@@ -53,10 +63,10 @@ struct FNothingStruct : public FDefaultElementStruct
 		ElementName = EElements::Nothing;
 		MainColor = nullptr;
 		ElementSymbol = nullptr;
-		ElementStrength = { EElements::Nothing };
-		ElementWeakness = { EElements::Nothing };
+		ElementStrength = EElements::Nothing;
+		ElementWeakness = EElements::Nothing;
 		ElementNeutralities = { EElements::Nothing };
-		ElementProperty = "None";
+		ElementProperty = EElementProperties::None;
 	}
 };
 
@@ -74,10 +84,10 @@ struct FFlameStruct : public FDefaultElementStruct
 		ElementName = EElements::Flame;
 		MainColor = nullptr;
 		ElementSymbol = nullptr;
-		ElementStrength = { EElements::Ice};
-		ElementWeakness = { EElements::Thunder };
+		ElementStrength = EElements::Ice;
+		ElementWeakness = EElements::Thunder;
 		ElementNeutralities = { EElements::Nothing, EElements::Flame };
-		ElementProperty = "Burn";
+		ElementProperty = EElementProperties::Burn;
 	}
 };
 
@@ -95,10 +105,10 @@ struct FIceStruct : public FDefaultElementStruct
 		ElementName = EElements::Ice;
 		MainColor = nullptr;
 		ElementSymbol = nullptr;
-		ElementStrength = { EElements::Thunder };
-		ElementWeakness = { EElements::Flame };
+		ElementStrength = EElements::Thunder;
+		ElementWeakness = EElements::Flame;
 		ElementNeutralities = { EElements::Nothing, EElements::Ice };
-		ElementProperty = "Freeze";
+		ElementProperty = EElementProperties::Freeze;
 	}
 };
 
@@ -116,10 +126,10 @@ struct FThunderStruct : public FDefaultElementStruct
 		ElementName = EElements::Thunder;
 		MainColor = nullptr;
 		ElementSymbol = nullptr;
-		ElementStrength = { EElements::Flame };
-		ElementWeakness = { EElements::Ice };
+		ElementStrength = EElements::Flame;
+		ElementWeakness = EElements::Ice;
 		ElementNeutralities = { EElements::Nothing, EElements::Thunder };
-		ElementProperty = "Electrocute";
+		ElementProperty = EElementProperties::Electrocute;
 	}
 };
 
