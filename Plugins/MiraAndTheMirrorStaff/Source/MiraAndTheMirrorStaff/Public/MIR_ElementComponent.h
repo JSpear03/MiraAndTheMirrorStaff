@@ -66,6 +66,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	// The current Element of this magic.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element Details", meta = (KeyWords = "Current"))
+		EElements CurrentElement = EElements::None;
+
 	// Determines working data for the specified Element (via enum).
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element Details", meta = (KeyWords = "Struct"))
 		FDefaultElementStruct ElementStruct = DefaultElementStruct;
@@ -120,7 +124,8 @@ public:
 	 *
 	 * @returns N/A
 	 */
-	void SetElementDetails(EElements ENewElement = EElements::None);
+	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Set Element Details"))
+		void SetElementDetails(EElements ENewElement = EElements::None);
 
 private:
 	// Returns a list of element names.

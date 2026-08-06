@@ -27,12 +27,27 @@ enum class EAttackTypes : uint8
  * An Enumeration of all Attack Types properties used in the game.
  * - None: A default value that is not meant to be used in game.
  * - Cut: Specifies a cutting property, used to destroy things like vines.
+ * - Copy: Specifies a copying property, used to copy magic.
  */
 UENUM(BlueprintType)
 enum class EAttackProperties : uint8
 {
 	None  UMETA(DisplayName = "None", ToolTip = "Specifies no Attack Type properties."),
 	Cut   UMETA(DisplayName = "Cut",  ToolTip = "Specifies a cutting property, used to destroy things like vines."),
+	Copy  UMETA(DisplayName = "Copy", ToolTip = "Specifies a copying property, used to copy magic."),
+};
+
+
+/**
+ * An Enumeration of all Attack Subtypes used in the game.
+ * Meant to be used in `SetAttackTypeDetails()` for simplicity.
+ */
+UENUM(BlueprintType)
+enum class EAttackSubtypes : uint8
+{
+	None    UMETA(DisplayName = "None",   ToolTip = "No subtype."),
+	Copy    UMETA(DisplayName = "Copy",   ToolTip = "Allows the copying of magic. Zero damage and mana consumption."),
+	Dagger  UMETA(DisplayName = "Dagger", ToolTip = "Melee subtype with halved damage and no mana consumption.")
 };
 
 

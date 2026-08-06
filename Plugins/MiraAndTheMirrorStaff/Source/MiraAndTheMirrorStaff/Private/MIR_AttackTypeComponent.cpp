@@ -18,26 +18,6 @@ void UMIR_AttackTypeComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
-	// Set up AttackTypeStruct.
-	//switch (EThisAttackType)
-	//{
-	//case EAttackTypes::Melee:  // Configure Component for Melee
-	//	AttackTypeStruct = MeleeStruct;
-	//	break;
-
-	//case EAttackTypes::Ranged: // Configure Component for Ranged
-	//	AttackTypeStruct = RangedStruct;
-	//	break;
-
-	//case EAttackTypes::AoE:    // Configure Component for AoE
-	//	AttackTypeStruct = AoEStruct;
-	//	break;
-
-	//default:
-	//	break;  // Do nothing because FDefaultStruct is already defined.
-	//}
-
 }
 
 // Called every frame
@@ -48,30 +28,45 @@ void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType)
+void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType, EAttackSubtypes ESubtype)
 {
 	// Set up AttackTypeStruct.
-	switch (ENewAttackType)
+	switch (ESubtype)
 	{
-	case EAttackTypes::None:  // Configure Component for None
-		AttackTypeStruct = DefaultTypeStruct;
+	case EAttackSubtypes::Copy:    // Configure Component for Copy
+		AttackTypeStruct = CopyStruct;
 		break;
 
-	case EAttackTypes::Melee:  // Configure Component for Melee
-		AttackTypeStruct = MeleeStruct;
-		break;
-
-	case EAttackTypes::Ranged: // Configure Component for Ranged
-		AttackTypeStruct = RangedStruct;
-		break;
-
-	case EAttackTypes::AoE:    // Configure Component for AoE
-		AttackTypeStruct = AoEStruct;
+	case EAttackSubtypes::Dagger:  // Configure Component for Dagger
+		AttackTypeStruct = DaggerStruct;
 		break;
 
 	default:
-		break;  // Do nothing because FDefaultStruct is already defined.
+		switch (ENewAttackType)
+		{
+		case EAttackTypes::None:   // Configure Component for None
+			AttackTypeStruct = DefaultTypeStruct;
+			break;
+
+		case EAttackTypes::Melee:  // Configure Component for Melee
+			AttackTypeStruct = MeleeStruct;
+			break;
+
+		case EAttackTypes::Ranged: // Configure Component for Ranged
+			AttackTypeStruct = RangedStruct;
+			break;
+
+		case EAttackTypes::AoE:    // Configure Component for AoE
+			AttackTypeStruct = AoEStruct;
+			break;
+
+		default:
+			break;  // Do nothing because FDefaultStruct is already defined.
+		}
+		break;
 	}
+	
+	return;
 }
 
 TArray<FString> UMIR_AttackTypeComponent::GetAttackNames()

@@ -17,7 +17,7 @@ struct FDefaultElementStruct
 
 	// The name of this Element.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Element."))
-		EElements ElementName = EElements::Nothing;
+		EElements ElementName = EElements::None;
 
 	// The Material, which specifies a main color, used by this Element.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "MainColor",
@@ -32,17 +32,17 @@ struct FDefaultElementStruct
 	// The Element that *this* Element applies double damage (2×) against.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Strength",
 			  ToolTip = "One or more Elements that *this* Element applies double damage (2×) against."))
-		EElements ElementStrength = EElements::Nothing;
+		EElements ElementStrength = EElements::None;
 
 	// The Elements that *this* Element applies zero damage (0×) against.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Weakness",
 			  ToolTip = "One or more Elements that *this* Element applies zero damage (0×) against."))
-		EElements ElementWeakness = EElements::Nothing;
+		EElements ElementWeakness = EElements::None;
 
 	// One or more Elements that *this* Element applies default damage (1×) against.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Neutralities",
 			  ToolTip = "One or more Elements that *this* Element applies default damage (1×) against."))
-		TArray<EElements> ElementNeutralities = { EElements::Nothing };
+		TArray<EElements> ElementNeutralities = { EElements::None };
 
 	// The property of this Element.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property", ToolTip = "The property of this Element."))

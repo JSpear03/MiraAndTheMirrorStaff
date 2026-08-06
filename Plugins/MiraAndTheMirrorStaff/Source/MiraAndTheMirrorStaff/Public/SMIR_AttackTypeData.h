@@ -93,6 +93,45 @@ struct FAoEStruct : public FDefaultTypeStruct
 
 
 /**
+ * Struct defining damage and mana-consumption values for the "Melee" Attack Type,
+ * but only for the Dagger, which has halved damage and no mana-consumption.
+ */
+USTRUCT(BlueprintType)
+struct FDaggerStruct : public FDefaultTypeStruct
+{
+	GENERATED_BODY()
+
+	// FMeleeStruct constructor sets default values for each variable.
+	FDaggerStruct()
+	{
+		AttackTypeName = EAttackTypes::Melee;
+		Damage = 1;
+		ManaConsumption = 0;
+		AttackTypeProperty = EAttackProperties::Cut;
+	}
+};
+
+
+/**
+ * Struct defining damage and mana-consumption values for the copy magic.
+ */
+USTRUCT(BlueprintType)
+struct FCopyStruct : public FDefaultTypeStruct
+{
+	GENERATED_BODY()
+
+	// FMeleeStruct constructor sets default values for each variable.
+	FCopyStruct()
+	{
+		AttackTypeName = EAttackTypes::None;
+		Damage = 0;
+		ManaConsumption = 0;
+		AttackTypeProperty = EAttackProperties::Copy;
+	}
+};
+
+
+/**
  * 
  */
 //class MIRAANDTHEMIRRORSTAFF_API SMIR_AttackTypeData

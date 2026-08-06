@@ -29,6 +29,35 @@ void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
+void UMIR_ElementComponent::SetElementDetails(EElements ENewElement)
+{
+	switch (ENewElement)
+	{
+	case EElements::None:  // Configure Component for None
+		ElementStruct = DefaultElementStruct;
+		break;
+
+	case EElements::Nothing:  // Configure Component for Melee
+		ElementStruct = NothingStruct;
+		break;
+
+	case EElements::Flame: // Configure Component for Ranged
+		ElementStruct = FlameStruct;
+		break;
+
+	case EElements::Ice:    // Configure Component for AoE
+		ElementStruct = IceStruct;
+		break;
+
+	case EElements::Thunder:    // Configure Component for AoE
+		ElementStruct = ThunderStruct;
+		break;
+
+	default:
+		break;  // Do nothing because FDefaultStruct is already defined.
+	}
+}
+
 TArray<FString> UMIR_ElementComponent::GetElementNames()
 {
 	return {"Ranged Nothing", "Nothing", "Flame", "Ice", "Thunder"};

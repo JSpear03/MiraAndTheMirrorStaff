@@ -46,10 +46,16 @@ public:
 	const FMeleeStruct MeleeStruct;				 // Default struct for Melee.
 	const FRangedStruct RangedStruct;			 // Default struct for Ranged.
 	const FAoEStruct AoEStruct;					 // Default struct for AoE.
+	const FDaggerStruct DaggerStruct;			 // Default struct for Dagger (Melee subtype).
+	const FCopyStruct CopyStruct;				 // Default struct for Copy (special type).
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	// The current Attack Type. Set this value to dictate the working struct.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Current"))
+		EAttackTypes CurrentAttackType = EAttackTypes::None;
 
 	// Determines working data for the specified Attack Type (via enum).
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Struct"))
@@ -87,10 +93,13 @@ public:
 	 * case to then set the `AttackTypeStruct` appropriately.
 	 * 
 	 * @param ENewAttackType A specifier to determine the new struct for the `AttackTypeStruct`.
+	 * @param ESubtype A specifier to determine the exact struct desired (for Dagger and Copy).
 	 * 
 	 * @returns N/A
 	 */
-	void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None);
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Set Attack Type Details"))
+		void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None,
+								  EAttackSubtypes ESubtype = EAttackSubtypes::None);
 
 private:
 	// Returns a list of the attack names.
