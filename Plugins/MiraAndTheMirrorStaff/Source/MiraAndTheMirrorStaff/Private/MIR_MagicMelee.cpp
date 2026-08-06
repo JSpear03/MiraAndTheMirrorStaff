@@ -23,4 +23,5 @@ AMIR_MagicMelee::AMIR_MagicMelee()
 	AttackTypeComponent->AttackType.AttackTypeName = "Melee";
 	AttackTypeComponent->AttackType.Damage = 4;
 	AttackTypeComponent->AttackType.ManaConsumption = 2;
+	AttackTypeComponent->SetAttackTypeDetails(EAttackTypes::Melee);
 }

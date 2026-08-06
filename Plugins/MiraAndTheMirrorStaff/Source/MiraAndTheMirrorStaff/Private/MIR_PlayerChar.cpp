@@ -12,8 +12,26 @@ AMIR_PlayerChar::AMIR_PlayerChar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	ManaComponent = CreateDefaultSubobject<UMIR_ManaComponent>(TEXT("Mana Component"));
+	MeleeArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Melee Arrow"));
+	RangedArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Ranged Arrow"));
+	AOEArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("AOE Arrow"));
 
 	SpringArm->SetupAttachment(RootComponent); 
+	MeleeArrow->SetupAttachment(RootComponent);
+	RangedArrow->SetupAttachment(RootComponent);
+	AOEArrow->SetupAttachment(RootComponent);
+
+	// Puts arrows at the front of the player.
+	MeleeArrow->SetWorldLocation(FVector(50, 0, 30));
+	RangedArrow->SetWorldLocation(FVector(50, 0, 30));
+
+	// Arrow colors.
+	MeleeArrow->ArrowColor = FColor::Red;
+	RangedArrow->ArrowColor = FColor::Green;
+	AOEArrow->ArrowColor = FColor::Blue;
+
+	// Allows character to rotate towards the direction.
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// Attaches camera to the end of the spring arm. 
 	CameraComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName); 
