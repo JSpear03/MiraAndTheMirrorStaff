@@ -7,7 +7,7 @@
 #include "MIR_ArcadeController.generated.h"
 
 /**
- * 
+ * Dictates behaviors for player inputs and controls.
  */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
@@ -61,10 +61,12 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 		float InteractRange = 250.0f;
 
 protected:
+	// Represents whether the Main Attack can be used.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
 		bool bCanUseMainAttack = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
+	// Represents the Main Attack's cooldown in terms of seconds.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack", meta = (Units = "Seconds"))
 		int32 MainAttackCooldown = 2;
 
 	// Called to setup input actions. 
@@ -73,7 +75,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Called to move character.
+	/**
+	 * Called to move character.
+	 *
+	 * @param ActionValue The value with which the character will be moved.
+	 * 
+	 * @returns N/A
+	 */
 	void MoveCharacter(const FInputActionValue& ActionValue);
 
 	// Called to attack with Magic or Mirror staff.
@@ -89,25 +97,30 @@ protected:
 
 	// Discards the current copied magic. 
 	UFUNCTION(BlueprintImplementableEvent)
-
 		void DiscardCopiedMagic();
 
 	// Called to interact with an object. 
 	void UseInteract();
 
-	// Checks if player has obtained item for jumping.
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-		bool IsPlayerJumping();
+	/**
+	 * Checks if player has obtained the Skybound Shoes, the item that allows jumping.
+	 * 
+	 * @returns bool
+	 */
+	bool IsPlayerJumping() const;
 
-	// Called to get the player to jump. 
+	// Called to get the player to jump.
 	void StartPlayerJumping();
 
 	// Called after player is done jumping.
 	void StopPlayerJumping();
 
-	// Checks if player obtained item for dashing.
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-		bool IsPlayerDashing();
+	/**
+	 * Checks if player has obtained the Spirit Stole, the item that allows dashing.
+	 *
+	 * @returns bool
+	 */
+	bool IsPlayerDashing() const;
 
 	// Called to increase player walk speed.
 	void StartDashing();
@@ -123,7 +136,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void OpenMap();
 
-	// Sets Can Use Main Attack to true, so player can use the Main Attack input. 
+	// Sets `bCanUseMainAttack` to True, re-enabling the Main Attack input.
 	UFUNCTION(BlueprintCallable)
 		void AllowMainAttack();
 };

@@ -44,12 +44,17 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 public:
 	// Key item flags. Set to true when obtained so any logic gates
 	// involving their inputs (Jump, Dash, etc.) can succeed.
+
+	// Represents whether the player has the Mirror Staff,
+	// which is needed for input events related to copying, etc.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
 		bool bHasMirrorStaff = false;
 
+	// Represents whether the player has the Skybound Shoes (and, thus, the Jump ability).
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
 		bool bHasSkyboundShoes = false;
 
+	// Represents whether the player has the Spirit Stole (and, thus, the Dash ability).
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
 		bool bHasSpiritStole = false;
 
