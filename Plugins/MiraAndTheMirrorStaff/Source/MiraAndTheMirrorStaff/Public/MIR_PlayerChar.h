@@ -59,11 +59,13 @@ public:
 		bool bHasSpiritStole = false;
 
 	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items",
+			  meta = (ClampMin = 0, ClampMax = 4, UIMin = 0, UIMax = 4))
 		int32 KeyGemstoneCount = 0;
 
 	// Used as part of a timer to set the value of bCanGetHit. 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown",
+			  meta = (Units = "Seconds", ClampMin = 0, ClampMax = 5, UIMin = 0, UIMax = 5))
 		int32 CooldownSeconds = 2;
 
 	// Used for the position of the camera. 

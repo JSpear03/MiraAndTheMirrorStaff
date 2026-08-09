@@ -66,7 +66,8 @@ protected:
 		bool bCanUseMainAttack = true;
 
 	// Represents the Main Attack's cooldown in terms of seconds.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack", meta = (Units = "Seconds"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack",
+			  meta = (Units = "Seconds", ClampMin = 0, ClampMax = 10, UIMin = 0, UIMax = 10))
 		int32 MainAttackCooldown = 2;
 
 	// Called to setup input actions. 
