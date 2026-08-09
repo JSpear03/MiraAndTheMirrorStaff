@@ -57,7 +57,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Current"))
 		EAttackTypes CurrentAttackType = EAttackTypes::None;
 
-	// Determines working data for the specified Attack Type (via enum).
+	// The current Attack Subtype (Copy, Dagger, etc.). Set this value to dictate the working struct.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Current Subtype"))
+		EAttackSubtypes CurrentAttackSubtype = EAttackSubtypes::None;
+
+	// Determines working data for the specified Attack Type (via enum called `CurrentAttackType`).
+	// Its contents will not update until BeginPlay() is called.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Struct"))
 		FDefaultTypeStruct AttackTypeStruct = DefaultTypeStruct;
 
@@ -97,9 +102,8 @@ public:
 	 * 
 	 * @returns N/A
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Set Attack Type Details"))
-		void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None,
-								  EAttackSubtypes ESubtype = EAttackSubtypes::None);
+	void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None,
+							  EAttackSubtypes ESubtype = EAttackSubtypes::None);
 
 private:
 	// Returns a list of the attack names.

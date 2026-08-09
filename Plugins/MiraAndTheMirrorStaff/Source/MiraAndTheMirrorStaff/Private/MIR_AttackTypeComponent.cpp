@@ -17,7 +17,8 @@ void UMIR_AttackTypeComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	// Configure Attack Type details.
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
 }
 
 // Called every frame

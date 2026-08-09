@@ -66,11 +66,12 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	// The current Element of this magic.
+	// The current Element of this magic. Set this value to dictate the working struct.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element Details", meta = (KeyWords = "Current"))
 		EElements CurrentElement = EElements::None;
 
-	// Determines working data for the specified Element (via enum).
+	// Determines working data for the specified Element (via enum called `CurrentElement`).
+	// Its contents will not update until BeginPlay() is called.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element Details", meta = (KeyWords = "Struct"))
 		FDefaultElementStruct ElementStruct = DefaultElementStruct;
 

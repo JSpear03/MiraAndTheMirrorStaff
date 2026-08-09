@@ -17,8 +17,8 @@ void UMIR_ElementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	// Configure Element details.
+	SetElementDetails(CurrentElement);
 }
 
 // Called every frame

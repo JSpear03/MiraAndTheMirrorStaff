@@ -26,11 +26,11 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
-	// Creates the Attack Type Component for the spell
+	// Creates the Attack Type Component for the spell.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Components")
 	    class UMIR_AttackTypeComponent* AttackTypeComponent;
 
-    // Creates the Element Component for the spell
+    // Creates the Element Component for the spell.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Components")
 	    class UMIR_ElementComponent* ElementComponent;
 
