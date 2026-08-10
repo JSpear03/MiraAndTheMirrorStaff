@@ -6,7 +6,8 @@
 // Sets default values
 AMIR_PuzzleAssetsIndirectBASE::AMIR_PuzzleAssetsIndirectBASE()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame.  
+	// You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -16,6 +17,17 @@ void AMIR_PuzzleAssetsIndirectBASE::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	switch (PuzzleState)
+	{
+	case EPuzzleState::Activate:
+		ActivateIndirect();
+		break;
+	case EPuzzleState::Deactivate:
+		DeactivateIndirect();
+		break;
+	default:
+		break;
+	}
 }
 
 // Called every frame

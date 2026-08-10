@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MIR_PlayerChar.h"
+#include "EMIR_PuzzleState.h"
 #include "MIR_PuzzleAssetsIndirectBASE.generated.h"
 
 UCLASS()
@@ -16,6 +17,10 @@ public:
 	// Checks if child asset is turned on. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button")
 		bool bDidTurnOn = false;
+
+	// Puzzle state to activate and deactivate a puzzle action.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle State")
+		EPuzzleState PuzzleState = EPuzzleState::Deactivate;
 
 	// Sets default values for this actor's properties
 	AMIR_PuzzleAssetsIndirectBASE();
