@@ -2,8 +2,6 @@
 
 
 #include "MIR_ManaUp.h"
-#include "Kismet/GameplayStatics.h"
-#include "MIR_PlayerChar.h"
 
 // Sets default values.
 AMIR_ManaUp::AMIR_ManaUp()
