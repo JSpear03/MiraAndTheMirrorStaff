@@ -22,6 +22,7 @@ AMIR_MagicRanged::AMIR_MagicRanged()
 	AttackTypeComponent->AttackType.AttackTypeName = "Ranged";
 	AttackTypeComponent->AttackType.Damage = 4;
 	AttackTypeComponent->AttackType.ManaConsumption = 1;
+    AttackTypeComponent->SetAttackTypeDetails(EAttackTypes::Ranged);
 
 	// The ProjectileMovementComponent is responsible for moving the projectile in a straight line at a constant speed.
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));

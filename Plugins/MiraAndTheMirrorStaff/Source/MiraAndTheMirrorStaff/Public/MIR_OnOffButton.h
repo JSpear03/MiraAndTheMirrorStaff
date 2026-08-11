@@ -4,10 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/SphereComponent.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "MIR_PuzzleAssetDirectBASE.h"
-#include "IMIR_Button.h"
 #include "MIR_OnOffButton.generated.h"
 
 UCLASS()
@@ -19,10 +16,20 @@ public:
 	// Sets default values for this actor's properties
 	AMIR_OnOffButton();
 
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;	
+
+	// Called when player collides with on off button.  
+	UFUNCTION()
+		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+			const FHitResult& SweepResult);
+
+	// Called when player stop colliding with the button. 
+	UFUNCTION()
+		void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 public:	
 	// Called every frame

@@ -4,20 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "IMIR_Indirect.h"
 #include "MIR_PlayerChar.h"
 #include "MIR_PuzzleAssetsIndirectBASE.generated.h"
 
 UCLASS()
-class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetsIndirectBASE : public AActor, public IIMIR_Indirect
+class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetsIndirectBASE : public AActor
 {
 	GENERATED_BODY()
-	
-	// Checks if child asset is turned on. 
-	UPROPERTY(EditAnywhere, Category = "Button")
-		bool bDidTurnOn = false;
 
 public:	
+	// Checks if child asset is turned on. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button")
+		bool bDidTurnOn = false;
+
 	// Sets default values for this actor's properties
 	AMIR_PuzzleAssetsIndirectBASE();
 
@@ -30,9 +29,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Sets Indirect to activate.
-	virtual void ActivateIndirect_Implementation(AMIR_PlayerChar* PlayerCharacter) override;
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Active")
+		void ActivateIndirect();
 
-	// Sets Indirect to deactivate. 
-	virtual void DeactivateIndirect_Implementation(AMIR_PlayerChar* PlayerCharacter) override;
+	// Sets Indirect to deactivate.
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Deactive")
+		void DeactivateIndirect();
 
 };

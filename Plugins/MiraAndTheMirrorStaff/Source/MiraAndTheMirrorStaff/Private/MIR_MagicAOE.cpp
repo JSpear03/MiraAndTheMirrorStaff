@@ -21,6 +21,7 @@ AMIR_MagicAOE::AMIR_MagicAOE()
     AttackTypeComponent->AttackType.AttackTypeName = "AOE";
     AttackTypeComponent->AttackType.Damage = 4;
     AttackTypeComponent->AttackType.ManaConsumption = 3;
+    AttackTypeComponent->SetAttackTypeDetails(EAttackTypes::AoE);
 }
 
 // Potential function to allow the AOE spell to expand its radius over time

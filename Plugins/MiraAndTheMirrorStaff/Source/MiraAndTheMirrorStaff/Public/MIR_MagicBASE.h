@@ -27,11 +27,11 @@ public:
     virtual void Tick(float DeltaTime) override;
 
 	// Creates the Attack Type Component for the spell
-	UPROPERTY(EditAnywhere, Category = "Magic|Components")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Components")
 	    class UMIR_AttackTypeComponent* AttackTypeComponent;
 
     // Creates the Element Component for the spell
-    UPROPERTY(EditAnywhere, Category = "Magic|Components")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Components")
 	    class UMIR_ElementComponent* ElementComponent;
 
 	// Creates the overridable Collision Component for the spell.
