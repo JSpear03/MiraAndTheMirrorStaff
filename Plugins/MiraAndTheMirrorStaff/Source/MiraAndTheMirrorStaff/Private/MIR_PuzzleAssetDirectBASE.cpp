@@ -3,7 +3,6 @@
 
 #include "MIR_PuzzleAssetDirectBASE.h"
 #include "Kismet/GameplayStatics.h"
-#include "MIR_PlayerChar.h"
 
 // Sets default values
 AMIR_PuzzleAssetDirectBASE::AMIR_PuzzleAssetDirectBASE()
@@ -24,6 +23,8 @@ AMIR_PuzzleAssetDirectBASE::AMIR_PuzzleAssetDirectBASE()
 void AMIR_PuzzleAssetDirectBASE::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OnDirectActivated.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::FindDirectBase);
 }
 
 // Called every frame
@@ -32,4 +33,3 @@ void AMIR_PuzzleAssetDirectBASE::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

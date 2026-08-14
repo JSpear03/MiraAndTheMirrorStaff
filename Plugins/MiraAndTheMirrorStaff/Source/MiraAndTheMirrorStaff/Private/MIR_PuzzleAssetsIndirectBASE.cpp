@@ -16,6 +16,8 @@ AMIR_PuzzleAssetsIndirectBASE::AMIR_PuzzleAssetsIndirectBASE()
 void AMIR_PuzzleAssetsIndirectBASE::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OnIndirectLinked.AddDynamic(this, &AMIR_PuzzleAssetsIndirectBASE::ActivateIndirect);
 	
 	switch (PuzzleState)
 	{
@@ -35,5 +37,10 @@ void AMIR_PuzzleAssetsIndirectBASE::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AMIR_PuzzleAssetsIndirectBASE::CallActivateDelegate()
+{
+	OnIndirectLinked.Broadcast();
 }
 
