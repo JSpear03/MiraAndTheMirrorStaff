@@ -41,8 +41,6 @@ AMIR_PlayerChar::AMIR_PlayerChar()
 	bUseControllerRotationYaw = false; 
 
 	SpringArm->bUsePawnControlRotation = true;  // Allows rotation of the spring arm. 
-
-	ElementComponent->ElementType.ElementName = "Ranged Nothing";
 }
 
 void AMIR_PlayerChar::BeginPlay()
@@ -95,15 +93,15 @@ void AMIR_PlayerChar::SetCanGetHit(bool bGetHit)
 	bCanGetHit = bGetHit;
 }
 
-void AMIR_PlayerChar::SetStoredMagic(FString MagicType)
-{
-	StoredMagicType = MagicType;
-}
-
-FString AMIR_PlayerChar::GetStoredMagic()
-{
-	return StoredMagicType;
-}
+//void AMIR_PlayerChar::SetStoredMagic(AMIR_MagicBASE* const& MagicType)
+//{
+//	StoredMagicType = MagicType->GetClass();
+//}
+//
+//TSubclassOf<class AMIR_MagicBASE> AMIR_PlayerChar::GetStoredMagic() const
+//{
+//	return StoredMagicType;
+//}
 
 // Leave most of the cases blank for now.
 void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)

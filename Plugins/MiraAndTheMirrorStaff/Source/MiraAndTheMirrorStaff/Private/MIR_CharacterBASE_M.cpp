@@ -15,7 +15,7 @@ AMIR_CharacterBASE_M::AMIR_CharacterBASE_M()
 	// Creates Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
 
-	ElementComponent->ElementType.ElementalNeutralities = {"Nothing", "Flame", "Ice", "Thunder"};
+	ElementComponent->SetCurrentElement(EElements::Nothing);
 }
 
 // Called when the game starts or when spawned
@@ -66,3 +66,12 @@ void AMIR_CharacterBASE_M::CalculateDamage(FString AttackerElement, FString Reci
 	HealthComponent->HealthReduction(Modifier * AttackerDamageValue);
 }
 
+void AMIR_CharacterBASE_M::SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType)
+{
+	StoredMagicType = MagicType;
+}
+
+TSubclassOf<class AMIR_MagicBASE> AMIR_CharacterBASE_M::GetStoredMagic() const
+{
+	return StoredMagicType;
+}

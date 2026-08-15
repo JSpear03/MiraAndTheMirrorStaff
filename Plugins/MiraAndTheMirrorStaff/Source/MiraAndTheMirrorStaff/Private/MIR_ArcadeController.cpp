@@ -197,10 +197,10 @@ void AMIR_ArcadeController::AllowMainAttack()
  * COMBAT ACTIONS — SUB-ATTACK
  ***********************************************************************************/
 
-void AMIR_ArcadeController::UseSubAttack()
-{
-	GEngine->AddOnScreenDebugMessage(3, 5, FColor::Blue, TEXT("Use Dagger."));
-}
+//void AMIR_ArcadeController::UseSubAttack()
+//{
+//	GEngine->AddOnScreenDebugMessage(3, 5, FColor::Blue, TEXT("Use Dagger."));
+//}
 
 /************************************************************************************
  * OTHER ACTIONS — INTERACTION
@@ -251,4 +251,14 @@ void AMIR_ArcadeController::UseInteract()
 	{
 		IIMIR_Interactable::Execute_OnInteract(ClosestInteractable, PlayerCharacter);
 	}
+}
+
+void AMIR_ArcadeController::SetSummonedMagicRef(AMIR_MagicBASE* const& MagicType)
+{
+	SummonedMagicRef = MagicType;
+}
+
+AMIR_MagicBASE* AMIR_ArcadeController::GetSummonedMagicRef() const
+{
+	return SummonedMagicRef;
 }

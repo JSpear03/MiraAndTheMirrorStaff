@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "IMIR_Copiable.h"
+#include "MIR_MagicBASE.h"
 #include "MIR_CopiableComponent.generated.h"
 
 
@@ -27,5 +28,5 @@ public:
 		FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Sets new copied magic for player. 
-	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer, const FString& MagicToCopy) override;
+	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer, TSubclassOf<class AMIR_MagicBASE> MagicToCopy) override;
 };

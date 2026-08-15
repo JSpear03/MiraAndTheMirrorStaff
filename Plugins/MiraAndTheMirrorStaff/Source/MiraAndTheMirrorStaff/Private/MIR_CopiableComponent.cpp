@@ -35,16 +35,19 @@ void UMIR_CopiableComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 void UMIR_CopiableComponent::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
-	const FString& MagicToCopy)
+	TSubclassOf<class AMIR_MagicBASE> MagicToCopy)
 {
 	// Reachable from Blueprint through Execute_CopyMagic, so the player cannot be assumed valid.
 	if (!CurrentPlayer)
 	{
 		return;
 	}
+	
+	// Debug print statement for confirmation (TODO: Delete)
+	/*FString NameOfMagic = StaticEnum<EElements>()->GetValueAsString(MagicToCopy->ElementComponent->GetElementName());
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Purple, NameOfMagic);*/
 
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Purple, MagicToCopy);
-
+	// Set the new magic.
 	CurrentPlayer->SetStoredMagic(MagicToCopy);
 }
 

@@ -70,7 +70,7 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 	return;
 }
 
-TArray<FString> UMIR_AttackTypeComponent::GetAttackNames()
+void UMIR_AttackTypeComponent::SetCurrentAttackType(EAttackTypes ENewAttackType)
 {
-	return { "None", "Melee", "Ranged", "AOE" };
+	CurrentAttackType = ENewAttackType;
 }
