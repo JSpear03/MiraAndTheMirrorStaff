@@ -12,8 +12,9 @@
 // Sets default values
 AMIR_MagicBASE::AMIR_MagicBASE()
 {
-    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
+    // Set this actor to call Tick() every frame.  
+    // You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = false;
 
     // The Scene Component and its init values (the root component of the spell actor)
     SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
