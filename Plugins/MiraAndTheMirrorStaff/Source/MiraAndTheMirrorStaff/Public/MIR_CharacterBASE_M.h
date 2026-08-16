@@ -6,12 +6,17 @@
 #include "GameFramework/Character.h"
 #include "MIR_HealthComponent.h"
 #include "MIR_ElementComponent.h"
+#include "MIR_MagicBASE.h"
 #include "MIR_CharacterBASE_M.generated.h"
 
 UCLASS(Blueprintable)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_CharacterBASE_M : public ACharacter
 {
 	GENERATED_BODY()
+
+	// The currently usable magic attack.
+	UPROPERTY(EditAnywhere, Category = "Magic|Main Attack")
+		TSubclassOf<class AMIR_MagicBASE> StoredMagicType;
 
 public:
 	// Sets default values for this character's properties
@@ -38,8 +43,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element")
 		UMIR_ElementComponent* ElementComponent; 
 
+	// TODO: Update with new Element and AttackType Component changes.
 	// Decreases health based on the calculated damage. 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void CalculateDamage(FString AttackerElement, FString RecieverElement, 
 			int32 AttackerDamageValue);
+
+	// Stored Magic setter.
+	UFUNCTION(BlueprintCallable, Category = "Magic|Main Attack")
+		void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType);
+
+	// Stored Magic getter.
+	UFUNCTION(BlueprintCallable, Category = "Magic|Main Attack")
+		TSubclassOf<class AMIR_MagicBASE> GetStoredMagic() const;
 };

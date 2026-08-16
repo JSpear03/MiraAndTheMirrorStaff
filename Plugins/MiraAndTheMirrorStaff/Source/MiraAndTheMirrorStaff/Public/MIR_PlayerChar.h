@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "MIR_ManaComponent.h"
+#include "MIR_MagicBASE.h"
 #include "MIR_PlayerChar.generated.h"
 
 class AMIR_RespawnPoint;
@@ -30,9 +31,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "Copied Magic")
-		FString StoredMagicType;
-
+	// Represents whether the player is invincible (i.e., they cannot get hit).
 	UPROPERTY()
 		bool bCanGetHit = true;
 
@@ -40,6 +39,18 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PlayerChar : public AMIR_CharacterBASE_M
 	UPROPERTY()
 		AMIR_RespawnPoint* LastRespawnPoint = nullptr;
 
+private:
+	// A class reference to the Dagger.
+	UPROPERTY(EditAnywhere, Category = "Magic|Sub-Attack (Dagger)")
+		TSubclassOf<class AMIR_MagicMelee> DaggerRef;
+
+	// A class reference to the Melee Copy.
+	UPROPERTY(EditAnywhere, Category = "Magic|Copy Attacks")
+		TSubclassOf<class AMIR_MagicMelee> MeleeCopyRef;
+
+	// A class reference to the Ranged Copy.
+	UPROPERTY(EditAnywhere, Category = "Magic|Copy Attacks")
+		TSubclassOf<class AMIR_MagicRanged> RangedCopyRef;
 
 public:
 	// Key item flags. Set to true when obtained so any logic gates
@@ -65,8 +76,8 @@ public:
 
 	// Used as part of a timer to set the value of bCanGetHit. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown",
-			  meta = (Units = "Seconds", ClampMin = 0, ClampMax = 5, UIMin = 0, UIMax = 5))
-		int32 CooldownSeconds = 2;
+			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 5.0, UIMin = 0.0, UIMax = 5.0))
+		float CooldownSeconds = 2.0;
 
 	// Used for the position of the camera. 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -88,12 +99,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
 		bool bCanDash = false;
 
+	// Spawn transform for Melee magic.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
 		UArrowComponent* MeleeArrow;
 
+	// Spawn transform for Ranged magic.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
 		UArrowComponent* RangedArrow;
 
+	// Spawn transform for AoE magic.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
 		UArrowComponent* AOEArrow;
 
@@ -117,13 +131,17 @@ private:
 	void SetCanGetHit(bool bGetHit);
 
 public:
-	// Stored Magic setter.
-	UFUNCTION(BlueprintCallable)
-		void SetStoredMagic(FString MagicType);
+	// DaggerRef getter.
+	UFUNCTION(BlueprintCallable, Category = "Magic|Sub-Attack (Dagger)")
+		TSubclassOf<class AMIR_MagicMelee> GetDaggerRef() const { return DaggerRef; };
 
-	// Stored Magic getter.
-	UFUNCTION(BlueprintCallable)
-		FString GetStoredMagic();
+	// MeleeCopyRef getter.
+	UFUNCTION(BlueprintCallable, Category = "Magic|Copy Attacks")
+		TSubclassOf<class AMIR_MagicMelee> GetMeleeCopyRef() const { return MeleeCopyRef; };
+
+	// RangedCopyRef getter.
+	UFUNCTION(BlueprintCallable, Category = "Magic|Copy Attacks")
+		TSubclassOf<class AMIR_MagicRanged> GetRangedCopyRef() const { return RangedCopyRef; };
 
 	// Grants item from treasure.
 	UFUNCTION(BlueprintCallable)

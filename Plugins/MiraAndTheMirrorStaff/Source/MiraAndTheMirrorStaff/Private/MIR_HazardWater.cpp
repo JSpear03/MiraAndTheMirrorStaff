@@ -4,7 +4,7 @@
 #include "MIR_HazardWater.h"
 #include "MIR_MagicBASE.h"
 #include "MIR_ElementComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 
 void AMIR_HazardWater::OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -18,7 +18,7 @@ void AMIR_HazardWater::OnHazardBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	// The element check matters because every spell currently spawns an
 	// IceCollisionComponent regardless of its element.
 	if (Magic && OtherComp == Magic->IceCollisionComponent &&
-		Magic->ElementComponent->ElementType.ElementName == "Ice")
+		Magic->ElementComponent->GetElementName() == EElements::Ice)
 	{
 		OnFreezeHit(Magic->GetActorLocation());
 	}

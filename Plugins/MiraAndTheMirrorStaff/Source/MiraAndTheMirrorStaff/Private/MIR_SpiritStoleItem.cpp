@@ -6,6 +6,7 @@
 // Sets default values. 
 AMIR_SpiritStoleItem::AMIR_SpiritStoleItem()
 {
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // Called when game starts.

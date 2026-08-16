@@ -7,41 +7,6 @@
 #include "SMIR_ElementData.h"
 #include "MIR_ElementComponent.generated.h"
 
-USTRUCT(BlueprintType)  
-struct FElement
-{
-	GENERATED_BODY()
-
-	// Name of the element.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
-		FString ElementName = "Nothing";
-
-	// Sets the color of the element.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element")
-		UMaterial* MainColor = nullptr;
-
-	// What represents the element.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element")
-		UTexture2D* ElementSymbol = nullptr;
-
-	// What the current element is strong against (x2 multiplier). 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
-		FString ElementStrength = "Nothing";
-
-	// What the current element is weak against (x0 multiplier). 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
-		FString ElementWeakness = "Nothing";
-
-	// List of elements that the element name is neutral against (x1 multiplier).
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementNames"))
-		TArray<FString> ElementalNeutralities;
-
-	// The type of action the element does. 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element", meta = (GetOptions = "GetElementProperties"))
-		FString ElementProperty = "None";
-
-};
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MIRAANDTHEMIRRORSTAFF_API UMIR_ElementComponent : public UActorComponent
@@ -49,8 +14,6 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_ElementComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Element Type")
-		FElement ElementType;
 
 	// Sets default values for this component's properties
 	UMIR_ElementComponent();
@@ -128,14 +91,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Set Element Details"))
 		void SetElementDetails(EElements ENewElement = EElements::None);
 
-private:
-	// Returns a list of element names.
-	// RangedNothing is only for the player.
-	UFUNCTION()
-		TArray<FString> GetElementNames();
-
-	// Returns a list of properties for each element. 
-	UFUNCTION()
-		TArray<FString> GetElementProperties();
-
+	/**
+	 * Sets the `CurrentElement` member variable.
+	 * 
+	 * @param ENewElement The value to be assigned to `CurrentElement`.
+	 * 
+	 * @returns N/A
+	 */
+	void SetCurrentElement(EElements ENewElement = EElements::None);
 };
