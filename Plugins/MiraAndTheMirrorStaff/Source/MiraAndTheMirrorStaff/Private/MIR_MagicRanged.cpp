@@ -11,7 +11,7 @@
 AMIR_MagicRanged::AMIR_MagicRanged()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
     // Placeholder value for the main damaging collision of the ranged spell.
     CollisionComponent->SetCapsuleRadius(40.0f);

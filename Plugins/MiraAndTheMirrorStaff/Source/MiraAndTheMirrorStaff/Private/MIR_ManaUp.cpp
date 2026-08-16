@@ -6,6 +6,7 @@
 // Sets default values.
 AMIR_ManaUp::AMIR_ManaUp()
 {
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // Called when game begins.

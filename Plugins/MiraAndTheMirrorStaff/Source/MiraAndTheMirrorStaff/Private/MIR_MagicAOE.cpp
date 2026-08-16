@@ -8,8 +8,9 @@
 
 AMIR_MagicAOE::AMIR_MagicAOE()
 {
-    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
+    // Set this actor to call Tick() every frame.  
+    // You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = false;
 
     // Placeholder value for the main damaging collision of the AOE spell.
     CollisionComponent->SetCapsuleRadius(InitialSize);
