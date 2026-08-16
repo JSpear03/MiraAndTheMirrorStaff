@@ -88,7 +88,8 @@ void AMIR_MagicBASE::HandleDespawn(const float TimerDuration)
 void AMIR_MagicBASE::InstantHandleDespawn()
 {
     ReenableMainAttack();
-    this->Destroy();
+    SetLifeSpan(0.01f);
+    //this->Destroy();
 }
 
 void AMIR_MagicBASE::ReenableMainAttack()
@@ -105,5 +106,6 @@ void AMIR_MagicBASE::ReenableMainAttack()
     else
     {
         PlayerCont->AllowMainAttack();  // Allows main attack again.
+        GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, TEXT("Main Attack ALLOWED!"));
     }
 }

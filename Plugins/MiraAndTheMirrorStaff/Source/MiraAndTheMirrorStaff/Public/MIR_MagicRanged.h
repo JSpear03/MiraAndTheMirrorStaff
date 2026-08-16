@@ -33,4 +33,7 @@ protected:
 	// The amount of time until the summoned magic despawns.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Despawn")
 		float MagicLifespan = 10.0f;
+
+	// Represents whether certain logic in `Tick()` has executed once.
+	bool bDoOnce = false;
 };
