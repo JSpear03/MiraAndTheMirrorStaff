@@ -63,7 +63,7 @@ void AMIR_PuzzleAssetManager::CheckActiveInDirect(AMIR_PuzzleAssetManager* Direc
 
 		// Commence activation of the linked IndirectBASE and the timer.
 		CurrentDirect->LinkedActor->CallActivateDelegate();
-		SetActiveTimer(2);
+		/*SetActiveTimer(2);*/  // Potentially causing errors for Water fountain. 
 	}
 }
 
