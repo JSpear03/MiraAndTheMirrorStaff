@@ -40,8 +40,9 @@ public:
 	/**
 	* Gets the owner's `Health` variable.
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Stats")
-		int32 GetHealth();
+	UFUNCTION(BlueprintCallable, Category = "Stats", meta = (KeyWords = "Get",
+			  ReturnDisplayName = "Health"))
+		int32 GetHealth() const;
 
 	/**
 	* Sets the owner's `Health` variable.

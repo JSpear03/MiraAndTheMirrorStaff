@@ -4,18 +4,30 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "MIR_PuzzleAssetManager.h"
 #include "MIR_PlayerChar.h"
+#include "EMIR_PuzzleState.h"
 #include "MIR_PuzzleAssetsIndirectBASE.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnIndirectLinked);
+
 UCLASS()
-class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetsIndirectBASE : public AActor
+class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetsIndirectBASE : public AMIR_PuzzleAssetManager
 {
 	GENERATED_BODY()
 
 public:	
+	// Sets indirect to activate.
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable, Category = "Indirect")
+		FOnIndirectLinked OnIndirectLinked;
+
 	// Checks if child asset is turned on. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button")
 		bool bDidTurnOn = false;
+
+	// Puzzle state to activate and deactivate a puzzle action.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle State")
+		EPuzzleState PuzzleState = EPuzzleState::Deactivate;
 
 	// Sets default values for this actor's properties
 	AMIR_PuzzleAssetsIndirectBASE();
@@ -36,4 +48,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Deactive")
 		void DeactivateIndirect();
 
+	// Broadcasts the Activate function from the OnIndirectLinked delegate.
+	UFUNCTION(BlueprintCallable, Category = "Active")
+		void CallActivateDelegate();
 };

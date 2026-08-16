@@ -4,10 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "ArcadeController.h"
+#include "MIR_MagicBASE.h"
 #include "MIR_ArcadeController.generated.h"
 
 /**
- * 
+ * An Enumeration of all MagicAttacks used in the game.
+ * - None: A default value that is not meant to be used in-game.
+ * - MainAttack: Specifies either the currently copied magic or the MeleeCopy.
+ * - SubAttack: Specifies the Dagger.
+ * - RangedCopy: Specifies the RangedCopy.
+ */
+UENUM(BlueprintType)
+enum class EMagicAttacks : uint8
+{
+	None        UMETA(DisplayName = "None", ToolTip = "A default value that is not meant to be used in-game."),
+	MainAttack  UMETA(DisplayName = "MainAttack", ToolTip = "Specifies either the currently copied magic or the MeleeCopy."),
+	SubAttack   UMETA(DisplayName = "SubAttack", ToolTip = "Specifies the Dagger."),
+	RangedCopy  UMETA(DisplayName = "RangedCopy", ToolTip = "Specifies the RangedCopy."),
+};
+
+
+/**
+ * Dictates behaviors for player inputs and controls.
  */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
@@ -60,12 +78,22 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 		meta = (AllowPrivateAccess = "true"))
 		float InteractRange = 250.0f;
 
+	// A reference to the currently summoned magic.
+	UPROPERTY(VisibleAnywhere, Category = "Copied Magic")
+		AMIR_MagicBASE* SummonedMagicRef;
+
 protected:
+	// Represents whether the Main Attack can be used.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
 		bool bCanUseMainAttack = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
-		int32 MainAttackCooldown = 2;
+		bool bCanUseSubAttack = true;
+
+	// Represents the Main Attack's cooldown in terms of seconds.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack",
+			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 10.0, UIMin = 0.0, UIMax = 10.0))
+		float MainAttackCooldown = 2.0;
 
 	// Called to setup input actions. 
 	virtual void SetupInputComponent() override;
@@ -73,7 +101,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Called to move character.
+	/**
+	 * Called to move character.
+	 *
+	 * @param ActionValue The value with which the character will be moved.
+	 * 
+	 * @returns N/A
+	 */
 	void MoveCharacter(const FInputActionValue& ActionValue);
 
 	// Called to attack with Magic or Mirror staff.
@@ -85,29 +119,35 @@ protected:
 		void UseMirrorStaff();
 
 	// Called to attack with dagger.
-	void UseSubAttack();
+	UFUNCTION(BlueprintImplementableEvent)
+		void UseSubAttack();
 
 	// Discards the current copied magic. 
 	UFUNCTION(BlueprintImplementableEvent)
-
 		void DiscardCopiedMagic();
 
 	// Called to interact with an object. 
 	void UseInteract();
 
-	// Checks if player has obtained item for jumping.
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-		bool IsPlayerJumping();
+	/**
+	 * Checks if player has obtained the Skybound Shoes, the item that allows jumping.
+	 * 
+	 * @returns bool
+	 */
+	bool IsPlayerJumping() const;
 
-	// Called to get the player to jump. 
+	// Called to get the player to jump.
 	void StartPlayerJumping();
 
 	// Called after player is done jumping.
 	void StopPlayerJumping();
 
-	// Checks if player obtained item for dashing.
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-		bool IsPlayerDashing();
+	/**
+	 * Checks if player has obtained the Spirit Stole, the item that allows dashing.
+	 *
+	 * @returns bool
+	 */
+	bool IsPlayerDashing() const;
 
 	// Called to increase player walk speed.
 	void StartDashing();
@@ -123,7 +163,15 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void OpenMap();
 
-	// Sets Can Use Main Attack to true, so player can use the Main Attack input. 
+	// Sets `SummonedMagicRef` to a reference to a summoned magic.
+	UFUNCTION(BlueprintCallable, Category = "Copied Magic")
+		void SetSummonedMagicRef(AMIR_MagicBASE* const& MagicType);
+
+	UFUNCTION(BlueprintCallable, Category = "Copied Magic")
+		AMIR_MagicBASE* GetSummonedMagicRef() const;
+
+public:
+	// Sets `bCanUseMainAttack` to True, re-enabling the Main Attack input.
 	UFUNCTION(BlueprintCallable)
 		void AllowMainAttack();
 };

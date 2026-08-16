@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
-#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "MIR_PlayerChar.h"
 #include "MIR_PickableBASE.generated.h"
 
 UCLASS()
@@ -23,7 +25,7 @@ protected:
 
 	// Mesh for any child of PickableBASE. 
 	UPROPERTY(EditAnywhere, Category = "Mesh")
-		USkeletalMeshComponent* Mesh;
+		UStaticMeshComponent* Mesh;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

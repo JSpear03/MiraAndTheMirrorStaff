@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "MIR_MagicBASE.h"
 #include "IMIR_Copiable.generated.h"
 
 class AMIR_PlayerChar;
@@ -26,5 +27,8 @@ class MIRAANDTHEMIRRORSTAFF_API IIMIR_Copiable
 public:
 	// When called, the function stores copied magic for the player.
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Copy Magic")
-		void CopyMagic(AMIR_PlayerChar* CurrentPlayer, const FString& MagicToCopy);   
+		void CopyMagic(AMIR_PlayerChar* CurrentPlayer, TSubclassOf<AMIR_MagicBASE> MagicToCopy);
+
+	// TODO: Confirm whether AMIR_MagicBASE* or TSubobjectOf<class AMIR_MagicBASE> is better.
+	// Reflect any changes in MIR_CopiableComponent, MIR_EnemyBASE, etc.
 };

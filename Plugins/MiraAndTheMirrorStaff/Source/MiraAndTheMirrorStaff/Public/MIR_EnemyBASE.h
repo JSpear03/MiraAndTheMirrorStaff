@@ -56,7 +56,10 @@ public:
 	// copy, for example) calls IIMIR_Copiable::Execute_CopyMagic on the enemy Actor, and the
 	// enemy hands the work to its Copiable Component.
 	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
-		const FString& MagicToCopy) override;
+		TSubclassOf<class AMIR_MagicBASE> MagicToCopy) override;
+
+	// TODO: Confirm whether AMIR_MagicBASE* or TSubobjectOf<class AMIR_MagicBASE> is better.
+	// Reflect any changes in MIR_EnemyBASE.cpp.
 
 	// Called when enemy delgate is broadcasted.
 	UFUNCTION(BlueprintImplementableEvent)

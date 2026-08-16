@@ -17,7 +17,8 @@ void UMIR_AttackTypeComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	// Configure Attack Type details.
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
 }
 
 // Called every frame
@@ -69,7 +70,7 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 	return;
 }
 
-TArray<FString> UMIR_AttackTypeComponent::GetAttackNames()
+void UMIR_AttackTypeComponent::SetCurrentAttackType(EAttackTypes ENewAttackType)
 {
-	return { "None", "Melee", "Ranged", "AOE" };
+	CurrentAttackType = ENewAttackType;
 }

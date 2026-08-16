@@ -53,41 +53,158 @@ void AMIR_ArcadeController::BeginPlay()
 	Super::BeginPlay();
 }
 
+/************************************************************************************
+ * MOBILITY ACTIONS — GENERAL MOVEMENT
+ ***********************************************************************************/
+
 void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 {
-	//ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	//FRotator ControllerRotation = PlayerCharacter->GetControlRotation();
-	//FVector ActionVector, ForwardVector, RightVector;
+	/**
+	 * // ===== OLD MOVEMENT CODE ====
+	 * 
+	 * //ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	 * //FRotator ControllerRotation = PlayerCharacter->GetControlRotation();
+	 * //FVector ActionVector, ForwardVector, RightVector;
+	 *
+	 * //ActionVector = ActionValue.Get<FVector>();
+	 *
+	 * //ControllerRotation = UKismetMathLibrary::MakeRotFromX(ActionVector);
+	 *
+	 * //PlayerCharacter->SetActorRotation(ControllerRotation, ETeleportType::None);
+	 *
+	 * //ForwardVector = UKismetMathLibrary::GetForwardVector(ControllerRotation);
+	 * //RightVector = UKismetMathLibrary::GetRightVector(ControllerRotation);
+	 *
+	 * //PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y-Axis.
+	 * //PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);    // Movement on the X-Axis.
+	 */
 
-	//ActionVector = ActionValue.Get<FVector>();
-
-	//ControllerRotation = UKismetMathLibrary::MakeRotFromX(ActionVector);
-
-	//PlayerCharacter->SetActorRotation(ControllerRotation, ETeleportType::None);
-
-	//ForwardVector = UKismetMathLibrary::GetForwardVector(ControllerRotation);
-	//RightVector = UKismetMathLibrary::GetRightVector(ControllerRotation);
-
-	//PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y Axis.
-	//PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);  // Movement on the X Axis. 
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	FRotator ControllerRotation = PlayerCharacter->GetControlRotation();
-	FVector ActionVector, ForwardVector, RightVector;
+	// Get player-character reference and necessary vectors and rotaters.
+	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);  // Player-character reference.
+	FRotator ControllerRotation = PlayerCharacter->GetControlRotation();  // Player character's control rotation.
+	FVector ActionVector, ForwardVector, RightVector;					  // Movement- and rotation-related vector.
 
 	ActionVector = ActionValue.Get<FVector>();
-	ForwardVector = UKismetMathLibrary::GetForwardVector(ControllerRotation);
-	RightVector = UKismetMathLibrary::GetRightVector(ControllerRotation);
+	ForwardVector = UKismetMathLibrary::GetForwardVector(ControllerRotation);  // Forward vector off control rotation.
+	RightVector = UKismetMathLibrary::GetRightVector(ControllerRotation);      // Right vector off control rotation.
 
-	PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y Axis.
-	PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);  // Movement on the X Axis.
-
+	// Add movement to the player character.
+	PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y-Axis.
+	PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);    // Movement on the X-Axis.
 
 }
 
-void AMIR_ArcadeController::UseSubAttack()
+/************************************************************************************
+ * MOBILITY ACTIONS — JUMPING
+ ***********************************************************************************/
+
+void AMIR_ArcadeController::StartPlayerJumping()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Use dagger"));
+	// Check whether the player has the item to jump.
+	if (!IsPlayerJumping())
+	{
+		// If the condition results in True (returns False -> negated to True), do nothing.
+		return;
+	}
+	else
+	{
+		// If the condition results in False (returns True -> negated to False), start jumping.
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->Jump();
+	}
 }
+
+void AMIR_ArcadeController::StopPlayerJumping()
+{
+	UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->StopJumping();
+}
+
+bool AMIR_ArcadeController::IsPlayerJumping() const
+{
+	// A reference to the player character.
+	AMIR_PlayerChar* PlayerCharacter =
+		Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (!PlayerCharacter)
+	{
+		// If the reference is invalid, return false.
+		return false;
+	}
+	else
+	{
+		// If the reference is valid, return the value in this Boolean.
+		return PlayerCharacter->bHasSkyboundShoes;
+	}
+}
+
+/************************************************************************************
+ * MOBILITY ACTIONS — DASHING
+ ***********************************************************************************/
+
+void AMIR_ArcadeController::StartDashing()
+{
+	// Check whether the player has the item to dash.
+	if (!IsPlayerDashing())
+	{
+		// If the condition results in True (returns False -> negated to True), do nothing.
+		return;
+	}
+	else
+	{
+		// If the condition results in False (returns True -> negated to False), start dashing.
+		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		UCharacterMovementComponent* CharacterMovement = PlayerCharacter->GetCharacterMovement();
+
+		CharacterMovement->MaxWalkSpeed = 900;
+	}
+}
+
+void AMIR_ArcadeController::StopDashing()
+{
+	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	UCharacterMovementComponent* CharacterMovement = PlayerCharacter->GetCharacterMovement();
+
+	CharacterMovement->MaxWalkSpeed = 600;
+}
+
+bool AMIR_ArcadeController::IsPlayerDashing() const
+{
+	// A reference to the player character.
+	AMIR_PlayerChar* PlayerCharacter =
+		Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (!PlayerCharacter)
+	{
+		// If the reference is invalid, return false.
+		return false;
+	}
+	else
+	{
+		// If the reference is valid, return the value in this Boolean.
+		return PlayerCharacter->bHasSpiritStole;
+	}
+}
+
+/************************************************************************************
+ * COMBAT ACTIONS — MAIN ATTACK
+ ***********************************************************************************/
+
+void AMIR_ArcadeController::AllowMainAttack()
+{
+	bCanUseMainAttack = true;
+}
+
+/************************************************************************************
+ * COMBAT ACTIONS — SUB-ATTACK
+ ***********************************************************************************/
+
+//void AMIR_ArcadeController::UseSubAttack()
+//{
+//	GEngine->AddOnScreenDebugMessage(3, 5, FColor::Blue, TEXT("Use Dagger."));
+//}
+
+/************************************************************************************
+ * OTHER ACTIONS — INTERACTION
+ ***********************************************************************************/
 
 void AMIR_ArcadeController::UseInteract()
 {
@@ -136,43 +253,12 @@ void AMIR_ArcadeController::UseInteract()
 	}
 }
 
-void AMIR_ArcadeController::StartPlayerJumping()
+void AMIR_ArcadeController::SetSummonedMagicRef(AMIR_MagicBASE* const& MagicType)
 {
-	if (!IsPlayerJumping())
-	{
-		return;
-	}
-
-	UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->Jump();
+	SummonedMagicRef = MagicType;
 }
 
-void AMIR_ArcadeController::StopPlayerJumping()
+AMIR_MagicBASE* AMIR_ArcadeController::GetSummonedMagicRef() const
 {
-	UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->StopJumping();
-}
-
-void AMIR_ArcadeController::StartDashing()
-{
-	if (!IsPlayerDashing())
-	{
-		return;
-	}
-
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	UCharacterMovementComponent* CharacterMovement = PlayerCharacter->GetCharacterMovement();
-
-	CharacterMovement->MaxWalkSpeed = 900;
-}
-
-void AMIR_ArcadeController::StopDashing()
-{
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	UCharacterMovementComponent* CharacterMovement = PlayerCharacter->GetCharacterMovement();
-
-	CharacterMovement->MaxWalkSpeed = 600;
-}
-
-void AMIR_ArcadeController::AllowMainAttack()
-{
-	bCanUseMainAttack = true;
+	return SummonedMagicRef;
 }

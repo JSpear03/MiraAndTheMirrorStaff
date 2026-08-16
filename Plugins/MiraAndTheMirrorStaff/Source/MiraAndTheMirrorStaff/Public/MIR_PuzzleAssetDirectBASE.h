@@ -7,11 +7,14 @@
 #include "Components/SphereComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "MIR_PlayerChar.h"
+#include "MIR_PuzzleAssetManager.h"
 #include "MIR_PuzzleAssetsIndirectBASE.h"
 #include "MIR_PuzzleAssetDirectBASE.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectActivated, AMIR_PuzzleAssetManager*, DirectAsset);
+
 UCLASS()
-class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetDirectBASE : public AActor
+class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetDirectBASE : public AMIR_PuzzleAssetManager
 {
 	GENERATED_BODY()
 	
@@ -25,6 +28,10 @@ protected:
 		USkeletalMeshComponent* Mesh;
 
 public:
+	// Delegate object to call Activate for Direct.
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Active")
+		FOnDirectActivated OnDirectActivated;
+
 	// Linked actor for indirect puzzle base.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Link")
 		AMIR_PuzzleAssetsIndirectBASE* LinkedActor = nullptr;
@@ -50,5 +57,5 @@ public:
 	// Sets Direct to deactivate.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Deactive")
 		void DeactivateDirect(AMIR_PlayerChar* PlayerCharacter);
-
+	
 };

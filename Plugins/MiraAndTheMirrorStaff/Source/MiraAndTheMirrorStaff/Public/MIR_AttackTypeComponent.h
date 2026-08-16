@@ -7,21 +7,6 @@
 #include "SMIR_AttackTypeData.h"
 #include "MIR_AttackTypeComponent.generated.h"
 
-USTRUCT(BlueprintType)
-struct FAttackType
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Assigned Attack Type", meta = (GetOptions = "GetAttackNames"))
-		FString AttackTypeName = "None";
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Assigned Attack Type", meta = (ClampMin = 0, ClampMax = 10, UIMin = 0, UIMax = 10))
-		int32 Damage = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Assigned Attack Type", meta = (ClampMin = 0, ClampMax = 10, UIMin = 0, UIMax = 10))
-		int32 ManaConsumption = 0;
-};
-
 
 /**
  * Specifies an Attack Type for a summonable magic.
@@ -33,10 +18,7 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_AttackTypeComponent : public UActorComponen
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets attack type data for the magic classes. 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
-		FAttackType AttackType;
+public:
 
 	// Sets default values for this component's properties
 	UMIR_AttackTypeComponent();
@@ -57,7 +39,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Current"))
 		EAttackTypes CurrentAttackType = EAttackTypes::None;
 
-	// Determines working data for the specified Attack Type (via enum).
+	// The current Attack Subtype (Copy, Dagger, etc.). Set this value to dictate the working struct.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Current Subtype"))
+		EAttackSubtypes CurrentAttackSubtype = EAttackSubtypes::None;
+
+	// Determines working data for the specified Attack Type (via enum called `CurrentAttackType`).
+	// Its contents will not update until BeginPlay() is called.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Struct"))
 		FDefaultTypeStruct AttackTypeStruct = DefaultTypeStruct;
 
@@ -97,12 +84,15 @@ public:
 	 * 
 	 * @returns N/A
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Set Attack Type Details"))
-		void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None,
-								  EAttackSubtypes ESubtype = EAttackSubtypes::None);
+	void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None,
+							  EAttackSubtypes ESubtype = EAttackSubtypes::None);
 
-private:
-	// Returns a list of the attack names.
-	UFUNCTION()
-		TArray<FString> GetAttackNames();
+	/**
+	 * Sets the `CurrentAttackType` member variable.
+	 * 
+	 * @param ENewAttackType The value to be assigned to `CurrentAttackType`.
+	 * 
+	 * @returns N/A
+	 */
+	void SetCurrentAttackType(EAttackTypes ENewAttackType = EAttackTypes::None);
 };

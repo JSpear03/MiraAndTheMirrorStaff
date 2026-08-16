@@ -2,8 +2,6 @@
 
 
 #include "MIR_HealthUp.h"
-#include "Kismet/GameplayStatics.h"
-#include "MIR_PlayerChar.h"
 
 // Sets default values
 AMIR_HealthUp::AMIR_HealthUp()
@@ -23,7 +21,7 @@ void AMIR_HealthUp::BeginPlay()
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_HealthUp::OnHealthOverlap);
 }
 
-void AMIR_HealthUp::OnHealthOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+void AMIR_HealthUp::OnHealthOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
