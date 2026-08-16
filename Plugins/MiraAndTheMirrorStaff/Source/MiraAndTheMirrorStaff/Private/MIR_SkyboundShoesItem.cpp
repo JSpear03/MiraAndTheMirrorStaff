@@ -7,6 +7,7 @@
 // Sets default values.
 AMIR_SkyboundShoesItem::AMIR_SkyboundShoesItem()
 {
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // Called when game starts.

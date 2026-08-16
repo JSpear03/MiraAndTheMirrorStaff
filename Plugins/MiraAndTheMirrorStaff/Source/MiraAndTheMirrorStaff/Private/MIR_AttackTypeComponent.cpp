@@ -8,7 +8,7 @@ UMIR_AttackTypeComponent::UMIR_AttackTypeComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  
 	// You can turn these features off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 }
 
@@ -70,7 +70,7 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 	return;
 }
 
-TArray<FString> UMIR_AttackTypeComponent::GetAttackNames()
+void UMIR_AttackTypeComponent::SetCurrentAttackType(EAttackTypes ENewAttackType)
 {
-	return { "None", "Melee", "Ranged", "AOE" };
+	CurrentAttackType = ENewAttackType;
 }

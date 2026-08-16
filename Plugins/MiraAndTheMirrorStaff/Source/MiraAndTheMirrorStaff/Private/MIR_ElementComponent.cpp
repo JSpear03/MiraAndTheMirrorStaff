@@ -58,12 +58,7 @@ void UMIR_ElementComponent::SetElementDetails(EElements ENewElement)
 	}
 }
 
-TArray<FString> UMIR_ElementComponent::GetElementNames()
+void UMIR_ElementComponent::SetCurrentElement(EElements ENewElement)
 {
-	return {"Ranged Nothing", "Nothing", "Flame", "Ice", "Thunder"};
-}
-
-TArray<FString> UMIR_ElementComponent::GetElementProperties()
-{
-	return {"None", "Burn", "Freeze", "Electrocute"};
+	CurrentElement = ENewElement;
 }

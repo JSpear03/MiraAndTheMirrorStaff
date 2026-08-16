@@ -32,7 +32,7 @@ void UMIR_HealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
-int32 UMIR_HealthComponent::GetHealth()
+int32 UMIR_HealthComponent::GetHealth() const
 {
 	return Health;
 }
