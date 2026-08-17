@@ -1,0 +1,61 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Components/MIR_HealthComponent.h"
+
+// Sets default values for this component's properties
+UMIR_HealthComponent::UMIR_HealthComponent()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  
+	// You can turn these features off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
+
+	// ...
+}
+
+
+// Called when the game starts
+void UMIR_HealthComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+
+// Called every frame
+void UMIR_HealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+int32 UMIR_HealthComponent::GetHealth() const
+{
+	return Health;
+}
+
+void UMIR_HealthComponent::SetHealth(int32 NewHealth)
+{
+	Health = FMath::Clamp(NewHealth, 0, TotalHealth);
+}
+
+void UMIR_HealthComponent::HealthRecovery(int32 Amount)
+{
+	SetHealth(Health + Amount);
+}
+
+void UMIR_HealthComponent::HealthReduction(int32 Amount)
+{
+	SetHealth(Health - Amount);
+}
+
+void UMIR_HealthComponent::IncreaseTotalHealth(int32 BonusHealth)
+{
+	TotalHealth = FMath::Clamp(TotalHealth + BonusHealth, 0, MaxHealth);
+
+	SetHealth(TotalHealth);  // Sets current health to full health. 
+}
+
