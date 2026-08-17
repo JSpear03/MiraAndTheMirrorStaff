@@ -99,6 +99,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
 		bool bCanDash = false;
 
+	// Allows the player to use the Mirror staff. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mirror Staff")
+		bool bCanUseMirrorStaff = false;
+
 	// Spawn transform for Melee magic.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
 		UArrowComponent* MeleeArrow;
