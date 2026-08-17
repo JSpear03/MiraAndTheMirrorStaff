@@ -30,7 +30,7 @@ void AMIR_MirrorStaffPickable::OnMirrorBeginOverlap(UPrimitiveComponent* Overlap
 		return;
 	}
 
-	PlayerCharacter->bCanUseMirrorStaff = true;
+	PlayerCharacter->bHasMirrorStaff = true;
 
 	Destroy();
 }
