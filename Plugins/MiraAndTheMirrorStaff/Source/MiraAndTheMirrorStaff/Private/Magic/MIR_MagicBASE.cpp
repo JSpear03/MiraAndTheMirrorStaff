@@ -60,6 +60,13 @@ void AMIR_MagicBASE::BeginPlay()
     //CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_MagicBASE::OnMagicBaseOverlap);
 }
 
+void AMIR_MagicBASE::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    ClearDespawnTimer();  // Clean up despawn timer if the actor is prematurely destroyed.
+
+    Super::EndPlay(EndPlayReason);
+}
+
 //void AMIR_MagicBASE::OnMagicBaseOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 //    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 //{
@@ -110,24 +117,38 @@ void AMIR_MagicBASE::Tick(float DeltaTime)
 void AMIR_MagicBASE::HandleDespawn(const float TimerDuration)
 {
     // Prepare variables for timer.
-    FTimerHandle DespawnTimerHandle;   // The handle for the despawn timer.
-    const UWorld* World = GetWorld();  // A reference to the World.
-    FTimerManager& TimerManager = World->GetTimerManager();  // Timer manager for the despawn timer.
+    FTimerManager& TimerManager = GetWorld()->GetTimerManager();  // Timer manager for the despawn timer.
 
     // Lambda for handling despawn upon elapsion of timer.
-    const FTimerDelegate& DespawnTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager, &DespawnTimerHandle]
+    const FTimerDelegate& DespawnTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager]
         {
             // Debug message (TODO: Delete once debugging is complete).
             UE_LOG(LogTemp, Warning, TEXT("Lifespan elapsed; destroy magic."));
 
-            TimerManager.ClearTimer(DespawnTimerHandle);  // Clears timer.
+            TimerManager.ClearTimer(DespawnHandle);  // Clears timer.
             ReenableMainAttack();
-            this->Destroy();                              // Destroys actor.
+            this->Destroy();                         // Destroys actor.
         }
     );
 
     // Initiate timer.
-    TimerManager.SetTimer(DespawnTimerHandle, DespawnTimerDelegate, TimerDuration, false);
+    TimerManager.SetTimer(DespawnHandle, DespawnTimerDelegate, TimerDuration, false);
+}
+
+void AMIR_MagicBASE::ClearDespawnTimer()
+{
+    if (GetWorld())  // Validate
+    {
+        // The TimerManager instance for the current world.
+        FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+
+        if (TimerManager.IsTimerActive(DespawnHandle))  // Validate
+        {
+            // Perform cleanup by clearing timer and invalidating the handle.
+            TimerManager.ClearTimer(DespawnHandle);
+            DespawnHandle.Invalidate();
+        }
+    }
 }
 
 void AMIR_MagicBASE::InstantHandleDespawn()
@@ -151,6 +172,6 @@ void AMIR_MagicBASE::ReenableMainAttack()
     else
     {
         PlayerCont->AllowMainAttack();  // Allows main attack again.
-        GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, TEXT("Main Attack ALLOWED!"));
+        GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Emerald, TEXT("Main Attack ALLOWED!"));
     }
 }

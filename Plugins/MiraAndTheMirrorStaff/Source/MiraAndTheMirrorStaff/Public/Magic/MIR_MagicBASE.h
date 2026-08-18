@@ -18,6 +18,10 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicBASE : public AActor
     UPROPERTY(EditAnywhere, Category = "Magic|Mesh")
         USkeletalMeshComponent* Mesh;
 
+private:
+    // Timer handle for the despawn timer.
+    FTimerHandle DespawnHandle;
+
 public:
     // Sets default values for this actor's properties
     AMIR_MagicBASE();
@@ -25,6 +29,9 @@ public:
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
+
+    // Called when the component ends.
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     // The amount of time until the summoned magic despawns.
     const float MagicLifespan = 10.0f;
@@ -91,5 +98,8 @@ public:
     // A Scene Component that acts as the root component.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Collision")
         class USceneComponent* SceneComponent;
+
+    // Clears the cooldown timer. Must be called during actor cleanup on `EndPlay()`.
+    void ClearDespawnTimer();
 
 };
