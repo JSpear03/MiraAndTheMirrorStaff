@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/MIR_AttackTypeComponent.h"
+#include "Components/MIR_ElementComponent.h"
 #include "MIR_MagicBASE.generated.h"
 
 UCLASS(BlueprintType)
@@ -51,6 +53,16 @@ protected:
 
     // Calls `AllowMainAttack()` on an AMIR_ArcadeController reference if it is valid.
     void ReenableMainAttack();
+
+    /*
+    * When something overlaps with the Magic Base.
+    *
+    * @param OtherActor Represented by either an enemy or Indirect puzzle asset.
+    */
+    /*UFUNCTION()
+    void OnMagicBaseOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+        const FHitResult& SweepResult);*/
 
 public:
     // Called every frame

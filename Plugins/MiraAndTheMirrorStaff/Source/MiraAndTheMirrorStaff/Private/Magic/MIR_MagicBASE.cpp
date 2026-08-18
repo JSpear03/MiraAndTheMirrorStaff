@@ -4,10 +4,12 @@
 #include "Magic/MIR_MagicBASE.h"
 #include "Components/MIR_AttackTypeComponent.h"
 #include "Components/MIR_ElementComponent.h"
-#include "Input/MIR_ArcadeController.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BillboardComponent.h"
+#include "Characters/Enemies/MIR_EnemyBASE.h"
+#include "Input/MIR_ArcadeController.h"
+#include "Kismet/GameplayStatics.h"
+#include "PuzzleAssets/Indirect/MIR_PuzzleAssetsIndirectBASE.h"
 
 // Sets default values
 AMIR_MagicBASE::AMIR_MagicBASE()
@@ -54,7 +56,50 @@ AMIR_MagicBASE::AMIR_MagicBASE()
 void AMIR_MagicBASE::BeginPlay()
 {
     Super::BeginPlay();
+
+    //CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_MagicBASE::OnMagicBaseOverlap);
 }
+
+//void AMIR_MagicBASE::OnMagicBaseOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+//    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//    // ========== PREPARE VARIABLES ===============================================================
+//    
+//    // Represents whether the `OtherActor` is a child of AMIR_EnemyBASE.
+//    bool bIsChildOfEnemy = OtherActor->GetClass()->IsChildOf<AMIR_EnemyBASE>();
+//
+//    //Represents whether the `OtherActor` is a child of AMIR_PuzzleAssetsIndirectBASE.
+//    bool bIsChildOfPuzzleAsset = OtherActor->GetClass()->IsChildOf<AMIR_PuzzleAssetsIndirectBASE>();
+//
+//    // ========== PERFORM VALIDATION ==============================================================
+//
+//    if (!OtherActor || !bIsChildOfEnemy || !bIsChildOfPuzzleAsset)
+//    {
+//        return;
+//    }
+//    else
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver, TEXT("Magic Base collision."));
+//    }
+//
+//    // ========== HANDLE COLLISION SCENARIO =======================================================
+//
+//    if (bIsChildOfEnemy)
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Turquoise,
+//                                         TEXT("Magic collided with enemy."));
+//    }
+//    else if (bIsChildOfPuzzleAsset)
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Emerald,
+//                                         TEXT("Magic collided with puzzle asset."));
+//    }
+//    else
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Orange,
+//                                         TEXT("Magic collided with neither enemy nor puzzle asset."));
+//    }
+//}
 
 // Called every frame
 void AMIR_MagicBASE::Tick(float DeltaTime)

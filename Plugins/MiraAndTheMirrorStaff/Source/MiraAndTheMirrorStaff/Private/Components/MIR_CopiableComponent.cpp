@@ -38,14 +38,11 @@ void UMIR_CopiableComponent::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPl
 	TSubclassOf<class AMIR_MagicBASE> MagicToCopy)
 {
 	// Reachable from Blueprint through Execute_CopyMagic, so the player cannot be assumed valid.
-	if (!CurrentPlayer)
+	// Additionally, MagicToCopy may be null, so it may also be invalid.
+	if (!CurrentPlayer || !MagicToCopy)
 	{
 		return;
 	}
-	
-	// Debug print statement for confirmation (TODO: Delete)
-	/*FString NameOfMagic = StaticEnum<EElements>()->GetValueAsString(MagicToCopy->ElementComponent->GetElementName());
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Purple, NameOfMagic);*/
 
 	// Set the new magic.
 	CurrentPlayer->SetStoredMagic(MagicToCopy);
