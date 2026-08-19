@@ -45,7 +45,7 @@ void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Found player"));
 
-	ActivateDirect(PlayerCharacter);
+	ActivateDirect();
 }
 
 void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
@@ -66,7 +66,7 @@ void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		return;
 	}
 
-	DeactivateDirect(PlayerCharacter);
+	DeactivateDirect();
 }
 
 // Called every frame

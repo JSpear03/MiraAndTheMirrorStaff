@@ -36,6 +36,11 @@ void AMIR_PuzzleAssetManager::FindDirectBase(AMIR_PuzzleAssetManager* DirectAsse
 
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Checking direct asset"));
 
+	if (!CurrentDirect)
+	{
+		return;
+	}
+
 	// Check whether `CurrentDirect` is contained in the `DirectContainer`.
 	if (DirectContainer.Contains(CurrentDirect))
 	{
@@ -131,7 +136,8 @@ void AMIR_PuzzleAssetManager::SetActiveTimer(float Duration)
 					AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(Item);
 
 					CurrentDirect->LinkedActor->DeactivateIndirect();  // Deactivates IndirectBASE.
-					CurrentDirect->DeactivateDirect(PlayerCharacter);  // Deactivates DirectBASE.
+					//CurrentDirect->DeactivateDirect(PlayerCharacter);  // Deactivates DirectBASE.
+					CurrentDirect->DeactivateDirect();  // Deactivates DirectBASE.
 				}
 			}
 		}
