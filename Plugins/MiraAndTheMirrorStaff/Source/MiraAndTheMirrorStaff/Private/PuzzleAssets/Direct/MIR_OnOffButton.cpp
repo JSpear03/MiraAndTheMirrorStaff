@@ -41,6 +41,8 @@ void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 		return;
 	}
 
+	bIsNothingFired = true;
+
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Found player"));
 
 	ActivateDirect(PlayerCharacter);
@@ -52,7 +54,7 @@ void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
 
-	if (!OtherActor || !PlayerCharacter)
+	if (!OtherActor || !PlayerCharacter || bIsNothingFired)
 	{
 		return;
 	}
