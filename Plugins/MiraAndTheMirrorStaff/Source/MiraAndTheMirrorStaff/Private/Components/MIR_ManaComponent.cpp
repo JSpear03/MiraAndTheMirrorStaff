@@ -3,12 +3,13 @@
 
 #include "Components/MIR_ManaComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "TimerManager.h"
 
 // Sets default values for this component's properties
 UMIR_ManaComponent::UMIR_ManaComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
+	// Set this component to be initialized when the game starts and to be ticked every frame.
+	// These features, if unneeded, may be turned off to improve performance.
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
@@ -24,6 +25,13 @@ void UMIR_ManaComponent::BeginPlay()
 	
 }
 
+
+void UMIR_ManaComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	ClearCooldownTimer();  // Clean up cooldown timer if the player is prematurely destroyed.
+
+	Super::EndPlay(EndPlayReason);
+}
 
 // Called every frame
 void UMIR_ManaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -50,40 +58,57 @@ void UMIR_ManaComponent::ManaCooldown()
 		return;
 	}
 
-	FTimerHandle CooldownTimerHandle;
-	int32 ManaAmount = 1;
+	// The amount by which mana will be recovered per timer repetition.
+	const int32 ManaAmount = 1;
 
-	// When called after timer reached a certain amount of seconds, a little bit of mana is recovered.. 
-	const FTimerDelegate& CooldownDelegate = FTimerDelegate::CreateLambda([this, ManaAmount, &CooldownTimerHandle] 
+	// The TimerManager instance for the current world.
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+
+	// When called on every timer repetition, a set amount of mana is recovered.
+	const FTimerDelegate& CooldownDelegate = FTimerDelegate::CreateLambda([this, ManaAmount]
 		{
 			if (ManaPower != TotalManaPower)
 			{
+				// Not equal, so recover.
 				UE_LOG(LogTemp, Warning, TEXT("Recover Mana"));
-
 				ManaRecovery(ManaAmount);
+
+				if (ManaPower == TotalManaPower)
+				{
+					// Are equal post-recovery, so clear timer.
+					UE_LOG(LogTemp, Warning, TEXT("Clear Timer Post-Recovery"));
+					ClearCooldownTimer();
+					return;
+				}
 			}
 			else 
 			{
+				// Are equal, so clear timer.
 				UE_LOG(LogTemp, Warning, TEXT("Clear Timer"));
-
-				ClearCooldownTimer(CooldownTimerHandle);
+				ClearCooldownTimer();
+				return;
 			}
 		}
 	);
 
-	const UWorld* World = GetWorld();
-	FTimerManager& TimerManager = World->GetTimerManager();
-
 	// Repeats the delegate every second.
-	TimerManager.SetTimer(CooldownTimerHandle, CooldownDelegate, 1, true);
+	TimerManager.SetTimer(CooldownHandle, CooldownDelegate, 1.0f, true);
 }
 
-void UMIR_ManaComponent::ClearCooldownTimer(FTimerHandle CurrentTimerHandle)
+void UMIR_ManaComponent::ClearCooldownTimer()
 {
-	const UWorld* World = GetWorld();
-	FTimerManager& TimerManager = World->GetTimerManager();
+	if (GetWorld())  // Validate
+	{
+		// The TimerManager instance for the current world.
+		FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 
-	TimerManager.ClearTimer(CurrentTimerHandle);
+		if (TimerManager.IsTimerActive(CooldownHandle))  // Validate
+		{
+			// Perform cleanup by clearing timer and invalidating the handle.
+			TimerManager.ClearTimer(CooldownHandle);
+			CooldownHandle.Invalidate();
+		}
+	}
 }
 
 void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)

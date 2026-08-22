@@ -24,35 +24,43 @@ void AMIR_EnemyBASE::BeginPlay()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMIR_EnemyBASE::OnOverlapBegin);
 }
 
-void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
+void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
-	TSubclassOf<class AMIR_MagicBASE> CurrentMagic;
+	// The currently possessed player character.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
+															 GetPlayerCharacter(GetWorld(), 0));
 
-	if (!OtherActor || !PlayerCharacter)
+	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
 	{
 		return;
 	}
 
 	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>();
 
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Overlap found"));
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Overlap found"));  // TODO: Delete
 
-	if (!bIsChildOfMagic)
+	if (!bIsChildOfMagic)  // Is NOT valid?
 	{
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Is Magic"));
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, FString::Printf(TEXT("Is Magic: %s"), 
+									 *OtherActor->GetClass()->GetName()));		// TODO: Delete
 
-	CurrentMagic = Cast<AMIR_MagicBASE>(OtherActor)->GetClass();
-
-	// This enemy is the copy source, so it is the interface receiver. Execute_CopyMagic is a
-	// static function: the object it dispatches on is the first argument, not the "->" prefix.
-	IIMIR_Copiable::Execute_CopyMagic(this, PlayerCharacter, CurrentMagic);
+	if (Cast<AMIR_MagicBASE>(OtherActor)->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Do Copy"));
+		// This enemy is the copy source, so it is the interface receiver. Execute_CopyMagic is a
+		// static function: the object it dispatches on is the first argument, not the "->" prefix.
+		IIMIR_Copiable::Execute_CopyMagic(this, PlayerCharacter, GetStoredMagic());
+	}
+	else
+	{
+		// TODO: Call damage-calc function.
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Orange, TEXT("Do not copy"));
+	}
 }
 
 void AMIR_EnemyBASE::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,

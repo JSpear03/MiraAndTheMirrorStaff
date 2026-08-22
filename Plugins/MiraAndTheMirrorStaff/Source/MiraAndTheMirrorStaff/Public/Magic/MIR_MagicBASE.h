@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/MIR_AttackTypeComponent.h"
+#include "Components/MIR_ElementComponent.h"
 #include "MIR_MagicBASE.generated.h"
 
 UCLASS(BlueprintType)
@@ -16,6 +18,10 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicBASE : public AActor
     UPROPERTY(EditAnywhere, Category = "Magic|Mesh")
         USkeletalMeshComponent* Mesh;
 
+private:
+    // Timer handle for the despawn timer.
+    FTimerHandle DespawnHandle;
+
 public:
     // Sets default values for this actor's properties
     AMIR_MagicBASE();
@@ -23,6 +29,9 @@ public:
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
+
+    // Called when the component ends.
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     // The amount of time until the summoned magic despawns.
     const float MagicLifespan = 10.0f;
@@ -52,6 +61,16 @@ protected:
     // Calls `AllowMainAttack()` on an AMIR_ArcadeController reference if it is valid.
     void ReenableMainAttack();
 
+    /*
+    * When something overlaps with the Magic Base.
+    *
+    * @param OtherActor Represented by either an enemy or Indirect puzzle asset.
+    */
+    /*UFUNCTION()
+    void OnMagicBaseOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+        const FHitResult& SweepResult);*/
+
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -79,5 +98,8 @@ public:
     // A Scene Component that acts as the root component.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Collision")
         class USceneComponent* SceneComponent;
+
+    // Clears the cooldown timer. Must be called during actor cleanup on `EndPlay()`.
+    void ClearDespawnTimer();
 
 };
