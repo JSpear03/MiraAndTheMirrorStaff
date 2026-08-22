@@ -77,24 +77,28 @@ FString UMIR_Attack_Player::GetStaticDescription() const
 
 EBTNodeResult::Type UMIR_Attack_Player::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	//Get a generic pawn actor
-	APawn* GenericPawn = OwnerComp.GetAIOwner()->GetPawn();
+	// Reset memory timer
+	FBTAttackPlayerMemory* MyMemory = CastInstanceNodeMemory<FBTAttackPlayerMemory>(NodeMemory);
+	if (MyMemory)
+	{
+		MyMemory->ElapsedTime = 0.0f;
+	}
 
-	//Convert to actual enemy class
+	// Get a generic pawn actor
+	APawn* GenericPawn = OwnerComp.GetAIOwner() ? OwnerComp.GetAIOwner()->GetPawn() : nullptr;
 	AMIR_EnemyBASE* ControlledPawn = Cast<AMIR_EnemyBASE>(GenericPawn);
 
 	if (!ControlledPawn) {
 		return EBTNodeResult::Failed;
 	}
 
-	// Grab your combat component from the current pawn
+	// Grab combat component from current pawn
 	UMIR_Combat_Component* CombatComp = GenericPawn->FindComponentByClass<UMIR_Combat_Component>();
-
 	if (!CombatComp) {
 		return EBTNodeResult::Failed;
 	}
 
-	// Read the parameter set in the editor node layout
+	// Read parameter set in editor node layout
 	switch (SelectedAttackMode)
 	{
 		case ECombatAttackMode::Melee:
@@ -106,7 +110,7 @@ EBTNodeResult::Type UMIR_Attack_Player::ExecuteTask(UBehaviorTreeComponent& Owne
 			break;
 	}
 
-	//Return in Progress
+	// Return in Progress to let animation sequence play
 	return EBTNodeResult::InProgress;
 }
 
@@ -114,7 +118,7 @@ void UMIR_Attack_Player::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	APawn* GenericPawn = OwnerComp.GetAIOwner()->GetPawn();
+	APawn* GenericPawn = OwnerComp.GetAIOwner() ? OwnerComp.GetAIOwner()->GetPawn() : nullptr;
 	AMIR_EnemyBASE* ControlledPawn = Cast<AMIR_EnemyBASE>(GenericPawn);
 
 	if (!ControlledPawn)
@@ -123,7 +127,7 @@ void UMIR_Attack_Player::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		return;
 	}
 
-	// Grab your combat component from the current pawn
+	// Grab combat component from current pawn
 	UMIR_Combat_Component* CombatComp = GenericPawn->FindComponentByClass<UMIR_Combat_Component>();
 
 	if (CombatComp)
@@ -141,10 +145,23 @@ void UMIR_Attack_Player::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 			return;
 		}
+
+		// 3. Fallback Safety Timeout: Prevent AI from freezing permanently if animation/notify is missing
+		FBTAttackPlayerMemory* MyMemory = CastInstanceNodeMemory<FBTAttackPlayerMemory>(NodeMemory);
+		if (MyMemory)
+		{
+			MyMemory->ElapsedTime += DeltaSeconds;
+			if (AttackTimeout > 0.0f && MyMemory->ElapsedTime >= AttackTimeout)
+			{
+				CombatComp->FinishCurrentAttack();
+				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+				return;
+			}
+		}
 	}
 	else
 	{
 		// Failsafe if the component is missing entirely
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
-}
+}

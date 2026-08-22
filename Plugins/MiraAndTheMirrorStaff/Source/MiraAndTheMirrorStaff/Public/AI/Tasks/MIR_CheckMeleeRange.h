@@ -26,7 +26,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Combat")
 	float AttackRange = 200.0f;
 
+	// Blackboard bool key to update with in-range status (defaults to WithinMeleeRange)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blackboard")
+	FBlackboardKeySelector WithinMeleeRangeKey;
+
 	// Overrides the text drawn on the node inside the Behavior Tree graph
 	virtual FString GetStaticDescription() const override;
 };
+
 
