@@ -1,10 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Characters/Enemies/MIR_EnemyBASE.h"
 #include "Characters/Player/MIR_PlayerChar.h"
 #include "Magic/MIR_MagicBASE.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/MIR_Combat_Component.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -12,9 +10,11 @@
 AMIR_EnemyBASE::AMIR_EnemyBASE()
 {
 	CopiableComponent = CreateDefaultSubobject<UMIR_CopiableComponent>(TEXT("Copiable Component"));
+	CombatComponent = CreateDefaultSubobject<UMIR_Combat_Component>(TEXT("Combat Component"));
 
 	ElementComponent->SetCurrentElement(EElements::Nothing);
 }
+
 
 void AMIR_EnemyBASE::BeginPlay()
 {

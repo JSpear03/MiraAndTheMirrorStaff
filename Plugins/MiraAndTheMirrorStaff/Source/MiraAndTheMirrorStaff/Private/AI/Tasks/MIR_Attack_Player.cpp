@@ -5,9 +5,11 @@
 
 UMIR_Attack_Player::UMIR_Attack_Player() {
 	NodeName = "Attack Player";
-
-	bNotifyTick = true;		//Needed to use TickTask
+	SelectedAttackMode = ECombatAttackMode::Melee;
+	AttackTimeout = 2.0f;
+	bNotifyTick = true;		// Needed to use TickTask
 }
+
 
 FString UMIR_Attack_Player::GetStaticDescription() const
 {
