@@ -1,53 +1,62 @@
 #include "AI/Tasks/MIR_CheckMeleeRange.h"
+#include "Characters/Enemies/MIR_EnemyBASE.h"
+#include "Characters/Player/MIR_PlayerChar.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AIController.h"
+
+UMIR_CheckMeleeRange::UMIR_CheckMeleeRange()
+{
+	NodeName = "Check Melee Range";
+	AttackRange = 200.0f;
+
+	// Filter blackboard selector to only accept Actors/Objects (e.g. Player character)
+	BlackboardKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UMIR_CheckMeleeRange, BlackboardKey), AActor::StaticClass());
+}
+
+FString UMIR_CheckMeleeRange::GetStaticDescription() const
+{
+	return FString::Printf(TEXT("%s\nRange: %.1f\nTarget: %s"),
+		*Super::GetStaticDescription(),
+		AttackRange,
+		*BlackboardKey.SelectedKeyName.ToString());
+}
 
 EBTNodeResult::Type UMIR_CheckMeleeRange::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	//Grab all necessary references, return failed if not found
-	
-	//Get a generic pawn actor
-	APawn* GenericPawn = OwnerComp.GetAIOwner()->GetPawn();
-
-	//Convert to actual enemy class
-	AMIR_EnemyBASE* ControlledPawn = Cast<AMIR_EnemyBASE>(GenericPawn);
-
-	if (!ControlledPawn) {
+	AAIController* AIController = OwnerComp.GetAIOwner();
+	if (!AIController)
+	{
 		return EBTNodeResult::Failed;
 	}
 
-	//Grab the player
+	APawn* GenericPawn = AIController->GetPawn();
+	AMIR_EnemyBASE* ControlledPawn = Cast<AMIR_EnemyBASE>(GenericPawn);
+	if (!ControlledPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
 
 	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
-	if (!BlackboardComp) {
+	if (!BlackboardComp)
+	{
 		return EBTNodeResult::Failed;
 	}
 
-	//Store the Player Character Reference
 	AMIR_PlayerChar* CharacterActor = Cast<AMIR_PlayerChar>(BlackboardComp->GetValueAsObject(GetSelectedBlackboardKey()));
-
-	if (!CharacterActor) {
+	if (!CharacterActor)
+	{
 		return EBTNodeResult::Failed;
 	}
 
-	//Grab both vectors
-	FVector SkeletonLocation = ControlledPawn->GetActorLocation();
-	FVector PlayerLocation = CharacterActor->GetActorLocation();
-
-	//Calculate Distance between objects. Using Squared values to be more accurate
-	float DistanceSq = FVector::DistSquared(SkeletonLocation, PlayerLocation);
-
-	//Square the attack range for performance improvements
+	// Calculate distance between enemy and player
+	float DistanceSq = FVector::DistSquared(ControlledPawn->GetActorLocation(), CharacterActor->GetActorLocation());
 	float AttackRangeSq = FMath::Square(AttackRange);
 
-	if (DistanceSq <= AttackRangeSq) {
-		//Inside the range, success!
+	if (DistanceSq <= AttackRangeSq)
+	{
 		return EBTNodeResult::Succeeded;
 	}
 
-	//Outside the range, fail!
 	return EBTNodeResult::Failed;
 }
 
-UMIR_CheckMeleeRange::UMIR_CheckMeleeRange(){
-	//Set the name of the node so it shows up as other than "Blackboard Base"
-	NodeName = "Check Melee Range";
-}
