@@ -32,7 +32,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Copy")
 		UMIR_CopiableComponent* CopiableComponent;
 
+	// Handles AI combat attack states and trigger events.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		class UMIR_Combat_Component* CombatComponent;
+
 	// Delegate to call function when enemy's health is 0.
+
 	UPROPERTY()
 		FOnEnemyDied OnEnemyDied;
 

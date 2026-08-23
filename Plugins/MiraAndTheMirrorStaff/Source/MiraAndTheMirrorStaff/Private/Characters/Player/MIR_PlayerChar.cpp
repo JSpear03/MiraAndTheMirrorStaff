@@ -12,9 +12,10 @@ AMIR_PlayerChar::AMIR_PlayerChar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	ManaComponent = CreateDefaultSubobject<UMIR_ManaComponent>(TEXT("Mana Component"));
-	MeleeArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Melee Arrow"));
-	RangedArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Ranged Arrow"));
-	AOEArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("AOE Arrow"));
+	MeleeArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Melee Arrow"));
+	RangedArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Ranged Arrow"));
+	AOEArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("AOE Arrow"));
+
 
 	SpringArm->SetupAttachment(RootComponent); 
 	MeleeArrow->SetupAttachment(RootComponent);
