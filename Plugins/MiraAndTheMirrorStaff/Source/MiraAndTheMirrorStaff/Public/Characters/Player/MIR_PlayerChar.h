@@ -151,6 +151,10 @@ private:
 	void SetCanGetHit(bool bGetHit);
 
 public:
+	// Changes current level to a Game Over related level. 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Game Over")
+		void LoadingGameOver();
+
 	// DaggerRef getter.
 	UFUNCTION(BlueprintCallable, Category = "Magic|Sub-Attack (Dagger)")
 		TSubclassOf<class AMIR_MagicMelee> GetDaggerRef() const { return DaggerRef; };

@@ -65,6 +65,8 @@ void AMIR_PlayerChar::HitEvent(AActor* SelfActor, AActor* OtherActor, FVector No
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("No Touchy!"));
 		HealthComponent->HealthReduction(CurrentEnemy->ContactDamage);
 
+		LoadingGameOver();
+
 		StartCooldownTimer();
 	}
 }
