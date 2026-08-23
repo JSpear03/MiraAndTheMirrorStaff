@@ -16,7 +16,6 @@ AMIR_PlayerChar::AMIR_PlayerChar()
 	RangedArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Ranged Arrow"));
 	AOEArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("AOE Arrow"));
 
-
 	SpringArm->SetupAttachment(RootComponent); 
 	MeleeArrow->SetupAttachment(RootComponent);
 	RangedArrow->SetupAttachment(RootComponent);
@@ -94,16 +93,6 @@ void AMIR_PlayerChar::SetCanGetHit(bool bGetHit)
 	bCanGetHit = bGetHit;
 }
 
-//void AMIR_PlayerChar::SetStoredMagic(AMIR_MagicBASE* const& MagicType)
-//{
-//	StoredMagicType = MagicType->GetClass();
-//}
-//
-//TSubclassOf<class AMIR_MagicBASE> AMIR_PlayerChar::GetStoredMagic() const
-//{
-//	return StoredMagicType;
-//}
-
 // Leave most of the cases blank for now.
 void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 {
@@ -120,6 +109,18 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 		break;
 	case EMIR_KeyItem::KeyGemstone:
 		KeyGemstoneCount++;
+		break;
+	case EMIR_KeyItem::KeyGemstoneRed:
+		bIsGemRed = true;
+		break;
+	case EMIR_KeyItem::KeyGemstoneBlue:
+		bIsGemBlue = true;
+		break;
+	case EMIR_KeyItem::KeyGemstoneGreen:
+		bIsGemGreen = true;
+		break;
+	case EMIR_KeyItem::KeyGemstoneYellow:
+		bIsGemYellow = true;
 		break;
 	default:
 		break;

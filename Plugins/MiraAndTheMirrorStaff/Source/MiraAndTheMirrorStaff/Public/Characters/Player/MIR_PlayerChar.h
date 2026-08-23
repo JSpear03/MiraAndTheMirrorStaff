@@ -19,7 +19,11 @@ enum class EMIR_KeyItem : uint8
 	MirrorStaff,
 	SkyboundShoes,
 	SpiritStole,
-	KeyGemstone
+	KeyGemstone,
+	KeyGemstoneRed,
+	KeyGemstoneBlue,
+	KeyGemstoneGreen,
+	KeyGemstoneYellow,
 };
 
 /**
@@ -73,6 +77,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items",
 			  meta = (ClampMin = 0, ClampMax = 4, UIMin = 0, UIMax = 4))
 		int32 KeyGemstoneCount = 0;
+
+	// Checks if gem is colored red.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+		bool bIsGemRed = false;
+
+	// Checks if gem is colored blue.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+		bool bIsGemBlue = false;
+
+	// Checks if gem is colored green.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+		bool bIsGemGreen = false;
+
+	// Checks if gem is colored yellow.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
+		bool bIsGemYellow = false;
 
 	// Used as part of a timer to set the value of bCanGetHit. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown",
