@@ -29,7 +29,6 @@ void AMIR_MagicAOE::BeginPlay()
     Super::BeginPlay();
 
     // The below should be called in the Blueprint child class instead.
-    //SpellExpansion(InitialSize, FinalSize, 0.5f);
     //HandleDespawn(MagicLifespan);
 }
 

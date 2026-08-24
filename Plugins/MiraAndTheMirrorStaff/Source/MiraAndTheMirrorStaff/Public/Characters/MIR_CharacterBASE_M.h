@@ -14,13 +14,13 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_CharacterBASE_M : public ACharacter
 {
 	GENERATED_BODY()
 
-	// The currently usable magic attack.
-	UPROPERTY(EditAnywhere, Category = "Magic|Main Attack")
-		TSubclassOf<class AMIR_MagicBASE> StoredMagicType;
-
 public:
 	// Sets default values for this character's properties
 	AMIR_CharacterBASE_M();
+
+	// The currently usable magic attack.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic|Main Attack")
+		TSubclassOf<class AMIR_MagicBASE> StoredMagicType;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,7 +32,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 
 	// The character's Health Component, which handles health calculations.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
@@ -57,3 +56,4 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Magic|Main Attack")
 		TSubclassOf<class AMIR_MagicBASE> GetStoredMagic() const;
 };
+

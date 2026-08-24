@@ -29,7 +29,8 @@ public:
 	const FRangedStruct RangedStruct;			 // Default struct for Ranged.
 	const FAoEStruct AoEStruct;					 // Default struct for AoE.
 	const FDaggerStruct DaggerStruct;			 // Default struct for Dagger (Melee subtype).
-	const FCopyStruct CopyStruct;				 // Default struct for Copy (special type).
+	const FMeleeCopyStruct MeleeCopyStruct;		 // Default struct for Melee Copy (special type).
+	const FRangedCopyStruct RangedCopyStruct;	 // Default struct for Ranged Copy (special type).
 
 protected:
 	// Called when the game starts

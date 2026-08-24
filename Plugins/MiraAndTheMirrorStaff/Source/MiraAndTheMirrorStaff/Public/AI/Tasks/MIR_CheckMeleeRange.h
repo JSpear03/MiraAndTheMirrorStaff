@@ -2,37 +2,36 @@
 
 #pragma once
 
-#pragma once
-
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
-#include "GameFramework/Actor.h"
-#include "AI/Enemy_Controllers/MIR_Skeleton_AIController.h"
-#include "Characters/Enemies/MIR_EnemyBASE.h"
-#include "Characters/Player/MIR_PlayerChar.h"
-#include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "MIR_CheckMeleeRange.generated.h" 
-
+#include "MIR_CheckMeleeRange.generated.h"
 
 /**
- * 
+ * Behavior Tree task that checks whether the target player is within melee attack range.
  */
-UCLASS(meta = (BlueprintSpawnableComponent))
+UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API UMIR_CheckMeleeRange : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
 protected:
-	//Execute Task
+	// Execute Task
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 public:
-	//Exposes the configurable distance between the skeleton and the player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Combat")
-	float AttackRange;
-
-	//Default Constructor
+	// Default Constructor
 	UMIR_CheckMeleeRange();
-	
+
+	// Exposes the configurable distance between the enemy and the player
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Combat")
+	float AttackRange = 200.0f;
+
+	// Blackboard bool key to update with in-range status (defaults to WithinMeleeRange)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blackboard")
+	FBlackboardKeySelector WithinMeleeRangeKey;
+
+	// Overrides the text drawn on the node inside the Behavior Tree graph
+	virtual FString GetStaticDescription() const override;
 };
+
+

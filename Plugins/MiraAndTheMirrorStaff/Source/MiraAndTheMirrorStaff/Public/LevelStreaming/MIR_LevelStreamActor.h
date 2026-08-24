@@ -23,24 +23,28 @@ protected:
 
 	// Attempts to stream a level upon overlap.
 	UFUNCTION()
-	void OverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-					   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-					   bool bFromSweep, const FHitResult& SweepResult);
+		void OverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+							bool bFromSweep, const FHitResult& SweepResult);
 
 	// Attemps to unload a level upon end of overlap.
 	UFUNCTION()
-	void OverlapEnds(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-					 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		void OverlapEnds(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	// The level to load during Level Streaming.
 	UPROPERTY(EditAnywhere, Category = "Streaming|Level")
-	TSoftObjectPtr<UWorld> LevelToLoad;
+		TSoftObjectPtr<UWorld> LevelToLoad;
 
 	// A currently loaded level via Level Streaming.
 	UPROPERTY(VisibleInstanceOnly, Category = "Streaming|Level")
-	ULevelStreamingDynamic* LoadedLevel = nullptr;
+		ULevelStreamingDynamic* LoadedLevel = nullptr;
 
 public:	
+	// Represents the current file path as a string.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Streaming|Level")
+		FString LevelPath;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

@@ -101,7 +101,7 @@ struct FDaggerStruct : public FDefaultTypeStruct
 {
 	GENERATED_BODY()
 
-	// FMeleeStruct constructor sets default values for each variable.
+	// FDaggerStruct constructor sets default values for each variable.
 	FDaggerStruct()
 	{
 		AttackTypeName = EAttackTypes::Melee;
@@ -113,17 +113,36 @@ struct FDaggerStruct : public FDefaultTypeStruct
 
 
 /**
- * Struct defining damage and mana-consumption values for the copy magic.
+ * Struct defining damage and mana-consumption values for the Melee Copy.
  */
 USTRUCT(BlueprintType)
-struct FCopyStruct : public FDefaultTypeStruct
+struct FMeleeCopyStruct : public FDefaultTypeStruct
 {
 	GENERATED_BODY()
 
-	// FMeleeStruct constructor sets default values for each variable.
-	FCopyStruct()
+	// FMeleeCopyStruct constructor sets default values for each variable.
+	FMeleeCopyStruct()
 	{
-		AttackTypeName = EAttackTypes::None;
+		AttackTypeName = EAttackTypes::Melee;
+		Damage = 0;
+		ManaConsumption = 0;
+		AttackTypeProperty = EAttackProperties::Copy;
+	}
+};
+
+
+/**
+ * Struct defining damage and mana-consumption values for the Ranged Copy.
+ */
+USTRUCT(BlueprintType)
+struct FRangedCopyStruct : public FDefaultTypeStruct
+{
+	GENERATED_BODY()
+
+	// FRangedCopyStruct constructor sets default values for each variable.
+	FRangedCopyStruct()
+	{
+		AttackTypeName = EAttackTypes::Ranged;
 		Damage = 0;
 		ManaConsumption = 0;
 		AttackTypeProperty = EAttackProperties::Copy;

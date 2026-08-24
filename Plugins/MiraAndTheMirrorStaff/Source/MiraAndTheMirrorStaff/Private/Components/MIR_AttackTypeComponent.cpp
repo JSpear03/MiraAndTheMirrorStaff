@@ -35,7 +35,22 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 	switch (ESubtype)
 	{
 	case EAttackSubtypes::Copy:    // Configure Component for Copy
-		AttackTypeStruct = CopyStruct;
+		switch (ENewAttackType)
+		{
+		case EAttackTypes::Melee:
+		{
+			AttackTypeStruct = MeleeCopyStruct;
+			break;
+		}
+		case EAttackTypes::Ranged:
+		{
+			AttackTypeStruct = RangedCopyStruct;
+			break;
+		}
+		default:
+			AttackTypeStruct = DefaultTypeStruct;
+			break;
+		}
 		break;
 
 	case EAttackSubtypes::Dagger:  // Configure Component for Dagger

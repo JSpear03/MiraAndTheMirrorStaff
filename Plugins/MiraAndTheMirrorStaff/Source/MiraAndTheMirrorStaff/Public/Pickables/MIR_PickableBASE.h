@@ -23,14 +23,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "CollisionComponent")
 		USphereComponent* CollisionComponent;
 
-	// Mesh for any child of PickableBASE. 
-	UPROPERTY(EditAnywhere, Category = "Mesh")
-		UStaticMeshComponent* Mesh;
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+	// Mesh for any child of PickableBASE. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+		UStaticMeshComponent* Mesh;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
