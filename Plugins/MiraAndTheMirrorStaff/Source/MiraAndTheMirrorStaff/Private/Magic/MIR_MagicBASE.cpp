@@ -4,10 +4,12 @@
 #include "Magic/MIR_MagicBASE.h"
 #include "Components/MIR_AttackTypeComponent.h"
 #include "Components/MIR_ElementComponent.h"
-#include "Input/MIR_ArcadeController.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BillboardComponent.h"
+#include "Characters/Enemies/MIR_EnemyBASE.h"
+#include "Input/MIR_ArcadeController.h"
+#include "Kismet/GameplayStatics.h"
+#include "PuzzleAssets/Indirect/MIR_PuzzleAssetsIndirectBASE.h"
 
 // Sets default values
 AMIR_MagicBASE::AMIR_MagicBASE()
@@ -54,7 +56,57 @@ AMIR_MagicBASE::AMIR_MagicBASE()
 void AMIR_MagicBASE::BeginPlay()
 {
     Super::BeginPlay();
+
+    //CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_MagicBASE::OnMagicBaseOverlap);
 }
+
+void AMIR_MagicBASE::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    ClearDespawnTimer();  // Clean up despawn timer if the actor is prematurely destroyed.
+
+    Super::EndPlay(EndPlayReason);
+}
+
+//void AMIR_MagicBASE::OnMagicBaseOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+//    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//    // ========== PREPARE VARIABLES ===============================================================
+//    
+//    // Represents whether the `OtherActor` is a child of AMIR_EnemyBASE.
+//    bool bIsChildOfEnemy = OtherActor->GetClass()->IsChildOf<AMIR_EnemyBASE>();
+//
+//    //Represents whether the `OtherActor` is a child of AMIR_PuzzleAssetsIndirectBASE.
+//    bool bIsChildOfPuzzleAsset = OtherActor->GetClass()->IsChildOf<AMIR_PuzzleAssetsIndirectBASE>();
+//
+//    // ========== PERFORM VALIDATION ==============================================================
+//
+//    if (!OtherActor || !bIsChildOfEnemy || !bIsChildOfPuzzleAsset)
+//    {
+//        return;
+//    }
+//    else
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver, TEXT("Magic Base collision."));
+//    }
+//
+//    // ========== HANDLE COLLISION SCENARIO =======================================================
+//
+//    if (bIsChildOfEnemy)
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Turquoise,
+//                                         TEXT("Magic collided with enemy."));
+//    }
+//    else if (bIsChildOfPuzzleAsset)
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Emerald,
+//                                         TEXT("Magic collided with puzzle asset."));
+//    }
+//    else
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Orange,
+//                                         TEXT("Magic collided with neither enemy nor puzzle asset."));
+//    }
+//}
 
 // Called every frame
 void AMIR_MagicBASE::Tick(float DeltaTime)
@@ -65,24 +117,38 @@ void AMIR_MagicBASE::Tick(float DeltaTime)
 void AMIR_MagicBASE::HandleDespawn(const float TimerDuration)
 {
     // Prepare variables for timer.
-    FTimerHandle DespawnTimerHandle;   // The handle for the despawn timer.
-    const UWorld* World = GetWorld();  // A reference to the World.
-    FTimerManager& TimerManager = World->GetTimerManager();  // Timer manager for the despawn timer.
+    FTimerManager& TimerManager = GetWorld()->GetTimerManager();  // Timer manager for the despawn timer.
 
     // Lambda for handling despawn upon elapsion of timer.
-    const FTimerDelegate& DespawnTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager, &DespawnTimerHandle]
+    const FTimerDelegate& DespawnTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager]
         {
             // Debug message (TODO: Delete once debugging is complete).
             UE_LOG(LogTemp, Warning, TEXT("Lifespan elapsed; destroy magic."));
 
-            TimerManager.ClearTimer(DespawnTimerHandle);  // Clears timer.
+            TimerManager.ClearTimer(DespawnHandle);  // Clears timer.
             ReenableMainAttack();
-            this->Destroy();                              // Destroys actor.
+            this->Destroy();                         // Destroys actor.
         }
     );
 
     // Initiate timer.
-    TimerManager.SetTimer(DespawnTimerHandle, DespawnTimerDelegate, TimerDuration, false);
+    TimerManager.SetTimer(DespawnHandle, DespawnTimerDelegate, TimerDuration, false);
+}
+
+void AMIR_MagicBASE::ClearDespawnTimer()
+{
+    if (GetWorld())  // Validate
+    {
+        // The TimerManager instance for the current world.
+        FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+
+        if (TimerManager.IsTimerActive(DespawnHandle))  // Validate
+        {
+            // Perform cleanup by clearing timer and invalidating the handle.
+            TimerManager.ClearTimer(DespawnHandle);
+            DespawnHandle.Invalidate();
+        }
+    }
 }
 
 void AMIR_MagicBASE::InstantHandleDespawn()
@@ -106,6 +172,6 @@ void AMIR_MagicBASE::ReenableMainAttack()
     else
     {
         PlayerCont->AllowMainAttack();  // Allows main attack again.
-        GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, TEXT("Main Attack ALLOWED!"));
+        GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Emerald, TEXT("Main Attack ALLOWED!"));
     }
 }

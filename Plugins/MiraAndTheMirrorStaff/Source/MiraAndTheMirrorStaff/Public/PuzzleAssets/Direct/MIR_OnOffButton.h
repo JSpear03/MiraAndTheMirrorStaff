@@ -11,6 +11,9 @@ UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_OnOffButton : public AMIR_PuzzleAssetDirectBASE
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "Overlap")
+		bool bIsNothingFired = false;
 	
 public:	
 	// Sets default values for this actor's properties
