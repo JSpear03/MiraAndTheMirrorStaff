@@ -36,7 +36,7 @@ void AMIR_PuzzleAssetManager::FindDirectBase(AMIR_PuzzleAssetManager* DirectAsse
 
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Checking direct asset"));
 
-	if (!CurrentDirect)
+	if (!CurrentDirect || !CurrentDirect->LinkedActor)
 	{
 		return;
 	}
