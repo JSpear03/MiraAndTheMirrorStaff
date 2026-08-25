@@ -42,8 +42,8 @@ protected:
 
 public:	
 	// Represents the current file path as a string.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Streaming|Level")
-		FString LevelPath;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Streaming|Level")
+		FString LevelPath;*/
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -52,5 +52,5 @@ private:
 	// Overlap volume to trigger Level Streaming.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"),
 			  Category = "Streaming|Volume")
-	UBoxComponent* OverlapVolume;
+		UBoxComponent* OverlapVolume;
 };

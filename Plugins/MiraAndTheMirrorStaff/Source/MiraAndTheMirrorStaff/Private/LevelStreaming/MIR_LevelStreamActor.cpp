@@ -12,9 +12,14 @@ AMIR_LevelStreamActor::AMIR_LevelStreamActor()
 	// You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	// Default Subobjects and root component.
 	OverlapVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapVolume"));
 	RootComponent = OverlapVolume;
 
+	// Set mobility.
+	RootComponent->SetMobility(EComponentMobility::Stationary);
+
+	// Function bindings.
 	OverlapVolume->OnComponentBeginOverlap.AddUniqueDynamic(this, 
 		&AMIR_LevelStreamActor::OverlapBegins);
 	OverlapVolume->OnComponentEndOverlap.AddUniqueDynamic(this, &AMIR_LevelStreamActor::OverlapEnds);
@@ -53,25 +58,19 @@ void AMIR_LevelStreamActor::OverlapBegins(UPrimitiveComponent* OverlappedCompone
 		// Credit to Austin for helping out with implmenting logic for loading level based on file path.
 
 		// The filepath of the level to load.
-		FString PackageName = LevelToLoad.ToSoftObjectPath().GetLongPackageName();
-		FSoftObjectPath LevelLoadPath = UWorld::RemovePIEPrefix(PackageName);  
+		FSoftObjectPath levelLoadPath = UWorld::RemovePIEPrefix(LevelToLoad.ToSoftObjectPath().
+																GetLongPackageName());
 
-		LevelPath = LevelLoadPath.ToString();  // Current level path as a string.
+		/*GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(
+										 TEXT("Level will load! %s"), *levelLoadPath.ToString()));*/
 
-		GEngine->AddOnScreenDebugMessage(
-			1, 
-			5, 
-			FColor::Red, 
-			FString::Printf(TEXT("Level will load! %s"), *LevelPath));
-
-		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(
-			this, 
-			TSoftObjectPtr<UWorld>(LevelLoadPath), 
-			this->GetActorLocation());
+		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this,
+															  TSoftObjectPtr<UWorld>(levelLoadPath),
+															  this->GetActorLocation());
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Level will NOT load!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Level will NOT load!"));
 	}
 }
 
@@ -83,8 +82,13 @@ void AMIR_LevelStreamActor::OverlapEnds(UPrimitiveComponent* OverlappedComponent
 
 	if (OtherActor == MyCharacter && !LevelToLoad.IsNull())
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Unloading level."));
 		UArcadeFunctions::ArcadeUnloadStreamLevel(this, LoadedLevel);
 		LoadedLevel = nullptr;
+	}
+	else
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Failed to unload level."));
 	}
 }
 
