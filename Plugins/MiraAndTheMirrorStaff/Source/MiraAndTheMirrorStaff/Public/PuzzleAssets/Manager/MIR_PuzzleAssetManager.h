@@ -18,7 +18,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Direct")
 		TArray<AMIR_PuzzleAssetManager*> DirectContainer;
 
-	// Array of all the indirect puzzle asssets in level. 
+	// Array of all the indirect puzzle assets in level. 
 	// May use it at a later time.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Indirect")
 		TArray<AMIR_PuzzleAssetManager*> IndirectAssets;
