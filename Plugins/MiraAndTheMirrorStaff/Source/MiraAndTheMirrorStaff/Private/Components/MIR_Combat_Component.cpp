@@ -11,14 +11,15 @@ UMIR_Combat_Component::UMIR_Combat_Component()
 void UMIR_Combat_Component::ExecuteMeleeAttack()
 {
 	bAttackFinished = false; // Lock the task loop
-	OnMeleeAttackTriggered();
+	OnMeleeAttackTriggered.Broadcast();
 }
 
 void UMIR_Combat_Component::ExecuteMagicAttack()
 {
 	bAttackFinished = false; // Lock the task loop
-	OnMagicAttackTriggered();
+	OnMagicAttackTriggered.Broadcast();
 }
+
 
 void UMIR_Combat_Component::FinishCurrentAttack()
 {

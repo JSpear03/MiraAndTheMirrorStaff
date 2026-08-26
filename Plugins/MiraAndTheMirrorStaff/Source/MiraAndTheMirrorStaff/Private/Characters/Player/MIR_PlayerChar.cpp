@@ -12,9 +12,9 @@ AMIR_PlayerChar::AMIR_PlayerChar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	ManaComponent = CreateDefaultSubobject<UMIR_ManaComponent>(TEXT("Mana Component"));
-	MeleeArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Melee Arrow"));
-	RangedArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Ranged Arrow"));
-	AOEArrow = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("AOE Arrow"));
+	MeleeArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Melee Arrow"));
+	RangedArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Ranged Arrow"));
+	AOEArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("AOE Arrow"));
 
 	SpringArm->SetupAttachment(RootComponent); 
 	MeleeArrow->SetupAttachment(RootComponent);
@@ -65,6 +65,8 @@ void AMIR_PlayerChar::HitEvent(AActor* SelfActor, AActor* OtherActor, FVector No
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("No Touchy!"));
 		HealthComponent->HealthReduction(CurrentEnemy->ContactDamage);
 
+		LoadingGameOver();
+
 		StartCooldownTimer();
 	}
 }
@@ -93,16 +95,6 @@ void AMIR_PlayerChar::SetCanGetHit(bool bGetHit)
 	bCanGetHit = bGetHit;
 }
 
-//void AMIR_PlayerChar::SetStoredMagic(AMIR_MagicBASE* const& MagicType)
-//{
-//	StoredMagicType = MagicType->GetClass();
-//}
-//
-//TSubclassOf<class AMIR_MagicBASE> AMIR_PlayerChar::GetStoredMagic() const
-//{
-//	return StoredMagicType;
-//}
-
 // Leave most of the cases blank for now.
 void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 {
@@ -119,6 +111,18 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 		break;
 	case EMIR_KeyItem::KeyGemstone:
 		KeyGemstoneCount++;
+		break;
+	case EMIR_KeyItem::KeyGemstoneRed:
+		bIsGemRed = true;
+		break;
+	case EMIR_KeyItem::KeyGemstoneBlue:
+		bIsGemBlue = true;
+		break;
+	case EMIR_KeyItem::KeyGemstoneGreen:
+		bIsGemGreen = true;
+		break;
+	case EMIR_KeyItem::KeyGemstoneYellow:
+		bIsGemYellow = true;
 		break;
 	default:
 		break;
