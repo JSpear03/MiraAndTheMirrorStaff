@@ -24,14 +24,12 @@ protected:
 	virtual void BeginPlay() override;	
 
 	// Called when player collides with on off button.  
-	UFUNCTION()
-		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		virtual void OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-			const FHitResult& SweepResult);
+			const FHitResult& SweepResult) override;
 
 	// Called when player stop colliding with the button. 
-	UFUNCTION()
-		void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		void OnCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 public:	

@@ -17,11 +17,10 @@ void AMIR_OnOffButton::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, &AMIR_OnOffButton::OnOverlap);
-	CapsuleCollision->OnComponentEndOverlap.AddDynamic(this, &AMIR_OnOffButton::OnEndOverlap);
+	//CapsuleCollision->OnComponentEndOverlap.AddDynamic(this, &AMIR_OnOffButton::OnEndOverlap);
 }
 
-void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+void AMIR_OnOffButton::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -49,7 +48,7 @@ void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	OnDirectActivated.Broadcast(this);
 }
 
-void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+void AMIR_OnOffButton::OnCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
 	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
