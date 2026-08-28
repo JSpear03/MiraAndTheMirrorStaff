@@ -17,19 +17,6 @@ void AMIR_PuzzleAssetsIndirectBASE::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnIndirectLinked.AddDynamic(this, &AMIR_PuzzleAssetsIndirectBASE::ActivateIndirect);
-	
-	switch (PuzzleState)
-	{
-	case EPuzzleState::Activate:
-		ActivateIndirect();
-		break;
-	case EPuzzleState::Deactivate:
-		DeactivateIndirect();
-		break;
-	default:
-		break;
-	}
 }
 
 // Called every frame
@@ -38,9 +25,3 @@ void AMIR_PuzzleAssetsIndirectBASE::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
-void AMIR_PuzzleAssetsIndirectBASE::CallActivateDelegate()
-{
-	OnIndirectLinked.Broadcast();
-}
-

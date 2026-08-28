@@ -20,6 +20,42 @@ AMIR_PuzzleAssetManager::AMIR_PuzzleAssetManager()
 void AMIR_PuzzleAssetManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	DetermineForwardActivation();	// Determine the management mode.
+
+	// Bind DPA delegates to `VerifyDirectInArray()`.
+	/* The current DPA in the `DirectAssetArray`. */
+	for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
+	{
+		if (!CurrentDirect)
+		{
+			continue;
+		}
+
+		CurrentDirect->OnDirectActivated.AddDynamic(this, &AMIR_PuzzleAssetManager::VerifyDirectInArray);
+		CurrentDirect->OnDirectDeactivated.AddDynamic(this, &AMIR_PuzzleAssetManager::VerifyDirectInArray);
+	}
+}
+
+// Called when the game ends or when destroyed.
+void AMIR_PuzzleAssetManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	ClearAutoTimer();
+
+	// Unbind DPA delegates from `VerifyDirectInArray()`.
+	/* The current DPA in the `DirectAssetArray`. */
+	for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
+	{
+		if (!CurrentDirect)
+		{
+			continue;
+		}
+
+		CurrentDirect->OnDirectActivated.RemoveDynamic(this,&AMIR_PuzzleAssetManager::VerifyDirectInArray);
+		CurrentDirect->OnDirectDeactivated.RemoveDynamic(this, &AMIR_PuzzleAssetManager::VerifyDirectInArray);
+	}
 }
 
 // Called every frame
@@ -29,140 +65,200 @@ void AMIR_PuzzleAssetManager::Tick(float DeltaTime)
 
 }
 
-void AMIR_PuzzleAssetManager::FindDirectBase(AMIR_PuzzleAssetManager* DirectAsset)
+/****************************************************************************************
+ * LINKED ASSETS | DIRECT
+ ****************************************************************************************/
+
+void AMIR_PuzzleAssetManager::VerifyDirectInArray(AMIR_PuzzleAssetDirectBASE* DirectAssetRef)
 {
 	// The current DirectBASE object reference.
-	AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(DirectAsset);
+	AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(DirectAssetRef);
 
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Checking direct asset"));
 
-	// Check whether `CurrentDirect` is contained in the `DirectContainer`.
-	if (DirectContainer.Contains(CurrentDirect))
+	if (!CurrentDirect)
 	{
-		// Is contained, so turn it on.
-		CurrentDirect->bDidTurnOn = true;
+		return;
+	}
+
+	// Check whether `CurrentDirect` is contained in the `DirectContainer`.
+	if (DirectAssetArray.Contains(CurrentDirect))
+	{
+		// Is contained, so try IPA activation/deactivation based on mode.
+		if (bIsForwardActivation)
+		{
+			TryIndirectActivation();
+		}
+		else
+		{
+			TryIndirectDeactivation();
+		}
+	}
+}
+
+bool AMIR_PuzzleAssetManager::FindAllDirectsInState(EPuzzleState InState)
+{
+	// Represents how many DPAs in the `DirectAssetArray` are in the specified state.
+	int32 StateCounter = 0;
+
+	// Count how many DPAs are in the specified state.
+	/* The current DPA in the `DirectAssetArray`. */
+	for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
+	{
+		// Check whether the current DPA is in the specified state.
+		if (CurrentDirect->GetCurrentState() == InState)
+		{
+			StateCounter++;
+		}
+	}
+
+	// Determine return value.
+	//if (StateCounter == DirectAssetArray.Num())
+	//{
+	//	return true;
+	//}
+	//else
+	//{
+	//	return false;
+	//}
+
+	// Determine return value.
+	return (StateCounter == DirectAssetArray.Num()) ? true : false;
+}
+
+/****************************************************************************************
+ * LINKED ASSETS | INDIRECT
+ ****************************************************************************************/
+
+void AMIR_PuzzleAssetManager::TryIndirectActivation()
+{
+	if (FindAllDirectsInState(EPuzzleState::Activate))
+	{
+		IndirectAsset->ActivatePuzzleAsset();
+		ClearAutoTimer();
 	}
 	else
 	{
-		// Not contained, so do nothing.
-		return;
-	}
-
-	// Finally, check whether all objects are on to determine timer activation.
-	CheckActiveInDirect(DirectAsset);
-}
-
-void AMIR_PuzzleAssetManager::CheckActiveInDirect(AMIR_PuzzleAssetManager* DirectAsset)
-{
-	// Check whether all objects are on.
-	if (FindAllDirectActive() == DirectContainer.Num())
-	{
-		// True, so activate the linked IndirectBASE object and commence timer.
-		/* The current DirectBASE object reference. */
-		AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(DirectAsset);
-
-		// Commence activation of the linked IndirectBASE and the timer.
-		CurrentDirect->LinkedActor->CallActivateDelegate();
-		/*SetActiveTimer(2);*/  // Potentially causing errors for Water fountain. 
-	}
-}
-
-int32 AMIR_PuzzleAssetManager::FindAllDirectActive()
-{
-	// Represents how many referenced DirectBASE objects are turned on.
-	int32 TurnOnCounter = 0;
-
-	// Check the ON status of each referenced object.
-	for (AMIR_PuzzleAssetManager* Item : DirectContainer)  // The current object in the `DirectContainer`.
-	{
-		// The current DirectBASE object reference.
-		AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(Item);
-
-		// Check whether the current object is on. If so, increment counter.
-		if (CurrentDirect->bDidTurnOn)
+		if (IndirectAsset->GetCurrentState() == EPuzzleState::Deactivate)
 		{
-			TurnOnCounter++;
+			ExecuteAutoTimer();
+		}
+		else
+		{
+			IndirectAsset->DeactivatePuzzleAsset();
 		}
 	}
-
-	return TurnOnCounter;
 }
 
-void AMIR_PuzzleAssetManager::SetActiveTimer(float Duration)
+void AMIR_PuzzleAssetManager::TryIndirectDeactivation()
 {
-	// Do nothing if the `Duration` is 0.
-	if (Duration == 0)
+	if (FindAllDirectsInState(EPuzzleState::Deactivate))
+	{
+		IndirectAsset->DeactivatePuzzleAsset();
+		ClearAutoTimer();
+	}
+	else
+	{
+		if (IndirectAsset->GetCurrentState() == EPuzzleState::Activate)
+		{
+			ExecuteAutoTimer();
+		}
+		else
+		{
+			IndirectAsset->ActivatePuzzleAsset();
+		}
+	}
+}
+
+/****************************************************************************************
+ * TIMER
+ ****************************************************************************************/
+
+void AMIR_PuzzleAssetManager::ExecuteAutoTimer()
+{
+	// Do not execute if Auto Timer is disabled.
+	if (!bUseAutoTimer)
 	{
 		return;
 	}
 
-	// ========== PREPARE VARIABLES ==========
+	// Manages the Auto Timer from the world's `TimerManager`.
+	FTimerManager& AutoTimerManager = GetWorld()->GetTimerManager();
 
-	FTimerHandle CooldownTimerHandle;  // The handle for this timer, making it distinct.
-	const UWorld* World = GetWorld();  // A reference to the current world.
+	// The delegate to execute upon elapsion of the Auto Timer.
+	FTimerDelegate AutoTimerDelegate;
 
-	// Manages the timer from the world's `TimerManager`.
-	FTimerManager& TimerManager = World->GetTimerManager();
-
-	// The currently possessed Character.
-	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(World, 0);
-	
-	// The currently possessed PlayerCharacter, casted to AMIR_PlayerChar.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
-
-	// ========== CREATE DELEGATE ==========
-
-	// This timer's delegate, which handles the deactivation of all DirectBASE objects and
-	// their linked IndirectBASE.
-	const FTimerDelegate& CooldownTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager, 
-		&CooldownTimerHandle, &PlayerCharacter]
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Fire Active Cooldown"));
-
-			TimerManager.ClearTimer(CooldownTimerHandle);
-
-			// Only executes, if not all elements are active. 
-			if (FindAllDirectActive() != DirectContainer.Num())
-			{
-				// Deactivate all DirectBASE objects and their linked IndirectBASE.
-				for (AMIR_PuzzleAssetManager* Item : DirectContainer)  // The current object in the `DirectContainer`.
-				{
-					// The current DirectBASE object reference.
-					AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(Item);
-
-					CurrentDirect->LinkedActor->DeactivateIndirect();  // Deactivates IndirectBASE.
-					CurrentDirect->DeactivateDirect(PlayerCharacter);  // Deactivates DirectBASE.
-				}
-			}
-		}
-	);
-
-	// ========== HANDLE TIMER ==========
+	// Bind the proper function to `AutoTimerDelegate` based on `bIsForwardActivation`.
+	if (bIsForwardActivation)
+	{
+		AutoTimerDelegate.BindUFunction(this, FName("HandleAutoDeactivation"));
+	}
+	else
+	{
+		AutoTimerDelegate.BindUFunction(this, FName("HandleAutoActivation"));
+	}
 
 	// Commence timer.
-	TimerManager.SetTimer(CooldownTimerHandle, CooldownTimerDelegate, Duration, false);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Active Timer is running"));
-
-	// Perform peri-timer operations.
-	DuringDuration();
+	AutoTimerManager.SetTimer(AutoTimerHandle, AutoTimerDelegate, AutoTimerDuration, false);
 }
 
-void AMIR_PuzzleAssetManager::DuringDuration()
+void AMIR_PuzzleAssetManager::ClearAutoTimer()
 {
-	// Check whether all objects are on.
-	if (FindAllDirectActive() == DirectContainer.Num())
+	if (AutoTimerHandle.IsValid())
 	{
-		for (AMIR_PuzzleAssetManager* Item : DirectContainer)  // The current object in the `DirectContainer`.
-		{
-			// The current DirectBASE object reference.
-			AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(Item);
-
-			CurrentDirect->LinkedActor->CallActivateDelegate();  // Activates IndirectBASE.
-		}
+		AutoTimerHandle.Invalidate();
 	}
 }
 
+void AMIR_PuzzleAssetManager::HandleAutoActivation()
+{
+	if (!FindAllDirectsInState(EPuzzleState::Deactivate))
+	{
+		// Activate all DPAs in the `DirectAssetArray`, then also the IPA.
+		/* The current DPA in the `DirectAssetArray`. */
+		for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
+		{
+			CurrentDirect->ActivatePuzzleAsset();
+		}
+		IndirectAsset->ActivatePuzzleAsset();
+	}
+}
 
+void AMIR_PuzzleAssetManager::HandleAutoDeactivation()
+{
+	if (!FindAllDirectsInState(EPuzzleState::Activate))
+	{
+		// Deactivate all DPAs in the `DirectAssetArray`, then also the IPA.
+		/* The current DPA in the `DirectAssetArray`. */
+		for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
+		{
+			CurrentDirect->DeactivatePuzzleAsset();
+		}
+		IndirectAsset->DeactivatePuzzleAsset();
+	}
+}
 
+/****************************************************************************************
+ * MODE
+ ****************************************************************************************/
 
+void AMIR_PuzzleAssetManager::DetermineForwardActivation()
+{
+	if (!IndirectAsset)
+	{
+		return;
+	}
+	else
+	{
+		if (IndirectAsset->GetInitialState() == EPuzzleState::Activate)
+		{
+			// If the IPA is already active, then the PAM needs to operate in reverse.
+			bIsForwardActivation = false;
+		}
+		else
+		{
+			// If the IPA is already inactive, then the PAM needs to operate forward.
+			bIsForwardActivation = true;
+		}
+	}
+}
