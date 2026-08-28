@@ -11,13 +11,6 @@ AMIR_PuzzleAssetDirectBASE::AMIR_PuzzleAssetDirectBASE()
 	// You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	//CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Component"));
-	//Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
-
-	//RootComponent = CollisionComponent;
-
-	//Mesh->SetupAttachment(RootComponent);
-
 	// Set up Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
 }
@@ -27,27 +20,7 @@ void AMIR_PuzzleAssetDirectBASE::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//OnDirectActivated.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::FindDirectBase);
-
-	//switch (PuzzleState)
-	//{
-	//case EPuzzleState::Activate:
-	//	ActivateDirect();
-	//	break;
-	//case EPuzzleState::Deactivate:
-	//	DeactivateDirect();
-	//	break;
-	//default:
-	//	break;
-	//}
-
-	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::
-														   OnCapsuleBeginOverlap);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver, TEXT("DirectBASE setup."));
-
-	//UE_LOG(LogTemp, Warning, TEXT("Overlap Event Bound: %s"),
-	//	CollisionComponent->OnComponentBeginOverlap.IsBound() ? TEXT("Yes") : TEXT("No"));
+	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::OnCapsuleBeginOverlap);
 }
 
 // Called every frame
