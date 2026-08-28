@@ -17,8 +17,8 @@ void AMIR_OnOffButton::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_OnOffButton::OnOverlap);
-	CollisionComponent->OnComponentEndOverlap.AddDynamic(this, &AMIR_OnOffButton::OnEndOverlap);
+	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, &AMIR_OnOffButton::OnOverlap);
+	CapsuleCollision->OnComponentEndOverlap.AddDynamic(this, &AMIR_OnOffButton::OnEndOverlap);
 }
 
 void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
@@ -45,7 +45,8 @@ void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Found player"));
 
-	ActivateDirect();
+	ActivatePuzzleAsset();
+	OnDirectActivated.Broadcast(this);
 }
 
 void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
@@ -66,7 +67,8 @@ void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		return;
 	}
 
-	DeactivateDirect();
+	DeactivatePuzzleAsset();
+	OnDirectDeactivated.Broadcast(this);
 }
 
 // Called every frame

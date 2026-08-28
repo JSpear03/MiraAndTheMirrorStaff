@@ -11,14 +11,14 @@ AMIR_PuzzleAssetDirectBASE::AMIR_PuzzleAssetDirectBASE()
 	// You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Component"));
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	//CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Component"));
+	//Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 
-	RootComponent = CollisionComponent;
+	//RootComponent = CollisionComponent;
 
-	Mesh->SetupAttachment(RootComponent);
+	//Mesh->SetupAttachment(RootComponent);
 
-	// Set up Element Component
+	// Set up Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
 }
 
@@ -27,27 +27,27 @@ void AMIR_PuzzleAssetDirectBASE::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnDirectActivated.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::FindDirectBase);
+	//OnDirectActivated.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::FindDirectBase);
 
-	switch (PuzzleState)
-	{
-	case EPuzzleState::Activate:
-		ActivateDirect();
-		break;
-	case EPuzzleState::Deactivate:
-		DeactivateDirect();
-		break;
-	default:
-		break;
-	}
+	//switch (PuzzleState)
+	//{
+	//case EPuzzleState::Activate:
+	//	ActivateDirect();
+	//	break;
+	//case EPuzzleState::Deactivate:
+	//	DeactivateDirect();
+	//	break;
+	//default:
+	//	break;
+	//}
 
-	/*CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::
-														   OnDirectBaseOverlap);
+	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, &AMIR_PuzzleAssetDirectBASE::
+														   OnCapsuleBeginOverlap);
 
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver, TEXT("DirectBASE setup."));
+	//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver, TEXT("DirectBASE setup."));
 
-	UE_LOG(LogTemp, Warning, TEXT("Overlap Event Bound: %s"),
-		CollisionComponent->OnComponentBeginOverlap.IsBound() ? TEXT("Yes") : TEXT("No"));*/
+	//UE_LOG(LogTemp, Warning, TEXT("Overlap Event Bound: %s"),
+	//	CollisionComponent->OnComponentBeginOverlap.IsBound() ? TEXT("Yes") : TEXT("No"));
 }
 
 // Called every frame
@@ -80,27 +80,36 @@ void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 		return;
 	}
 
-	if (PuzzleState == EPuzzleState::Activate)  // Active state
+	// Determine whether to activate or deactivate the DPA.
+	switch (CurrentState)
 	{
+	case EPuzzleState::Activate:
 		// Check deactivation condition.
 		if (OverlappingMagic->ElementComponent->GetElementName() == ElementComponent->GetElementWeakness())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Turquoise,
 				FString::Printf(TEXT("DirectBASE deactivation.")));
-			PuzzleState = EPuzzleState::Deactivate;
-			DeactivateDirect();
+			DeactivatePuzzleAsset();
+			OnDirectDeactivated.Broadcast(this);
 		}
-	}
-	else  // Deactive state
-	{
+		break;
+
+	case EPuzzleState::Deactivate:
 		// Check activation condition.
 		if (OverlappingMagic->ElementComponent->GetElementName() == ElementComponent->GetElementName())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Magenta,
 				FString::Printf(TEXT("DirectBASE activation.")));
-			PuzzleState = EPuzzleState::Activate;
-			ActivateDirect();
+			ActivatePuzzleAsset();
+			OnDirectActivated.Broadcast(this);
 		}
+		break;
 	}
+}
 
+void AMIR_PuzzleAssetDirectBASE::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	HandleOverlap(OtherActor);
 }
