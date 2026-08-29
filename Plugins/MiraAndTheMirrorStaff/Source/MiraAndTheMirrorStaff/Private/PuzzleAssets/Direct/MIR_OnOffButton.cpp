@@ -17,11 +17,10 @@ void AMIR_OnOffButton::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_OnOffButton::OnOverlap);
-	CollisionComponent->OnComponentEndOverlap.AddDynamic(this, &AMIR_OnOffButton::OnEndOverlap);
+	//CapsuleCollision->OnComponentEndOverlap.AddDynamic(this, &AMIR_OnOffButton::OnEndOverlap);
 }
 
-void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+void AMIR_OnOffButton::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -45,10 +44,11 @@ void AMIR_OnOffButton::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Found player"));
 
-	ActivateDirect(PlayerCharacter);
+	ActivatePuzzleAsset();
+	OnDirectActivated.Broadcast(this);
 }
 
-void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+void AMIR_OnOffButton::OnCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
 	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -66,7 +66,8 @@ void AMIR_OnOffButton::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		return;
 	}
 
-	DeactivateDirect(PlayerCharacter);
+	DeactivatePuzzleAsset();
+	OnDirectDeactivated.Broadcast(this);
 }
 
 // Called every frame
