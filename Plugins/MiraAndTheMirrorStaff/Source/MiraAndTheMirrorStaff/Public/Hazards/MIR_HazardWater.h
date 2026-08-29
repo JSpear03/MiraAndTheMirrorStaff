@@ -16,7 +16,14 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_HazardWater : public AMIR_HazardBASE
 {
 	GENERATED_BODY()
 
+public:
+	// Sets default values for this actor's properties.
+	AMIR_HazardWater();
+
 protected:
+	// Called when the game starts or when spawned.
+	virtual void BeginPlay() override;
+
 	// Extends the base hazard behavior with Ice-element attack detection.
 	virtual void OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BoxComponent.h"
 #include "MIR_HazardBASE.generated.h"
 
 /**
@@ -20,7 +21,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_HazardBASE : public AActor
 public:
 	// The volume that detects actors entering the hazard.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hazard")
-		class UBoxComponent* CollisionBox;
+		UBoxComponent* CollisionBox;
 
 	// Damage dealt to the player on contact, where 1 equals half a heart.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hazard")
@@ -30,6 +31,9 @@ public:
 	AMIR_HazardBASE();
 
 protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	// Whether the player is teleported to their last respawn point on contact.
 	bool bTeleportsPlayerToRespawn = true;
 
