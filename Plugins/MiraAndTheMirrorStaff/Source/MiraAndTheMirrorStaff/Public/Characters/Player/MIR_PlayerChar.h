@@ -182,4 +182,8 @@ public:
 	// Teleports the player to their last activated respawn point.
 	UFUNCTION(BlueprintCallable, Category = "Hazard")
 		void RespawnAtLastPoint();
+	
+	// Sets new element based on the element name. 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Elements")
+		void CopyElement();
 };
