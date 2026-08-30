@@ -15,6 +15,12 @@ AMIR_HazardBASE::AMIR_HazardBASE()
 	CollisionBox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	RootComponent = CollisionBox;
+}
+
+// Called when game starts.
+void AMIR_HazardBASE::BeginPlay()
+{
+	Super::BeginPlay();
 
 	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AMIR_HazardBASE::OnHazardBeginOverlap);
 }

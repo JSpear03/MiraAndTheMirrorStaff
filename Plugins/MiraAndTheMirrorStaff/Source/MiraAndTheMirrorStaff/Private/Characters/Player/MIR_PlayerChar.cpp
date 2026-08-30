@@ -5,6 +5,9 @@
 #include "Characters/Enemies/MIR_EnemyBASE.h"
 #include "Hazards/MIR_RespawnPoint.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/MIR_AttackTypeComponent.h"
+#include "Components/MIR_ElementComponent.h"
 
 // Sets default values.
 AMIR_PlayerChar::AMIR_PlayerChar()
@@ -48,6 +51,7 @@ void AMIR_PlayerChar::BeginPlay()
 	Super::BeginPlay();
 
 	OnActorHit.AddDynamic(this, &AMIR_PlayerChar::HitEvent);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMIR_PlayerChar::OnOverlapBegin);
 }
 
 void AMIR_PlayerChar::HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
@@ -68,6 +72,65 @@ void AMIR_PlayerChar::HitEvent(AActor* SelfActor, AActor* OtherActor, FVector No
 		LoadingGameOver();
 
 		StartCooldownTimer();
+	}
+}
+
+void AMIR_PlayerChar::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (!OtherActor || !bCanGetHit)
+	{
+		return;
+	}
+
+	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>();
+	if (!bIsChildOfMagic)
+	{
+		return;
+	}
+
+	// Ignore magic cast by the player itself
+	AActor* MagicInstigator = OtherActor->GetInstigator();
+	AActor* MagicOwner = OtherActor->GetOwner();
+
+	if (MagicInstigator == this || MagicOwner == this)
+	{
+		return;
+	}
+
+	AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
+	if (IncomingMagic && IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
+	{
+		// Ignore copy-mode magic (it's for copying, not damaging)
+		if (IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
+		{
+			return;
+		}
+
+		bCanGetHit = false;
+
+		// Convert EElements enum to string for CalculateDamage
+		FString AttackerElementStr = UEnum::GetValueAsString(IncomingMagic->ElementComponent->GetElementName());
+		AttackerElementStr.RemoveFromStart(TEXT("EElements::"));
+
+		FString ReceiverElementStr = UEnum::GetValueAsString(ElementComponent->GetElementName());
+		ReceiverElementStr.RemoveFromStart(TEXT("EElements::"));
+
+		int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
+		if (AttackerDamage <= 0)
+		{
+			AttackerDamage = 1;
+		}
+
+		CalculateDamage(AttackerElementStr, ReceiverElementStr, AttackerDamage);
+
+		LoadingGameOver();
+
+		StartCooldownTimer();
+
+		// Destroy the projectile upon impact
+		IncomingMagic->Destroy();
 	}
 }
 

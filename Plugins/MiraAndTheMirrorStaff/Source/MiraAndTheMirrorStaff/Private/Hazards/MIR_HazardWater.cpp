@@ -6,6 +6,21 @@
 #include "Components/MIR_ElementComponent.h"
 #include "Components/CapsuleComponent.h"
 
+// Sets default values.
+AMIR_HazardWater::AMIR_HazardWater()
+{
+	// Set this actor to call Tick() every frame.  
+	// You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+// Called when the game starts or when spawned.
+void AMIR_HazardWater::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AMIR_HazardWater::OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

@@ -143,6 +143,12 @@ protected:
 		void HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
 			const FHitResult& Hit);
 
+	// Called when player overlaps with incoming magic / projectiles.
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+			const FHitResult& SweepResult);
+
 private:
 	// Stars the timer for the hit event cooldown.
 	void StartCooldownTimer();
@@ -182,4 +188,8 @@ public:
 	// Teleports the player to their last activated respawn point.
 	UFUNCTION(BlueprintCallable, Category = "Hazard")
 		void RespawnAtLastPoint();
+	
+	// Sets new element based on the element name. 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Elements")
+		void CopyElement();
 };
