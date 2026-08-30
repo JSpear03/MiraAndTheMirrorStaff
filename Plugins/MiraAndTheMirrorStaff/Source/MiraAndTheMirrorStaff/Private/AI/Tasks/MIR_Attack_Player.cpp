@@ -2,6 +2,8 @@
 
 
 #include "AI/Tasks/MIR_Attack_Player.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 UMIR_Attack_Player::UMIR_Attack_Player() {
 	NodeName = "Attack Player";
