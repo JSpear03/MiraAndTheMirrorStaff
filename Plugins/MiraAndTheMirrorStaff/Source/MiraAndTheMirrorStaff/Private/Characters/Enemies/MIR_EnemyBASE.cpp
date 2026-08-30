@@ -39,9 +39,19 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 
 	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>();
 
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, TEXT("Overlap found"));  // TODO: Delete
-
 	if (!bIsChildOfMagic)  // Is NOT valid?
+	{
+		return;
+	}
+
+	// Prevent friendly fire and self-damage:
+	// Ignore magic if it was cast by this enemy, owned by this enemy, or cast by another enemy.
+	AActor* MagicInstigator = OtherActor->GetInstigator();
+	AActor* MagicOwner = OtherActor->GetOwner();
+
+	if (MagicInstigator == this || MagicOwner == this ||
+		(MagicInstigator && MagicInstigator->IsA<AMIR_EnemyBASE>()) ||
+		(MagicOwner && MagicOwner->IsA<AMIR_EnemyBASE>()))
 	{
 		return;
 	}
@@ -58,8 +68,22 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	}
 	else
 	{
-		// TODO: Call damage-calc function.
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Orange, TEXT("Do not copy"));
+		// Incoming magic is a real attack — apply damage using the element/attack-type system.
+		AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
+		if (IncomingMagic && IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
+		{
+			// Convert EElements enum to the FString that CalculateDamage expects.
+			// UEnum::GetValueAsString produces "EElements::Flame" — we strip the prefix.
+			FString AttackerElementStr = UEnum::GetValueAsString(IncomingMagic->ElementComponent->GetElementName());
+			AttackerElementStr.RemoveFromStart(TEXT("EElements::"));
+
+			FString ReceiverElementStr = UEnum::GetValueAsString(ElementComponent->GetElementName());
+			ReceiverElementStr.RemoveFromStart(TEXT("EElements::"));
+
+			int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
+
+			CalculateDamage(AttackerElementStr, ReceiverElementStr, AttackerDamage);
+		}
 	}
 }
 
@@ -82,7 +106,14 @@ void AMIR_EnemyBASE::Tick(float DeltaTime)
 	if (HealthComponent->GetHealth() == 0 && bCanRunBroadcast)
 	{
 		bCanRunBroadcast = false;
-		
+
+		// Notify the Combat Component so active BT tasks (Attack Player, etc.)
+		// break immediately instead of freezing in their tick loop.
+		if (CombatComponent)
+		{
+			CombatComponent->SetDeactivated(true);
+		}
+
 		OnEnemyDied.Broadcast();
 	}
 }
