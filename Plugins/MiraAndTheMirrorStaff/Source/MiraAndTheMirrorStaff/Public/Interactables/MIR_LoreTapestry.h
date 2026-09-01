@@ -24,9 +24,9 @@ public:
 		class UStaticMeshComponent* TapestryMesh;
 
 	// The lore text displayed when the player interacts with this tapestry.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lore Tapestry",
-		meta = (MultiLine = "true"))
-		FText LoreText;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lore Tapestry",
+	//	meta = (MultiLine = "true"))
+	//	FText LoreText;
 
 	// Sets default values for the Lore Tapestry's properties.
 	AMIR_LoreTapestry();
@@ -46,5 +46,5 @@ protected:
 
 	// Blueprint hook that displays the large lore text box widget.
 	UFUNCTION(BlueprintImplementableEvent, Category = "Lore Tapestry")
-		void OnLoreOpened(const FText& DisplayedText);
+		void OnLoreOpened();
 };

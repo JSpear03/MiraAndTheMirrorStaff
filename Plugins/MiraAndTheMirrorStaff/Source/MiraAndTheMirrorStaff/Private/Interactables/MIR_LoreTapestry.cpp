@@ -34,7 +34,7 @@ void AMIR_LoreTapestry::OnInteract_Implementation(AMIR_PlayerChar* CurrentPlayer
 		PlayerController->SetShowMouseCursor(true);
 	}
 
-	OnLoreOpened(LoreText);
+	OnLoreOpened();
 }
 
 void AMIR_LoreTapestry::CloseLoreText()
