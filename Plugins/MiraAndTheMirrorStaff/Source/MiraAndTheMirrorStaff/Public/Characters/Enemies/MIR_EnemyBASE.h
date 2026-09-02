@@ -25,7 +25,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_EnemyBASE : public AMIR_CharacterBASE_M, pu
 	
 public:
 	// Sets default value damage when player contacts enemy. 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Contact Damage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Contact Damage")
 		int32 ContactDamage = 1;
 
 	// Implements copy ability. 
@@ -69,4 +69,9 @@ public:
 	// Called when enemy delgate is broadcasted.
 	UFUNCTION(BlueprintImplementableEvent)
 		void EnemyDied();
+
+	// Change the material to a certain color, after dust is setup. 
+	UFUNCTION(BlueprintImplementableEvent)
+		void SetNewMaterial();
+
 };

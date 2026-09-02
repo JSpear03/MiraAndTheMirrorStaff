@@ -115,5 +115,6 @@ void AMIR_EnemyBASE::Tick(float DeltaTime)
 		}
 
 		OnEnemyDied.Broadcast();
+		SetNewMaterial();
 	}
 }
