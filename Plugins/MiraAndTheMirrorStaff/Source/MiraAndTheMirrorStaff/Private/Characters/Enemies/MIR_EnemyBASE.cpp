@@ -59,7 +59,21 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, FString::Printf(TEXT("Is Magic: %s"), 
 									 *OtherActor->GetClass()->GetName()));		// TODO: Delete
 
-	if (Cast<AMIR_MagicBASE>(OtherActor)->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
+	AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
+	if (!IncomingMagic)
+	{
+		return;
+	}
+
+	// Prevent the same magic instance from affecting this enemy more than once
+	// (e.g. dual-capsule overlaps, AoE expansion, melee swing re-entry).
+	// A single spell can still hit multiple different enemies.
+	if (!IncomingMagic->TryRegisterHit(this))
+	{
+		return;
+	}
+
+	if (IncomingMagic->AttackTypeComponent && IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Do Copy"));
 		// This enemy is the copy source, so it is the interface receiver. Execute_CopyMagic is a
@@ -69,8 +83,7 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	else
 	{
 		// Incoming magic is a real attack — apply damage using the element/attack-type system.
-		AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
-		if (IncomingMagic && IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
+		if (IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
 		{
 			// Convert EElements enum to the FString that CalculateDamage expects.
 			// UEnum::GetValueAsString produces "EElements::Flame" — we strip the prefix.

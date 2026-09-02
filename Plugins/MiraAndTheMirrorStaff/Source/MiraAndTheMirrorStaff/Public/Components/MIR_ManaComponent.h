@@ -65,6 +65,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mana Power")
 		void ManaCooldown();
 
+	// Returns true if the mana cooldown timer is actively ticking (mana is recovering).
+	UFUNCTION(BlueprintPure, Category = "Mana Power")
+		bool IsCooldownActive() const;
+
 	// Clears the cooldown timer. Must be called during actor cleanup on `EndPlay()`.
 	void ClearCooldownTimer();
 

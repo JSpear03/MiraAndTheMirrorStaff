@@ -111,6 +111,15 @@ void UMIR_ManaComponent::ClearCooldownTimer()
 	}
 }
 
+bool UMIR_ManaComponent::IsCooldownActive() const
+{
+	if (const UWorld* World = GetWorld())
+	{
+		return World->GetTimerManager().IsTimerActive(CooldownHandle);
+	}
+	return false;
+}
+
 void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
 {
 	TotalManaPower = FMath::Clamp(TotalManaPower + BonusManaPower, 0, MaxManaPower);
