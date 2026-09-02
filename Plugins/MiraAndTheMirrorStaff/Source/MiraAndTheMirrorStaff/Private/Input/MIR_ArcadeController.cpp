@@ -54,7 +54,7 @@ void AMIR_ArcadeController::BeginPlay()
 }
 
 /************************************************************************************
- * MOBILITY ACTIONS — GENERAL MOVEMENT
+ * MOBILITY ACTIONS ï¿½ GENERAL MOVEMENT
  ***********************************************************************************/
 
 void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
@@ -95,7 +95,7 @@ void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 }
 
 /************************************************************************************
- * MOBILITY ACTIONS — JUMPING
+ * MOBILITY ACTIONS ï¿½ JUMPING
  ***********************************************************************************/
 
 void AMIR_ArcadeController::StartPlayerJumping()
@@ -137,7 +137,7 @@ bool AMIR_ArcadeController::IsPlayerJumping() const
 }
 
 /************************************************************************************
- * MOBILITY ACTIONS — DASHING
+ * MOBILITY ACTIONS ï¿½ DASHING
  ***********************************************************************************/
 
 void AMIR_ArcadeController::StartDashing()
@@ -185,8 +185,21 @@ bool AMIR_ArcadeController::IsPlayerDashing() const
 }
 
 /************************************************************************************
- * COMBAT ACTIONS — MAIN ATTACK
+ * COMBAT ACTIONS ï¿½ MAIN ATTACK
  ***********************************************************************************/
+
+void AMIR_ArcadeController::UseMainAttack()
+{
+	// Gate: only fire the Blueprint spawn logic once per press.
+	// bCanUseMainAttack is re-enabled when the spell despawns (via AllowMainAttack).
+	if (!bCanUseMainAttack)
+	{
+		return;
+	}
+
+	bCanUseMainAttack = false;
+	BP_UseMainAttack();
+}
 
 void AMIR_ArcadeController::AllowMainAttack()
 {
@@ -194,7 +207,7 @@ void AMIR_ArcadeController::AllowMainAttack()
 }
 
 /************************************************************************************
- * COMBAT ACTIONS — SUB-ATTACK
+ * COMBAT ACTIONS ï¿½ SUB-ATTACK
  ***********************************************************************************/
 
 //void AMIR_ArcadeController::UseSubAttack()
@@ -203,7 +216,7 @@ void AMIR_ArcadeController::AllowMainAttack()
 //}
 
 /************************************************************************************
- * OTHER ACTIONS — INTERACTION
+ * OTHER ACTIONS ï¿½ INTERACTION
  ***********************************************************************************/
 
 void AMIR_ArcadeController::UseInteract()

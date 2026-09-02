@@ -175,3 +175,14 @@ void AMIR_MagicBASE::ReenableMainAttack()
         GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Emerald, TEXT("Main Attack ALLOWED!"));
     }
 }
+
+bool AMIR_MagicBASE::TryRegisterHit(AActor* Target)
+{
+    if (!Target || DamagedActors.Contains(Target))
+    {
+        return false;
+    }
+
+    DamagedActors.Add(Target);
+    return true;
+}
