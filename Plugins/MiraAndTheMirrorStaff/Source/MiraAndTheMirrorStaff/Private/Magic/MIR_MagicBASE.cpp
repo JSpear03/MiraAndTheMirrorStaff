@@ -160,6 +160,21 @@ void AMIR_MagicBASE::InstantHandleDespawn()
 
 void AMIR_MagicBASE::ReenableMainAttack()
 {
+    // Guard: only execute once per magic instance
+    if (bHasReenabledAttack)
+    {
+        return;
+    }
+    bHasReenabledAttack = true;
+
+    // Only ignore if this magic was explicitly cast by an enemy.
+    // Player-cast magic typically has null instigator/owner when spawned from Blueprint.
+    if ((GetInstigator() && GetInstigator()->IsA<AMIR_EnemyBASE>()) ||
+        (GetOwner() && GetOwner()->IsA<AMIR_EnemyBASE>()))
+    {
+        return;
+    }
+
     // The current Player Controller at index 0.
     AMIR_ArcadeController* PlayerCont = Cast<AMIR_ArcadeController>(UGameplayStatics::GetPlayerController(this, 0));
 

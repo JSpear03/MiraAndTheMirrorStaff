@@ -57,7 +57,7 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Blue, FString::Printf(TEXT("Is Magic: %s"), 
-								 *OtherActor->GetClass()->GetName()));		// TODO: Delete
+									 *OtherActor->GetClass()->GetName()));		// TODO: Delete
 
 	AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
 	if (!IncomingMagic)
@@ -73,7 +73,7 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 		return;
 	}
 
-	if (IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
+	if (IncomingMagic->AttackTypeComponent && IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Do Copy"));
 		// This enemy is the copy source, so it is the interface receiver. Execute_CopyMagic is a

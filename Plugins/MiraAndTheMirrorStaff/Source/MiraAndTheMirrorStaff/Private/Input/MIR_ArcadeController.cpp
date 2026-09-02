@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "Interfaces/IMIR_Interactable.h"
 #include "Characters/Player/MIR_PlayerChar.h"
+#include "Components/MIR_ManaComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -27,12 +28,11 @@ void AMIR_ArcadeController::SetupInputComponent()
 	{
 		// Triggered Bindings.
 		EnhancedInput->BindAction(Move, ETriggered, this, &AMIR_ArcadeController::MoveCharacter);
-		EnhancedInput->BindAction(MainAttack, ETriggered, this, &AMIR_ArcadeController::UseMainAttack);
-		EnhancedInput->BindAction(RangedCopy, ETriggered, this, &AMIR_ArcadeController::UseMirrorStaff);
-		EnhancedInput->BindAction(SubAttack, ETriggered, this, &AMIR_ArcadeController::UseSubAttack);
+		EnhancedInput->BindAction(MainAttack, ETriggered, this, &AMIR_ArcadeController::HandleMainAttackInput);
+		EnhancedInput->BindAction(RangedCopy, ETriggered, this, &AMIR_ArcadeController::HandleRangedCopyInput);
+		EnhancedInput->BindAction(SubAttack, ETriggered, this, &AMIR_ArcadeController::HandleSubAttackInput);
 		EnhancedInput->BindAction(Discard, ETriggered, this, &AMIR_ArcadeController::DiscardCopiedMagic);
-		EnhancedInput->BindAction(RangedCopy, ETriggered, this, &AMIR_ArcadeController::UseMirrorStaff);
-		
+
 		// Started Bindings.
 		EnhancedInput->BindAction(Interact, EStarted, this, &AMIR_ArcadeController::UseInteract);
 		EnhancedInput->BindAction(PauseAction, EStarted, this, &AMIR_ArcadeController::PauseMenu);
@@ -51,6 +51,16 @@ void AMIR_ArcadeController::SetupInputComponent()
 void AMIR_ArcadeController::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AMIR_ArcadeController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(SubAttackUnlockTimerHandle);
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 /************************************************************************************
@@ -185,38 +195,92 @@ bool AMIR_ArcadeController::IsPlayerDashing() const
 }
 
 /************************************************************************************
- * COMBAT ACTIONS � MAIN ATTACK
+ * COMBAT ACTIONS — ATTACK INPUTS
  ***********************************************************************************/
 
-void AMIR_ArcadeController::UseMainAttack()
+void AMIR_ArcadeController::HandleMainAttackInput()
 {
-	// Gate: only fire the Blueprint spawn logic once per press.
-	// bCanUseMainAttack is re-enabled when the spell despawns (via AllowMainAttack).
+	// Both MainAttack and RangedCopy rely on bCanUseMainAttack.
 	if (!bCanUseMainAttack)
 	{
 		return;
 	}
 
+	// Block Main Attack when the Mana Gauge is in cooldown.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (PlayerCharacter && PlayerCharacter->ManaComponent && PlayerCharacter->ManaComponent->IsCooldownActive())
+	{
+		return;
+	}
+
+	// Make Sub-Attack temporarily unusable for a brief window after Main Attack,
+	// but unlock it before the main spell despawns so they can be paired.
+	bCanUseSubAttack = false;
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, &AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
+	}
+
+	UseMainAttack();
 	bCanUseMainAttack = false;
-	BP_UseMainAttack();
+}
+
+void AMIR_ArcadeController::HandleRangedCopyInput()
+{
+	// Both MainAttack and RangedCopy rely on bCanUseMainAttack.
+	if (!bCanUseMainAttack)
+	{
+		return;
+	}
+
+	// Block Ranged Copy when the Mana Gauge is in cooldown.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (PlayerCharacter && PlayerCharacter->ManaComponent && PlayerCharacter->ManaComponent->IsCooldownActive())
+	{
+		return;
+	}
+
+	// Make Sub-Attack temporarily unusable for a brief window, then unlock it.
+	bCanUseSubAttack = false;
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, &AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
+	}
+
+	UseMirrorStaff();
+	bCanUseMainAttack = false;
+}
+
+void AMIR_ArcadeController::HandleSubAttackInput()
+{
+	// Sub-Attack relies on bCanUseSubAttack.
+	// It does NOT consume mana and remains usable during Mana Gauge cooldown.
+	if (!bCanUseSubAttack)
+	{
+		return;
+	}
+	
+	UseSubAttack();
+	bCanUseSubAttack = false;
+}
+
+void AMIR_ArcadeController::UnlockSubAttack()
+{
+	bCanUseSubAttack = true;
 }
 
 void AMIR_ArcadeController::AllowMainAttack()
 {
 	bCanUseMainAttack = true;
+	bCanUseSubAttack = true;
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(SubAttackUnlockTimerHandle);
+	}
 }
 
 /************************************************************************************
- * COMBAT ACTIONS � SUB-ATTACK
- ***********************************************************************************/
-
-//void AMIR_ArcadeController::UseSubAttack()
-//{
-//	GEngine->AddOnScreenDebugMessage(3, 5, FColor::Blue, TEXT("Use Dagger."));
-//}
-
-/************************************************************************************
- * OTHER ACTIONS � INTERACTION
+ * OTHER ACTIONS  INTERACTION
  ***********************************************************************************/
 
 void AMIR_ArcadeController::UseInteract()

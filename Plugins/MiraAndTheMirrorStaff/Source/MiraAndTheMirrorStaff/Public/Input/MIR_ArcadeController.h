@@ -90,6 +90,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
 		bool bCanUseSubAttack = true;
 
+	// Window in seconds after using Main Attack before Sub-Attack can be used.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack",
+			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 5.0, UIMin = 0.0, UIMax = 5.0))
+		float SubAttackDelayAfterMain = 0.25f;
+
+	// Timer handle for unlocking the sub-attack after a main attack.
+	FTimerHandle SubAttackUnlockTimerHandle;
+
 	// Represents the Main Attack's cooldown in terms of seconds.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack",
 			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 10.0, UIMin = 0.0, UIMax = 10.0))
@@ -101,6 +109,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called when the controller leaves play or is destroyed.
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	/**
 	 * Called to move character.
 	 *
@@ -109,6 +120,14 @@ protected:
 	 * @returns N/A
 	 */
 	void MoveCharacter(const FInputActionValue& ActionValue);
+
+	// Input handlers that enforce gating, mana cooldown, and lockout delay.
+	void HandleMainAttackInput();
+	void HandleRangedCopyInput();
+	void HandleSubAttackInput();
+
+	// Unlocks sub-attack after the brief window following a main attack.
+	void UnlockSubAttack();
 
 	// Called to attack with Magic or Mirror staff.
 	UFUNCTION(BlueprintImplementableEvent)

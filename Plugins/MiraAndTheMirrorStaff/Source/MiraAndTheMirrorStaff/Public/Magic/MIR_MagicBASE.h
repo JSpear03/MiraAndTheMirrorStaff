@@ -99,11 +99,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Collision")
         class USceneComponent* SceneComponent;
 
+    // Clears the cooldown timer. Must be called during actor cleanup on `EndPlay()`.
+    void ClearDespawnTimer();
+
     /**
      * @brief Attempts to register a hit on the given target actor.
      *
      * Returns true (and records the actor) the first time it is called for a
-     * given target.  Returns false on every subsequent call for the same target,
+     * given target. Returns false on every subsequent call for the same target,
      * preventing a single magic instance from damaging the same enemy more than
      * once while still allowing it to hit multiple different enemies.
      *
@@ -111,10 +114,8 @@ public:
      *
      * @returns True if this is the first hit on Target; false otherwise.
      */
+    UFUNCTION(BlueprintCallable, Category = "Magic|Combat")
     bool TryRegisterHit(AActor* Target);
-
-    // Clears the cooldown timer. Must be called during actor cleanup on `EndPlay()`.
-    void ClearDespawnTimer();
 
 private:
     // Tracks which actors this magic instance has already damaged so that
@@ -122,5 +123,8 @@ private:
     // overlaps, AoE expansion, or melee swing re-entry).
     UPROPERTY()
     TSet<TObjectPtr<AActor>> DamagedActors;
+
+    // Guard to ensure ReenableMainAttack only runs once per magic actor
+    bool bHasReenabledAttack = false;
 
 };
