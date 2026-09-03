@@ -74,8 +74,6 @@ void AMIR_PuzzleAssetManager::VerifyDirectInArray(AMIR_PuzzleAssetDirectBASE* Di
 	// The current DirectBASE object reference.
 	AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(DirectAssetRef);
 
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Checking direct asset"));
-
 	if (!CurrentDirect)
 	{
 		return;
@@ -113,16 +111,6 @@ bool AMIR_PuzzleAssetManager::FindAllDirectsInState(EPuzzleState InState)
 	}
 
 	// Determine return value.
-	//if (StateCounter == DirectAssetArray.Num())
-	//{
-	//	return true;
-	//}
-	//else
-	//{
-	//	return false;
-	//}
-
-	// Determine return value.
 	return (StateCounter == DirectAssetArray.Num()) ? true : false;
 }
 
@@ -134,18 +122,18 @@ void AMIR_PuzzleAssetManager::TryIndirectActivation()
 {
 	if (FindAllDirectsInState(EPuzzleState::Activate))
 	{
-		IndirectAsset->ActivatePuzzleAsset();
+		ActivateAllIndirects();
 		ClearAutoTimer();
 	}
 	else
 	{
-		if (IndirectAsset->GetCurrentState() == EPuzzleState::Deactivate)
+		if (CheckMinimalInactivity())
 		{
 			ExecuteAutoTimer();
 		}
 		else
 		{
-			IndirectAsset->DeactivatePuzzleAsset();
+			DeactivateAllIndirects();
 		}
 	}
 }
@@ -154,20 +142,68 @@ void AMIR_PuzzleAssetManager::TryIndirectDeactivation()
 {
 	if (FindAllDirectsInState(EPuzzleState::Deactivate))
 	{
-		IndirectAsset->DeactivatePuzzleAsset();
+		DeactivateAllIndirects();
 		ClearAutoTimer();
 	}
 	else
 	{
-		if (IndirectAsset->GetCurrentState() == EPuzzleState::Activate)
+		if (CheckMinimalActivity())
 		{
 			ExecuteAutoTimer();
 		}
 		else
 		{
-			IndirectAsset->ActivatePuzzleAsset();
+			ActivateAllIndirects();
 		}
 	}
+}
+
+void AMIR_PuzzleAssetManager::ActivateAllIndirects()
+{
+	// The current IPA in the `IndirectAssetArray`.
+	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
+	{
+		CurrentIndirect->ActivatePuzzleAsset();
+	}
+}
+
+void AMIR_PuzzleAssetManager::DeactivateAllIndirects()
+{
+	// The current IPA in the `IndirectAssetArray`.
+	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
+	{
+		CurrentIndirect->DeactivatePuzzleAsset();
+	}
+}
+
+bool AMIR_PuzzleAssetManager::CheckMinimalActivity()
+{
+	// The current IPA in the `IndirectAssetArray`.
+	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
+	{
+		if (CurrentIndirect->GetCurrentState() == EPuzzleState::Activate)
+		{
+			return true;
+		}
+	}
+
+	// Return false if none of the IPAs are active.
+	return false;
+}
+
+bool AMIR_PuzzleAssetManager::CheckMinimalInactivity()
+{
+	// The current IPA in the `IndirectAssetArray`.
+	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
+	{
+		if (CurrentIndirect->GetCurrentState() == EPuzzleState::Deactivate)
+		{
+			return true;
+		}
+	}
+
+	// Return false if none of the IPAs are inactive.
+	return false;
 }
 
 /****************************************************************************************
@@ -214,13 +250,13 @@ void AMIR_PuzzleAssetManager::HandleAutoActivation()
 {
 	if (!FindAllDirectsInState(EPuzzleState::Deactivate))
 	{
-		// Activate all DPAs in the `DirectAssetArray`, then also the IPA.
+		// Activate all DPAs in the `DirectAssetArray`, then also the IPAs.
 		/* The current DPA in the `DirectAssetArray`. */
 		for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 		{
 			CurrentDirect->ActivatePuzzleAsset();
 		}
-		IndirectAsset->ActivatePuzzleAsset();
+		ActivateAllIndirects();
 	}
 }
 
@@ -228,13 +264,13 @@ void AMIR_PuzzleAssetManager::HandleAutoDeactivation()
 {
 	if (!FindAllDirectsInState(EPuzzleState::Activate))
 	{
-		// Deactivate all DPAs in the `DirectAssetArray`, then also the IPA.
+		// Deactivate all DPAs in the `DirectAssetArray`, then also the IPAs.
 		/* The current DPA in the `DirectAssetArray`. */
 		for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 		{
 			CurrentDirect->DeactivatePuzzleAsset();
 		}
-		IndirectAsset->DeactivatePuzzleAsset();
+		DeactivateAllIndirects();
 	}
 }
 
@@ -244,21 +280,64 @@ void AMIR_PuzzleAssetManager::HandleAutoDeactivation()
 
 void AMIR_PuzzleAssetManager::DetermineForwardActivation()
 {
-	if (!IndirectAsset)
+	// Represents whether all assets in the `IndirectAssetArray` are valid.
+	bool bValidIndirectAsset = true;
+
+	// Represents whether all assets in the `IndirectAssetArray` are in the deactive state.
+	bool bInitialStateDeactivation = true;
+
+	int32 ActiveCount = 0;	  // Represents how many IPAs are in the active state.
+	int32 InactiveCount = 0;  // Represents how many IPAs are in the inactive state.
+
+	// The current IPA in the `IndirectAssetArray`.
+	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
+	{
+		// Validate.
+		if (!CurrentIndirect)
+		{
+			return;
+		}
+
+		// Check state.
+		if (CurrentIndirect->GetInitialState() == EPuzzleState::Activate)
+		{
+			bInitialStateDeactivation = false;
+			ActiveCount++;
+		}
+		else
+		{
+			InactiveCount++;
+		}
+	}
+
+	// Ensure that all IPAs are in the same state before continuing;
+	// the PAM may have unexpected results otherwise.
+	if (ActiveCount != IndirectAssetArray.Num() || InactiveCount != IndirectAssetArray.Num())
 	{
 		return;
 	}
 	else
 	{
-		if (IndirectAsset->GetInitialState() == EPuzzleState::Activate)
+		if (!bInitialStateDeactivation)
 		{
-			// If the IPA is already active, then the PAM needs to operate in reverse.
+			// If the IPAs are already active, then the PAM needs to operate in reverse.
 			bIsForwardActivation = false;
 		}
 		else
 		{
-			// If the IPA is already inactive, then the PAM needs to operate forward.
+			// If the IPAs are already inactive, then the PAM needs to operate forward.
 			bIsForwardActivation = true;
 		}
 	}
+
+	//if (IndirectAsset->GetInitialState() == EPuzzleState::Activate)
+	//{
+	//	// If the IPA is already active, then the PAM needs to operate in reverse.
+	//	bIsForwardActivation = false;
+	//}
+	//else
+	//{
+	//	// If the IPA is already inactive, then the PAM needs to operate forward.
+	//	bIsForwardActivation = true;
+	//}
 }

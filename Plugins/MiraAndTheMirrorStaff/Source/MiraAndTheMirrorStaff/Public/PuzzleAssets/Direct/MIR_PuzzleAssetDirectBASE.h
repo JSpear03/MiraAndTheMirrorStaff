@@ -13,6 +13,14 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectActivated,   AMIR_PuzzleAssetDirectBASE*, SelfRef);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectDeactivated, AMIR_PuzzleAssetDirectBASE*, SelfRef);
 
+/**
+* A Direct Puzzle Asset (DPA) is a puzzle asset that is activated or deactivated by
+* a player character's summoned magic. A DPA may then broadcast a delegate to a Puzzle-
+* Asset Manager (PAM) that is referencing it. From here, the PAM may deactivate or activate
+* its linked Indirect Puzzle Assets (IPAs) accordingly.
+*
+* Thus, DPAs represent the "cause" in the cause–effect relationship between DPAs and IPAs.
+*/
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetDirectBASE : public AMIR_PuzzleAssetBASE
 {

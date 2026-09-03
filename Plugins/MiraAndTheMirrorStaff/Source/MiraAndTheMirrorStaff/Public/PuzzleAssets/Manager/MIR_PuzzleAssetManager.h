@@ -9,6 +9,17 @@
 #include "PuzzleAssets/Indirect/MIR_PuzzleAssetsIndirectBASE.h"
 #include "MIR_PuzzleAssetManager.generated.h"
 
+/**
+* The Puzzle-Asset Manager (PAM), in order to handle puzzles, manages two arrays:
+*   - `DirectAssetArray`: An array of Direct Puzzle Asset (DPA) instances.
+*   - `IndirectAssetArray`: An array of Indirect Puzzle Asset (IPA) instances.
+* 
+* Upon mutation of one or more assets in the `DirectAssetArray`, the PAM will attempt
+* to mutate all assets in the `IndirectAssetArray`, assuming certain conditions are met.
+* 
+* If all assets in the `DirectAssetArray` are mutated, the PAM will mutate all assets in
+* the `IndirectAssetArray` conversely. Thus, the PAM is able to manage puzzle solutions.
+*/
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetManager : public AActor
 {
@@ -19,9 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LinkedAssets|Direct")
 		TArray<AMIR_PuzzleAssetDirectBASE*> DirectAssetArray;
 
-	// The IPA instance managed by this actor.
+	// An array of all IPA instances managed by this actor.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LinkedAssets|Indirect")
-		AMIR_PuzzleAssetsIndirectBASE* IndirectAsset;
+		TArray<AMIR_PuzzleAssetsIndirectBASE*> IndirectAssetArray;
 
 	// The duration of the Auto Timer, which dictates how long the player has to
 	// activate/deactivate all DPAs before they are automatically deactivated/activated.
@@ -35,11 +46,11 @@ public:
 	// - True  : Use
 	// - False : Don't use
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Timer")
-		bool bUseAutoTimer = true;
+		bool bUseAutoTimer = false;
 
 	// Dictates the following:
-	// - True  : All DPAs must be activated to activate an IPA.
-	// - False : All DPAs must be deactivated to deactivate an IPA.
+	// - True  : All DPAs must be activated to activate the IPAs.
+	// - False : All DPAs must be deactivated to deactivate the IPAs.
 	bool bIsForwardActivation = true;
 
 	// Sets default values for this actor's properties
@@ -63,7 +74,7 @@ public:
 	* Verifies whether the `DirectAssetRef` parameter, passed by a delegate, is contained
 	* in the `DirectAssetArray`.
 	* 
-	* If so, then the PAM attempts to mutate the IPA by calling one of the following functions,
+	* If so, then the PAM attempts to mutate the IPAs by calling one of the following functions,
 	* depending on the value of `bIsForwardActivation`:
 	* 
 	* - True: `TryIndirectActivation()`
@@ -89,18 +100,44 @@ public:
 	// ========== LINKED ASSETS | INDIRECT ==========
 
 	/**
-	* If all DPAs are active, it tries to activate the IPA.
-	* Otherwise, it tries to either deactivate the IPA or set up the Auto Timer,
-	* depending on whether the IPA is already activated or deactivated.
+	* If all DPAs are active, it tries to activate the IPAs.
+	* Otherwise, it tries to either deactivate the IPAs or set up the Auto Timer,
+	* depending on whether the IPAs are already activated or deactivated.
 	*/
 	void TryIndirectActivation();
 
-	/*
-	* If all DPAs are deactive, it tries to deactivate the IPA.
-	* Otherwise, it tries to either activate the IPA or set up the Auto Timer,
-	* depending on whether the IPA is already activated or deactivated.
+	/**
+	* If all DPAs are deactive, it tries to deactivate the IPAs.
+	* Otherwise, it tries to either activate the IPAs or set up the Auto Timer,
+	* depending on whether the IPAs are already activated or deactivated.
 	*/
 	void TryIndirectDeactivation();
+	
+	/**
+	* Runs a for-each loop on all IPAs, activating them consecutively.
+	*/
+	void ActivateAllIndirects();
+
+	/**
+	* Runs a for-each loop on all IPAs, deactivating them consecutively.
+	*/
+	void DeactivateAllIndirects();
+
+	/**
+	* Returns whether at least one IPA is in the active state.
+	* Currently intended as a helper function for `TryIndirectDeactivation()`.
+	* 
+	* @returns bool
+	*/
+	bool CheckMinimalActivity();
+
+	/**
+	* Returns whether at least one IPA is in the inactive state.
+	* Currently intended as a helper function for `TryIndirectActivation()`.
+	*
+	* @returns bool
+	*/
+	bool CheckMinimalInactivity();
 
 	// ========== TIMER ==========
 
@@ -121,7 +158,7 @@ public:
 
 	/**
 	 * Executed if the Auto Timer elapses.
-	 * Automatically activates all DPAs and the IPA if all DPAs are NOT in the
+	 * Automatically activates all DPAs and IPAs if all DPAs are NOT in the
 	 * Deactivate state.
 	 */
 	UFUNCTION()
@@ -129,7 +166,7 @@ public:
 
 	/**
 	 * Executed if the Auto Timer elapses.
-	 * Automatically deactivates all DPAs and the IPA if all DPAs are NOT in the
+	 * Automatically deactivates all DPAs and IPAs if all DPAs are NOT in the
 	 * Activate state.
 	 */
 	UFUNCTION()
@@ -139,7 +176,7 @@ public:
 
 	/**
 	* Sets `bIsForwardActivation` depending on the `InitialState` of the `IndirectAsset`.
-	* Accordingly, this will dictate how the PAM manages the DPA(s) and IPA.
+	* Accordingly, this will dictate how the PAM manages the DPA(s) and IPA(s).
 	* Meant to be called exclusively on `BeginPlay()`.
 	*/
 	void DetermineForwardActivation();

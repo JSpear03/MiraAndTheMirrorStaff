@@ -5,17 +5,22 @@
 #include "CoreMinimal.h"
 #include "EMIR_PuzzleState.generated.h"
 
-/*
-* An enumeration of the Puzzle State for the actors inherited by the Puzzle Asset Indirect Base.
+/**
+* An enumeration of the Puzzle States for puzzle assets.
 * 
 * - Activate: Allows puzzle asset to follow an action. 
 * - Deactivate: Does nothing by default or stops a puzzle action. 
 */
 UENUM(Blueprintable)
-enum class EPuzzleState : uint8 
+enum class EPuzzleState : uint8
 {
-	Activate    UMETA(DisplayName = "Activate", ToolTip = "Allows puzzle asset to follow an action."),
-	Deactivate    UMETA(DisplayName = "Deactivate", ToolTip = "Stops puzzle action and do nothing."),
+	// An activated state where the puzzle asset can operate, commencing operations.
+	Activate    UMETA(DisplayName = "Activate",
+					  ToolTip = "An activated state where the puzzle asset can operate, commencing operations."),
+
+	// A deactivated state where the puzzle asset cannot operate, ceasing operations.
+	Deactivate  UMETA(DisplayName = "Deactivate",
+					  ToolTip = "A deactivated state where the puzzle asset cannot operate, ceasing operations."),
 };
 
 
