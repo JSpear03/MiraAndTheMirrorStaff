@@ -3,6 +3,7 @@
 
 #include "Hazards/MIR_HazardWater.h"
 #include "Magic/MIR_MagicBASE.h"
+#include "Characters/Player/MIR_PlayerChar.h"
 #include "Components/MIR_ElementComponent.h"
 #include "Components/CapsuleComponent.h"
 
@@ -37,4 +38,12 @@ void AMIR_HazardWater::OnHazardBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	{
 		OnFreezeHit(Magic->GetActorLocation());
 	}
+
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
+
+	// Attempts to load game over if player is found. It would actually switch once health reaches 0.
+	//if (PlayerCharacter)
+	//{
+	//	PlayerCharacter->LoadingGameOver();
+	//}
 }

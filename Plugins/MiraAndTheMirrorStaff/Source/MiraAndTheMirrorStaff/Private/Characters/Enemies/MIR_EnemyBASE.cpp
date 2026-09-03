@@ -85,17 +85,16 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 		// Incoming magic is a real attack — apply damage using the element/attack-type system.
 		if (IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
 		{
-			// Convert EElements enum to the FString that CalculateDamage expects.
-			// UEnum::GetValueAsString produces "EElements::Flame" — we strip the prefix.
-			FString AttackerElementStr = UEnum::GetValueAsString(IncomingMagic->ElementComponent->GetElementName());
-			AttackerElementStr.RemoveFromStart(TEXT("EElements::"));
+			// The `IncomingMagic`'s Element Name.
+			EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
 
-			FString ReceiverElementStr = UEnum::GetValueAsString(ElementComponent->GetElementName());
-			ReceiverElementStr.RemoveFromStart(TEXT("EElements::"));
+			// The receiver's Element Name.
+			EElements ReceiverElementName = ElementComponent->GetElementName();
 
+			// The `IncomingMagic`'s Damage.
 			int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
 
-			CalculateDamage(AttackerElementStr, ReceiverElementStr, AttackerDamage);
+			CalculateDamage(AttackerElementName, ReceiverElementName, AttackerDamage);
 		}
 	}
 }

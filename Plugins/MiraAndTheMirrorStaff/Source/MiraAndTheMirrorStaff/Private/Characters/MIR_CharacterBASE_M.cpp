@@ -12,9 +12,8 @@ AMIR_CharacterBASE_M::AMIR_CharacterBASE_M()
 	// Creates Health Component
 	HealthComponent = CreateDefaultSubobject<UMIR_HealthComponent>(TEXT("HealthComponent"));
 	
-	// Creates Element Component.
+	// Creates Element Component and assigns default Element.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
-
 	ElementComponent->SetCurrentElement(EElements::Nothing);
 }
 
@@ -39,25 +38,35 @@ void AMIR_CharacterBASE_M::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 }
 
-void AMIR_CharacterBASE_M::CalculateDamage(FString AttackerElement, FString RecieverElement, 
+/************************************************************************************
+ * SUSTAINING DAMAGE
+ ***********************************************************************************/
+
+void AMIR_CharacterBASE_M::CalculateDamage(EElements AttackerElement, EElements RecieverElement,
 	int32 AttackerDamageValue)
 {
-	int32 Modifier = 0;  // By default, zero represents what the attacker element is weak against.
+	// The damage multiplier based on Elemental weakness and strength.
+	// By default, zero represents what the `AttackerElement` is weak against.
+	int32 Modifier = 0;
 
-	if (AttackerElement == "Nothing" || RecieverElement == "Nothing"  // Netural Against
+	if (AttackerElement == EElements::Nothing || RecieverElement == EElements::Nothing  // Netural Against
 		|| AttackerElement == RecieverElement)
 	{
 		Modifier = 1;
 	}
-	else if ((AttackerElement == "Flame" && RecieverElement == "Ice") ||  // Strong against
-		(AttackerElement == "Ice" && RecieverElement == "Thunder") || 
-		(AttackerElement == "Thunder" && RecieverElement == "Flame"))
+	else if ((AttackerElement == EElements::Flame   && RecieverElement == EElements::Ice) ||  // Strong against
+			 (AttackerElement == EElements::Ice     && RecieverElement == EElements::Thunder) ||
+			 (AttackerElement == EElements::Thunder && RecieverElement == EElements::Flame))
 	{
 		Modifier = 2;
 	}
 
 	HealthComponent->HealthReduction(Modifier * AttackerDamageValue);
 }
+
+/************************************************************************************
+ * GETTERS & SETTERS
+ ***********************************************************************************/
 
 void AMIR_CharacterBASE_M::SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType)
 {

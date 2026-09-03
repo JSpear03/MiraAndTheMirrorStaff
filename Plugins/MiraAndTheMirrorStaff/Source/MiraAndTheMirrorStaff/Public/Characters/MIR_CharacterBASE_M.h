@@ -7,6 +7,7 @@
 #include "Components/MIR_HealthComponent.h"
 #include "Components/MIR_ElementComponent.h"
 #include "Magic/MIR_MagicBASE.h"
+#include "Enums/EMIR_Elements.h"
 #include "MIR_CharacterBASE_M.generated.h"
 
 UCLASS(Blueprintable)
@@ -45,7 +46,7 @@ public:
 	// TODO: Update with new Element and AttackType Component changes.
 	// Decreases health based on the calculated damage. 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-		void CalculateDamage(FString AttackerElement, FString RecieverElement, 
+		void CalculateDamage(EElements AttackerElement, EElements RecieverElement,
 			int32 AttackerDamageValue);
 
 	// Stored Magic setter.

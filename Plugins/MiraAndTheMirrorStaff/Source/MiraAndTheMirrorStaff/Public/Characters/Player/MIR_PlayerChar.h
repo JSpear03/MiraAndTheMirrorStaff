@@ -96,8 +96,8 @@ public:
 
 	// Used as part of a timer to set the value of bCanGetHit. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincible Cooldown",
-			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 5.0, UIMin = 0.0, UIMax = 5.0))
-		float CooldownSeconds = 2.0;
+			  meta = (Units = "Seconds", ClampMin = 0.0f, ClampMax = 5.0f, UIMin = 0.0f, UIMax = 5.0f))
+		float CooldownSeconds = 2.0f;
 
 	// Used for the position of the camera. 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -138,6 +138,11 @@ protected:
 	// Sets default values
 	virtual void BeginPlay() override;
 
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+protected:
 	// Called when player contacts an object. 
 	UFUNCTION()
 		void HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
@@ -157,7 +162,7 @@ private:
 	void SetCanGetHit(bool bGetHit);
 
 public:
-	// Changes current level to a Game Over related level. 
+	// Loads the Game-Over Screen if the player's health is 0.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Game Over")
 		void LoadingGameOver();
 
