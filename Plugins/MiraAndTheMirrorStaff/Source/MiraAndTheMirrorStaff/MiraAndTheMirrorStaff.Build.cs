@@ -26,7 +26,9 @@ public class MiraAndTheMirrorStaff : ModuleRules
 			new string[]
 			{
 				"Core",
-				"ArcadeFramework"
+				"ArcadeFramework",
+				"EnhancedInput",
+				"AIModule"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
