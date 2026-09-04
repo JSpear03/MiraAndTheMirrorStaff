@@ -34,11 +34,6 @@ public:
 	// Displays this tapestry's lore text and enables Game and UI input.
 	virtual void OnInteract_Implementation(AMIR_PlayerChar* CurrentPlayer) override;
 
-	// Restores game-only input after the lore text box closes.
-	// Called by the text box widget when the player dismisses it.
-	UFUNCTION(BlueprintCallable, Category = "Lore Tapestry")
-		void CloseLoreText();
-
 protected:
 	// Whether this tapestry's text box is currently on screen.
 	// Prevents a second box from opening while one is displayed.

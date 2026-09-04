@@ -18,34 +18,5 @@ AMIR_LoreTapestry::AMIR_LoreTapestry()
 
 void AMIR_LoreTapestry::OnInteract_Implementation(AMIR_PlayerChar* CurrentPlayer)
 {
-	if (bLoreOpen)
-	{
-		return;
-	}
-
-	bLoreOpen = true;
-
-	// Game and UI input lets the player click the text box while gameplay continues.
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-	if (PlayerController)
-	{
-		PlayerController->SetInputMode(FInputModeGameAndUI());
-		PlayerController->SetShowMouseCursor(true);
-	}
-
 	OnLoreOpened();
-}
-
-void AMIR_LoreTapestry::CloseLoreText()
-{
-	bLoreOpen = false;
-
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-	if (PlayerController)
-	{
-		PlayerController->SetInputMode(FInputModeGameOnly());
-		PlayerController->SetShowMouseCursor(false);
-	}
 }
