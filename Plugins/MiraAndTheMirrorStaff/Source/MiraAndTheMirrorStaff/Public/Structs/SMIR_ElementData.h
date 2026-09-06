@@ -19,10 +19,15 @@ struct FDefaultElementStruct
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Element."))
 		EElements ElementName = EElements::None;
 
-	// The Material, which specifies a main color, used by this Element.
+	// A Linear Color, which specifies a main color, used by this Element.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "MainColor",
-			  ToolTip = "The Material, which specifies a main color, used by this Element."))
-		UMaterial* MainColor = nullptr;
+			  ToolTip = "A Linear Color, which specifies a main color, used by this Element."))
+		FLinearColor MainColor = FLinearColor::White;
+
+	// A Linear Color, which specifies a sub-color, used by this Element.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "SubColor",
+			  ToolTip = "A Linear Color, which specifies a sub-color, used by this Element."))
+		FLinearColor SubColor = FLinearColor::Black;
 
 	// The symbol of this Element, which would be used in the Gameplay UI.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Symbol",
@@ -61,7 +66,8 @@ struct FNothingStruct : public FDefaultElementStruct
 	FNothingStruct()
 	{
 		ElementName = EElements::Nothing;
-		MainColor = nullptr;
+		MainColor = FLinearColor(0.0f, 1.0f, 0.393f, 1.0f);
+		SubColor = FLinearColor(0.0f, 0.042f, 0.017f, 1.0f);
 		ElementSymbol = nullptr;
 		ElementStrength = EElements::Nothing;
 		ElementWeakness = EElements::Nothing;
@@ -82,7 +88,8 @@ struct FFlameStruct : public FDefaultElementStruct
 	FFlameStruct()
 	{
 		ElementName = EElements::Flame;
-		MainColor = nullptr;
+		MainColor = FLinearColor(1.0f, 0.147f, 0.002f, 1.0f);
+		SubColor = FLinearColor(1.0f, 0.546f, 0.125f, 1.0f);
 		ElementSymbol = nullptr;
 		ElementStrength = EElements::Ice;
 		ElementWeakness = EElements::Thunder;
@@ -103,7 +110,8 @@ struct FIceStruct : public FDefaultElementStruct
 	FIceStruct()
 	{
 		ElementName = EElements::Ice;
-		MainColor = nullptr;
+		MainColor = FLinearColor(0.491f, 0.839f, 0.905f, 1.0f);
+		SubColor = FLinearColor(0.095f, 0.503f, 0.939f, 1.0f);
 		ElementSymbol = nullptr;
 		ElementStrength = EElements::Thunder;
 		ElementWeakness = EElements::Flame;
@@ -124,7 +132,8 @@ struct FThunderStruct : public FDefaultElementStruct
 	FThunderStruct()
 	{
 		ElementName = EElements::Thunder;
-		MainColor = nullptr;
+		MainColor = FLinearColor(1.0f, 0.723f, 0.002f, 1.0f);
+		SubColor = FLinearColor(0.93f, 0.823f, 0.287f, 1.0f);
 		ElementSymbol = nullptr;
 		ElementStrength = EElements::Flame;
 		ElementWeakness = EElements::Ice;

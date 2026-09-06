@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Components/MIR_AttackTypeComponent.h"
 #include "Components/MIR_ElementComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "MIR_MagicBASE.generated.h"
 
 UCLASS(BlueprintType)
@@ -13,10 +15,15 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicBASE : public AActor
 {
     GENERATED_BODY()
 
+public:
     // A debug-use mesh. Might be deleted, as each magic will likely use a Niagara
     // system for their visuals.
-    UPROPERTY(EditAnywhere, Category = "Magic|Mesh")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Mesh")
         USkeletalMeshComponent* Mesh;
+
+    // The component which handles the Niagara system to play.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Magic|Niagara")
+        UNiagaraComponent* NiagaraComponent = nullptr;
 
 private:
     // Timer handle for the despawn timer.

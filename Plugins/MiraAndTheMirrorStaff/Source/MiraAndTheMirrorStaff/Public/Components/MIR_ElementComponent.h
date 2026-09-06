@@ -44,38 +44,43 @@ public:
 		FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Returns the `AttackTypeName` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Name", ReturnDisplayName = "Name",
-			  ToolTip = "Returns the `ElementName` member variable."))
+	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Name",
+			  ReturnDisplayName = "Name", ToolTip = "Returns the `ElementName` member variable."))
 		EElements GetElementName() const { return ElementStruct.ElementName; }
 
 	// Returns the `MainColor` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Color", ReturnDisplayName = "MainColor",
-			  ToolTip = "Returns the `MainColor` member variable."))
-		UMaterial* GetMainColor() const { return ElementStruct.MainColor; }
+	UFUNCTION(BlueprintCallable, Category = "Element Details|Appearance", meta = (KeyWords = "Get Main Color",
+			  ReturnDisplayName = "MainColor", ToolTip = "Returns the `MainColor` member variable."))
+		const FLinearColor GetMainColor() const { return ElementStruct.MainColor; }
+
+	// Returns the `SubColor` member variable.
+	UFUNCTION(BlueprintCallable, Category = "Element Details|Appearance", meta = (KeyWords = "Get Sub Color",
+			  ReturnDisplayName = "SubColor", ToolTip = "Returns the `SubColor` member variable."))
+		const FLinearColor GetSubColor() const { return ElementStruct.SubColor; }
 
 	// Returns the `ElementSymbol` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Symbol", ReturnDisplayName = "Symbol",
-			  ToolTip = "Returns the `ElementSymbol` member variable."))
-		UTexture2D* GetElementSymbol() const { return ElementStruct.ElementSymbol; }
+	UFUNCTION(BlueprintCallable, Category = "Element Details|Appearance", meta = (KeyWords = "Get Symbol",
+			  ReturnDisplayName = "Symbol", ToolTip = "Returns the `ElementSymbol` member variable."))
+		const UTexture2D* GetElementSymbol() const { return ElementStruct.ElementSymbol; }
 
 	// Returns the `ElementStrength` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Strength", ReturnDisplayName = "Strength",
-			  ToolTip = "Returns the `ElementStrength` member variable."))
+	UFUNCTION(BlueprintCallable, Category = "Element Details|Matchups", meta = (KeyWords = "Get Strength",
+			  ReturnDisplayName = "Strength", ToolTip = "Returns the `ElementStrength` member variable."))
 		EElements GetElementStrength() const { return ElementStruct.ElementStrength; }
 
 	// Returns the `ElementWeakness` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Weakness", ReturnDisplayName = "Weakness",
-			  ToolTip = "Returns the `ElementWeakness` member variable."))
+	UFUNCTION(BlueprintCallable, Category = "Element Details|Matchups", meta = (KeyWords = "Get Weakness",
+			  ReturnDisplayName = "Weakness", ToolTip = "Returns the `ElementWeakness` member variable."))
 		EElements GetElementWeakness() const { return ElementStruct.ElementWeakness; }
 
 	// Returns the `ElementNeutralities` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Neutralities", ReturnDisplayName = "Neutralities",
-			  ToolTip = "Returns the `ElementNeutralities` member variable."))
+	UFUNCTION(BlueprintCallable, Category = "Element Details|Matchups", meta = (KeyWords = "Get Neutralities",
+			  ReturnDisplayName = "Neutralities", ToolTip = "Returns the `ElementNeutralities` member variable."))
 		TArray<EElements> GetElementNeutralities() const { return ElementStruct.ElementNeutralities; }
 
 	// Returns the `ElementProperty` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Property", ReturnDisplayName = "Property",
-			  ToolTip = "Returns the `ElementProperty` member variable."))
+	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Property",
+			  ReturnDisplayName = "Property", ToolTip = "Returns the `ElementProperty` member variable."))
 		EElementProperties GetElementProperty() const { return ElementStruct.ElementProperty; }
 
 	/**

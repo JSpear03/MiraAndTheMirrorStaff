@@ -50,12 +50,28 @@ AMIR_MagicBASE::AMIR_MagicBASE()
     // Allows for testing collisions. 
     Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal MeshComponent"));
     Mesh->SetupAttachment(BillboardComponent);
+
+    // Set up Niagara Component.
+    NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+    NiagaraComponent->SetupAttachment(BillboardComponent);
+    NiagaraComponent->bAutoActivate = false;  // Make invisible by default.
 }
 
 // Called when the game starts or when spawned
 void AMIR_MagicBASE::BeginPlay()
 {
     Super::BeginPlay();
+
+    // Activate Niagara system if valid.
+    if (NiagaraComponent->GetAsset())
+    {
+        // Set colors.
+        NiagaraComponent->SetNiagaraVariableLinearColor(TEXT("LightColor"), ElementComponent->GetMainColor());
+        NiagaraComponent->SetNiagaraVariableLinearColor(TEXT("DarkColor"), ElementComponent->GetSubColor());
+
+        // Activate system (e.g., makes it visible).
+        NiagaraComponent->Activate(true);
+    }
 
     //CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_MagicBASE::OnMagicBaseOverlap);
 }
