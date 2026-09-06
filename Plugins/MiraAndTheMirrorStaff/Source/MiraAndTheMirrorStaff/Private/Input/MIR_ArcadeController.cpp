@@ -120,6 +120,23 @@ void AMIR_ArcadeController::StartPlayerJumping()
 	{
 		// If the condition results in False (returns True -> negated to False), start jumping.
 		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->Jump();
+
+		bCanAnimateJump = true;
+
+		FTimerHandle CooldownTimerHandle;
+		FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+
+		const FTimerDelegate& CooldownTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager, 
+			&CooldownTimerHandle]
+			{
+				TimerManager.ClearTimer(CooldownTimerHandle);
+
+				bCanAnimateJump = false;
+			}
+		);
+
+		// Sets the timer, so jump animation can play properly. 
+		TimerManager.SetTimer(CooldownTimerHandle, CooldownTimerDelegate, 0.5, false);
 	}
 }
 
@@ -233,9 +250,13 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 		return;
 	}
 
-	// Block Ranged Copy when the Mana Gauge is in cooldown.
+	// Block Ranged Copy when the Mana Gauge is in cooldown and if the player doesn't have the Mirror Staff.
 	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (PlayerCharacter && PlayerCharacter->ManaComponent && PlayerCharacter->ManaComponent->IsCooldownActive())
+	{
+		return;
+	}
+	else if (PlayerCharacter && !PlayerCharacter->bHasMirrorStaff)
 	{
 		return;
 	}

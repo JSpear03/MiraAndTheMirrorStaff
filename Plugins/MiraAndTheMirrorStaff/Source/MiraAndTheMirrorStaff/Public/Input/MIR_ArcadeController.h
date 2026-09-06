@@ -82,6 +82,11 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 	UPROPERTY(VisibleAnywhere, Category = "Copied Magic")
 		AMIR_MagicBASE* SummonedMagicRef;
 
+public:
+	// Allows Player's Animation Blueprint to play jump animation. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "04_Jump")
+		bool bCanAnimateJump = false;
+
 protected:
 	// Represents whether the Main Attack can be used.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
