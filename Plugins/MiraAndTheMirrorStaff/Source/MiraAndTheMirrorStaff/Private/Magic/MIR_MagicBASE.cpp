@@ -66,8 +66,8 @@ void AMIR_MagicBASE::BeginPlay()
     if (NiagaraComponent->GetAsset())
     {
         // Set colors.
-        NiagaraComponent->SetNiagaraVariableLinearColor(TEXT("LightColor"), ElementComponent->GetMainColor());
-        NiagaraComponent->SetNiagaraVariableLinearColor(TEXT("DarkColor"), ElementComponent->GetSubColor());
+        NiagaraComponent->SetVariableLinearColor(TEXT("LightColor"), ElementComponent->GetMainColor());
+        NiagaraComponent->SetVariableLinearColor(TEXT("DarkColor"), ElementComponent->GetSubColor());
 
         // Activate system (e.g., makes it visible).
         NiagaraComponent->Activate(true);

@@ -43,4 +43,9 @@ void AMIR_MagicAOE::MagicExpansion(const float& Alpha)
         CurrentCapsule->SetCapsuleHalfHeight(NewSize);
         CurrentCapsule->SetCapsuleRadius(NewSize);
     }
+
+    // Update Niagara System.
+    NewSize /= 50.0f;  // (300.0 / 50.0) = 6.0
+    NiagaraComponent->SetVariableVec3(TEXT("BodyScale"), FVector(1.0f, 1.0f, 1.0f) * NewSize);
+    NiagaraComponent->SetVariableFloat(TEXT("AuraScale"), NewSize);
 }

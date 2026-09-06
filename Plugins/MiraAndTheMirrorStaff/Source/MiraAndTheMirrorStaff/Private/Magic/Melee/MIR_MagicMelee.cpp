@@ -33,6 +33,9 @@ AMIR_MagicMelee::AMIR_MagicMelee()
 
     // Add the Melee struct object with the new method. Uses settled consumption values, placeholder for damage.
     AttackTypeComponent->SetCurrentAttackType(EAttackTypes::Melee);
+
+    // Override the Niagara Component's attachment (normally BillboardComponent in the base class).
+    NiagaraComponent->SetupAttachment(CollisionComponent);
 }
 
 void AMIR_MagicMelee::BeginPlay()
