@@ -61,6 +61,10 @@ void UMIR_ManaComponent::ManaCooldown()
 	// The amount by which mana will be recovered per timer repetition.
 	const int32 ManaAmount = 1;
 
+	// The recovery rate of the Mana Gauge, which enables the gauge to recover at variable
+	// rates so that the total recovery time is always exactly eight seconds.
+	const float RecoveryRate = 8.0f / TotalManaPower;
+
 	// The TimerManager instance for the current world.
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 
@@ -91,8 +95,8 @@ void UMIR_ManaComponent::ManaCooldown()
 		}
 	);
 
-	// Repeats the delegate every second.
-	TimerManager.SetTimer(CooldownHandle, CooldownDelegate, 1.0f, true);
+	// Repeats the delegate per the value stored in `RecoveryRate`.
+	TimerManager.SetTimer(CooldownHandle, CooldownDelegate, RecoveryRate, true);
 }
 
 void UMIR_ManaComponent::ClearCooldownTimer()
