@@ -87,6 +87,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "04_Jump")
 		bool bCanAnimateJump = false;
 
+	// Condition when player can move during a certain animation state.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "05_Walk")
+		bool bCanMove = true;
+
 protected:
 	// Represents whether the Main Attack can be used.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
@@ -198,4 +202,7 @@ public:
 	// Sets `bCanUseMainAttack` to True, re-enabling the Main Attack input.
 	UFUNCTION(BlueprintCallable)
 		void AllowMainAttack();
+
+
+
 };

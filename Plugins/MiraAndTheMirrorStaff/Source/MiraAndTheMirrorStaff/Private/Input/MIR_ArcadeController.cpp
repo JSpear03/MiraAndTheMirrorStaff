@@ -28,9 +28,12 @@ void AMIR_ArcadeController::SetupInputComponent()
 	{
 		// Triggered Bindings.
 		EnhancedInput->BindAction(Move, ETriggered, this, &AMIR_ArcadeController::MoveCharacter);
-		EnhancedInput->BindAction(MainAttack, ETriggered, this, &AMIR_ArcadeController::HandleMainAttackInput);
-		EnhancedInput->BindAction(RangedCopy, ETriggered, this, &AMIR_ArcadeController::HandleRangedCopyInput);
-		EnhancedInput->BindAction(SubAttack, ETriggered, this, &AMIR_ArcadeController::HandleSubAttackInput);
+		EnhancedInput->BindAction(MainAttack, ETriggered, this, 
+			&AMIR_ArcadeController::HandleMainAttackInput);
+		EnhancedInput->BindAction(RangedCopy, ETriggered, this, 
+			&AMIR_ArcadeController::HandleRangedCopyInput);
+		EnhancedInput->BindAction(SubAttack, ETriggered, this, 
+			&AMIR_ArcadeController::HandleSubAttackInput);
 		EnhancedInput->BindAction(Discard, ETriggered, this, &AMIR_ArcadeController::DiscardCopiedMagic);
 
 		// Started Bindings.
@@ -69,39 +72,27 @@ void AMIR_ArcadeController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 {
-	/**
-	 * // ===== OLD MOVEMENT CODE ====
-	 * 
-	 * //ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	 * //FRotator ControllerRotation = PlayerCharacter->GetControlRotation();
-	 * //FVector ActionVector, ForwardVector, RightVector;
-	 *
-	 * //ActionVector = ActionValue.Get<FVector>();
-	 *
-	 * //ControllerRotation = UKismetMathLibrary::MakeRotFromX(ActionVector);
-	 *
-	 * //PlayerCharacter->SetActorRotation(ControllerRotation, ETeleportType::None);
-	 *
-	 * //ForwardVector = UKismetMathLibrary::GetForwardVector(ControllerRotation);
-	 * //RightVector = UKismetMathLibrary::GetRightVector(ControllerRotation);
-	 *
-	 * //PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y-Axis.
-	 * //PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);    // Movement on the X-Axis.
-	 */
+	if (!bCanMove)
+	{
+		return;
+	}
 
 	// Get player-character reference and necessary vectors and rotaters.
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);  // Player-character reference.
-	FRotator ControllerRotation = PlayerCharacter->GetControlRotation();  // Player character's control rotation.
-	FVector ActionVector, ForwardVector, RightVector;					  // Movement- and rotation-related vector.
+	ACharacter* PlayerCharacter = 
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);  // Player-character reference.
+	FRotator ControllerRotation = 
+		PlayerCharacter->GetControlRotation();  // Player character's control rotation.
+	FVector ActionVector, ForwardVector, RightVector;  // Movement- and rotation-related vector.
 
 	ActionVector = ActionValue.Get<FVector>();
-	ForwardVector = UKismetMathLibrary::GetForwardVector(ControllerRotation);  // Forward vector off control rotation.
-	RightVector = UKismetMathLibrary::GetRightVector(ControllerRotation);      // Right vector off control rotation.
+	ForwardVector = UKismetMathLibrary::
+		GetForwardVector(ControllerRotation);  // Forward vector off control rotation.
+	RightVector = 
+		UKismetMathLibrary::GetRightVector(ControllerRotation);  // Right vector off control rotation.
 
 	// Add movement to the player character.
 	PlayerCharacter->AddMovementInput(ForwardVector, ActionVector.Y);  // Movement on the Y-Axis.
 	PlayerCharacter->AddMovementInput(RightVector, ActionVector.X);    // Movement on the X-Axis.
-
 }
 
 /************************************************************************************
