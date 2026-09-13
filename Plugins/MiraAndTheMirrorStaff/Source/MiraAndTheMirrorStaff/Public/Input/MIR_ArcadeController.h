@@ -200,9 +200,10 @@ protected:
 
 public:
 	// Sets `bCanUseMainAttack` to True, re-enabling the Main Attack input.
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "03_Main Attack")
 		void AllowMainAttack();
 
-
-
+	// Turns off bCanUseMainAttack for a while, 
+	// so player animation does not look weird, when pressing the attack input. 
+	// TODO: Get rid of disallow main attack and timer.
 };

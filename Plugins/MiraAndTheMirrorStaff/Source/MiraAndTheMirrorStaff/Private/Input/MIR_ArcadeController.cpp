@@ -28,13 +28,14 @@ void AMIR_ArcadeController::SetupInputComponent()
 	{
 		// Triggered Bindings.
 		EnhancedInput->BindAction(Move, ETriggered, this, &AMIR_ArcadeController::MoveCharacter);
-		EnhancedInput->BindAction(MainAttack, ETriggered, this, 
+		EnhancedInput->BindAction(MainAttack, ETriggered, this,
 			&AMIR_ArcadeController::HandleMainAttackInput);
-		EnhancedInput->BindAction(RangedCopy, ETriggered, this, 
+		EnhancedInput->BindAction(RangedCopy, ETriggered, this,
 			&AMIR_ArcadeController::HandleRangedCopyInput);
-		EnhancedInput->BindAction(SubAttack, ETriggered, this, 
+		EnhancedInput->BindAction(SubAttack, ETriggered, this,
 			&AMIR_ArcadeController::HandleSubAttackInput);
-		EnhancedInput->BindAction(Discard, ETriggered, this, &AMIR_ArcadeController::DiscardCopiedMagic);
+		EnhancedInput->BindAction(Discard, ETriggered, this,
+			&AMIR_ArcadeController::DiscardCopiedMagic);
 
 		// Started Bindings.
 		EnhancedInput->BindAction(Interact, EStarted, this, &AMIR_ArcadeController::UseInteract);
@@ -102,7 +103,7 @@ void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 void AMIR_ArcadeController::StartPlayerJumping()
 {
 	// Check whether the player has the item to jump.
-	if (!IsPlayerJumping())
+	if (!IsPlayerJumping() || !bCanMove)
 	{
 		// If the condition results in True (returns False -> negated to True), do nothing.
 		return;
@@ -215,8 +216,11 @@ void AMIR_ArcadeController::HandleMainAttackInput()
 	}
 
 	// Block Main Attack when the Mana Gauge is in cooldown.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (PlayerCharacter && PlayerCharacter->ManaComponent && PlayerCharacter->ManaComponent->IsCooldownActive())
+	AMIR_PlayerChar* PlayerCharacter = 
+		Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (PlayerCharacter && PlayerCharacter->ManaComponent && 
+		PlayerCharacter->ManaComponent->IsCooldownActive())
 	{
 		return;
 	}
@@ -226,7 +230,8 @@ void AMIR_ArcadeController::HandleMainAttackInput()
 	bCanUseSubAttack = false;
 	if (UWorld* World = GetWorld())
 	{
-		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, &AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
+		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, 
+			&AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
 	}
 
 	UseMainAttack();
@@ -241,9 +246,13 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 		return;
 	}
 
-	// Block Ranged Copy when the Mana Gauge is in cooldown and if the player doesn't have the Mirror Staff.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (PlayerCharacter && PlayerCharacter->ManaComponent && PlayerCharacter->ManaComponent->IsCooldownActive())
+	// Block Ranged Copy when the Mana Gauge is in cooldown
+	// and if the player doesn't have the Mirror Staff.
+	AMIR_PlayerChar* PlayerCharacter = 
+		Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (PlayerCharacter && PlayerCharacter->ManaComponent && 
+		PlayerCharacter->ManaComponent->IsCooldownActive())
 	{
 		return;
 	}
@@ -256,7 +265,8 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 	bCanUseSubAttack = false;
 	if (UWorld* World = GetWorld())
 	{
-		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, &AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
+		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, 
+			&AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
 	}
 
 	UseMirrorStaff();
@@ -285,6 +295,7 @@ void AMIR_ArcadeController::AllowMainAttack()
 {
 	bCanUseMainAttack = true;
 	bCanUseSubAttack = true;
+
 	if (UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().ClearTimer(SubAttackUnlockTimerHandle);
