@@ -4,7 +4,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/MIR_Combat_Component.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values.
@@ -14,27 +13,12 @@ AMIR_EnemyBASE::AMIR_EnemyBASE()
 	CombatComponent = CreateDefaultSubobject<UMIR_Combat_Component>(TEXT("Combat Component"));
 
 	ElementComponent->SetCurrentElement(EElements::Nothing);
-
-	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
-	{
-		MoveComp->bCanWalkOffLedges = false;
-		MoveComp->bCanWalkOffLedgesWhenCrouching = false;
-		MoveComp->LedgeCheckThreshold = 50.0f;
-	}
 }
 
 
 void AMIR_EnemyBASE::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Enforce ledge prevention at runtime
-	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
-	{
-		MoveComp->bCanWalkOffLedges = false;
-		MoveComp->bCanWalkOffLedgesWhenCrouching = false;
-		MoveComp->LedgeCheckThreshold = 50.0f;
-	}
 
 	OnEnemyDied.AddDynamic(this, &AMIR_EnemyBASE::EnemyDied);
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMIR_EnemyBASE::OnOverlapBegin);
