@@ -80,22 +80,20 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 		// static function: the object it dispatches on is the first argument, not the "->" prefix.
 		IIMIR_Copiable::Execute_CopyMagic(this, PlayerCharacter, GetStoredMagic());
 	}
-	else
+	// Incoming magic is a real attack — apply damage using the element/attack-type system.
+	else if (IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
 	{
-		// Incoming magic is a real attack — apply damage using the element/attack-type system.
-		if (IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
-		{
-			// The `IncomingMagic`'s Element Name.
-			EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
+		// The `IncomingMagic`'s Element Name.
+		EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
 
-			// The receiver's Element Name.
-			EElements ReceiverElementName = ElementComponent->GetElementName();
+		// The receiver's Element Name.
+		EElements ReceiverElementName = ElementComponent->GetElementName();
 
-			// The `IncomingMagic`'s Damage.
-			int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
+		// The `IncomingMagic`'s Damage.
+		int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
 
-			CalculateDamage(AttackerElementName, ReceiverElementName, AttackerDamage);
-		}
+		CalculateDamage(AttackerElementName, ReceiverElementName, AttackerDamage);
+		CheckHealth();
 	}
 }
 
@@ -110,11 +108,8 @@ void AMIR_EnemyBASE::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
 	IIMIR_Copiable::Execute_CopyMagic(CopiableComponent, CurrentPlayer, MagicToCopy);
 }
 
-// Called every frame.
-void AMIR_EnemyBASE::Tick(float DeltaTime)
+void AMIR_EnemyBASE::CheckHealth()
 {
-	Super::Tick(DeltaTime);
-
 	if (HealthComponent->GetHealth() == 0 && bCanRunBroadcast)
 	{
 		bCanRunBroadcast = false;
@@ -126,7 +121,13 @@ void AMIR_EnemyBASE::Tick(float DeltaTime)
 			CombatComponent->SetDeactivated(true);
 		}
 
-		OnEnemyDied.Broadcast();
+		OnEnemyDied.Broadcast(this);
 		SetNewMaterial();
 	}
+}
+
+// Called every frame.
+void AMIR_EnemyBASE::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }

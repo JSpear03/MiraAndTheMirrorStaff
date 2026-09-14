@@ -79,7 +79,7 @@ void AMIR_PuzzleAssetManager::VerifyDirectInArray(AMIR_PuzzleAssetDirectBASE* Di
 		return;
 	}
 
-	// Check whether `CurrentDirect` is contained in the `DirectContainer`.
+	// Check whether `CurrentDirect` is contained in the `DirectArray`.
 	if (DirectAssetArray.Contains(CurrentDirect))
 	{
 		// Is contained, so try IPA activation/deactivation based on mode.
@@ -329,15 +329,4 @@ void AMIR_PuzzleAssetManager::DetermineForwardActivation()
 			bIsForwardActivation = true;
 		}
 	}
-
-	//if (IndirectAsset->GetInitialState() == EPuzzleState::Activate)
-	//{
-	//	// If the IPA is already active, then the PAM needs to operate in reverse.
-	//	bIsForwardActivation = false;
-	//}
-	//else
-	//{
-	//	// If the IPA is already inactive, then the PAM needs to operate forward.
-	//	bIsForwardActivation = true;
-	//}
 }

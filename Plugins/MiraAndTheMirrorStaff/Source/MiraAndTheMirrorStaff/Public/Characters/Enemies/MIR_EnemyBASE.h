@@ -8,7 +8,7 @@
 #include "Components/MIR_CopiableComponent.h"
 #include "MIR_EnemyBASE.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemyDied);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDied, AMIR_EnemyBASE*, SelfRef);
 
 /**
  *  Base class for all enemies in the game. 
@@ -37,8 +37,7 @@ public:
 		class UMIR_Combat_Component* CombatComponent;
 
 	// Delegate to call function when enemy's health is 0.
-
-	UPROPERTY()
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "State")
 		FOnEnemyDied OnEnemyDied;
 
 	// Sets default values for Base Enemy. 
@@ -66,12 +65,21 @@ public:
 	// TODO: Confirm whether AMIR_MagicBASE* or TSubobjectOf<class AMIR_MagicBASE> is better.
 	// Reflect any changes in MIR_EnemyBASE.cpp.
 
-	// Called when enemy delgate is broadcasted.
+	
+	/**
+	* Called when enemy delgate is broadcasted.
+	* 
+	* @param SelfRef An optional reference to self.
+	*/
 	UFUNCTION(BlueprintImplementableEvent)
-		void EnemyDied();
+		void EnemyDied(AMIR_EnemyBASE* SelfRef);
 
 	// Change the material to a certain color, after dust is setup. 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetNewMaterial();
+
+private:
+	// Checks if enemy's health reaches 0.
+	void CheckHealth();
 
 };
