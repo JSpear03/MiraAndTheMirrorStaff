@@ -62,10 +62,6 @@ public:
 	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
 		TSubclassOf<class AMIR_MagicBASE> MagicToCopy) override;
 
-	// TODO: Confirm whether AMIR_MagicBASE* or TSubobjectOf<class AMIR_MagicBASE> is better.
-	// Reflect any changes in MIR_EnemyBASE.cpp.
-
-	
 	/**
 	* Called when enemy delgate is broadcasted.
 	* 

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Characters/Player/MIR_PlayerChar.h"  // TODO: Is this necessary?
+#include "Characters/Player/MIR_PlayerChar.h" 
 #include "PuzzleAssets/MIR_PuzzleAssetBASE.h"
 #include "Enums/EMIR_PuzzleState.h"
 #include "Components/MIR_ElementComponent.h"
@@ -40,18 +40,18 @@ protected:
 	* @param OtherActor The actor that overlapped with this actor's `CollisionComponent`.
 	*/
 	UFUNCTION(BlueprintCallable)
-	void HandleOverlap(AActor* OtherActor);
+		void HandleOverlap(AActor* OtherActor);
 
 	// When the `CapsuleCollision` begins overlapping with something.
 	UFUNCTION()
-	virtual void OnCapsuleBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComponent,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult
-	);
+		virtual void OnCapsuleBeginOverlap(
+			UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent,
+			int32 OtherBodyIndex,
+			bool bFromSweep,
+			const FHitResult& SweepResult
+		);
 
 public:
 	// Delegate object to call Activate for Direct.

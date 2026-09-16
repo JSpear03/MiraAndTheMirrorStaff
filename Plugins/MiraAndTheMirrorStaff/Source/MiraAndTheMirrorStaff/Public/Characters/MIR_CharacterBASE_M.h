@@ -43,7 +43,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element")
 		UMIR_ElementComponent* ElementComponent; 
 
-	// TODO: Update with new Element and AttackType Component changes.
 	// Decreases health based on the calculated damage. 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void CalculateDamage(EElements AttackerElement, EElements RecieverElement,
