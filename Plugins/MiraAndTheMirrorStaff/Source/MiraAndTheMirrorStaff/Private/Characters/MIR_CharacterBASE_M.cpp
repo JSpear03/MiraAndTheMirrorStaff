@@ -6,7 +6,8 @@
 // Sets default values
 AMIR_CharacterBASE_M::AMIR_CharacterBASE_M()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this character to call Tick() every frame.  
+	// You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Creates Health Component
@@ -49,12 +50,14 @@ void AMIR_CharacterBASE_M::CalculateDamage(EElements AttackerElement, EElements 
 	// By default, zero represents what the `AttackerElement` is weak against.
 	int32 Modifier = 0;
 
-	if (AttackerElement == EElements::Nothing || RecieverElement == EElements::Nothing  // Netural Against
+	if (AttackerElement == EElements::Nothing || 
+		RecieverElement == EElements::Nothing  // Netural Against
 		|| AttackerElement == RecieverElement)
 	{
 		Modifier = 1;
 	}
-	else if ((AttackerElement == EElements::Flame   && RecieverElement == EElements::Ice) ||  // Strong against
+	else if ((AttackerElement == EElements::Flame   && 
+		RecieverElement == EElements::Ice) ||  // Strong against
 			 (AttackerElement == EElements::Ice     && RecieverElement == EElements::Thunder) ||
 			 (AttackerElement == EElements::Thunder && RecieverElement == EElements::Flame))
 	{

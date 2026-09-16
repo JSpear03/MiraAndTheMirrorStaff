@@ -16,26 +16,14 @@ AMIR_OnOffButton::AMIR_OnOffButton()
 void AMIR_OnOffButton::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//CapsuleCollision->OnComponentEndOverlap.AddDynamic(this, &AMIR_OnOffButton::OnEndOverlap);
 }
 
 void AMIR_OnOffButton::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
 
 	if (!OtherActor || !PlayerCharacter)
-	{
-		return;
-	}
-
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
-
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Actor Overlap"));
-
-	if (!bIsChildOfPlayer)
 	{
 		return;
 	}
@@ -51,20 +39,14 @@ void AMIR_OnOffButton::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp
 void AMIR_OnOffButton::OnCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
 
-	if (!OtherActor || !PlayerCharacter || bIsNothingFired)
+	if (!OtherActor || !PlayerCharacter)
 	{
 		return;
 	}
 
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
-
-	if (!bIsChildOfPlayer)
-	{
-		return;
-	}
+	bIsNothingFired = true;
 
 	DeactivatePuzzleAsset();
 	OnDirectDeactivated.Broadcast(this);
