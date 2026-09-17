@@ -9,22 +9,23 @@
 #include "Components/ArrowComponent.h"
 #include "Components/MIR_ManaComponent.h"
 #include "Magic/MIR_MagicBASE.h"
+#include "Enums/EMIR_KeyItem.h"
 #include "MIR_PlayerChar.generated.h"
 
 class AMIR_RespawnPoint;
 
-UENUM(BlueprintType)
-enum class EMIR_KeyItem : uint8
-{
-	MirrorStaff,
-	SkyboundShoes,
-	SpiritStole,
-	KeyGemstone,
-	KeyGemstoneRed,
-	KeyGemstoneBlue,
-	KeyGemstoneGreen,
-	KeyGemstoneYellow,
-};
+//UENUM(BlueprintType)
+//enum class EMIR_KeyItem : uint8
+//{
+//	MirrorStaff,
+//	SkyboundShoes,
+//	SpiritStole,
+//	KeyGemstone,
+//	KeyGemstoneRed,
+//	KeyGemstoneBlue,
+//	KeyGemstoneGreen,
+//	KeyGemstoneYellow,
+//};
 
 /**
  * The character that the player will control in this game.
@@ -74,6 +75,7 @@ public:
 		bool bHasSpiritStole = false;
 
 	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
+	// TODO: Deprecate; the Bools are a better solution.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items",
 			  meta = (ClampMin = 0, ClampMax = 4, UIMin = 0, UIMax = 4))
 		int32 KeyGemstoneCount = 0;

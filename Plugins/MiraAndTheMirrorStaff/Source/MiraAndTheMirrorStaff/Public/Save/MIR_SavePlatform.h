@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Characters/Player/MIR_PlayerChar.h"
 #include "MIR_SavePlatform.generated.h"
 
 UCLASS()
@@ -52,5 +53,5 @@ public:
 
 	// Adds Save Room UI to the viewport. 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "UI")
-		void CallSaveRoomMenu();
+		void CallSaveRoomMenu(AMIR_PlayerChar* PlayerRef);
 };

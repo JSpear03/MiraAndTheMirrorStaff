@@ -2,7 +2,6 @@
 
 
 #include "Save/MIR_SavePlatform.h"
-#include "Characters/Player/MIR_PlayerChar.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -56,8 +55,8 @@ void AMIR_SavePlatform::OnSaveBeginOverlap(UPrimitiveComponent* OverlappedCompon
 
 	// ========== CALL UI =======================================================================
 	
-	// The Save-Room UI can be safely created; the above checks succeeded.
-	CallSaveRoomMenu();
+	// The Save-Room UI can be safely created; the validations above succeeded.
+	CallSaveRoomMenu(PlayerCharacter);
 }
 
 // Called every frame
@@ -66,4 +65,3 @@ void AMIR_SavePlatform::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

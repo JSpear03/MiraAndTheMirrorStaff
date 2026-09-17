@@ -214,7 +214,7 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 		bHasSpiritStole = true;
 		break;
 
-	case EMIR_KeyItem::KeyGemstone:
+	case EMIR_KeyItem::KeyGemstone:  // TODO: Deprecate; the Bools are a better solution.
 		KeyGemstoneCount++;
 		break;
 
