@@ -29,7 +29,7 @@ protected:
 		float MagicLifespan = 2.0f;
 
 	// The initial x-axis rotation (relative).
-	const double InitialRotationX = -90.0;
+	const float InitialRotationX = -90.0;
 
 	// The initial rotation upon swinging (relative).
 	const float InitialRotationZ = -90.0f;

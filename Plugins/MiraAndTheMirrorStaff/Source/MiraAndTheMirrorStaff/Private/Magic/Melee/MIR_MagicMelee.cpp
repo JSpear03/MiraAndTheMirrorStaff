@@ -41,15 +41,12 @@ AMIR_MagicMelee::AMIR_MagicMelee()
 void AMIR_MagicMelee::BeginPlay()
 {
     Super::BeginPlay();
-
-    // Call the below in Blueprints instead.
-    //HandleDespawn(MagicLifespan);
 }
 
 void AMIR_MagicMelee::SwingMagic(const float& Alpha)
 {
     // The new relative rotation (z-axis) of the Billboard Component.
-    double NewRotationZ = FMath::Lerp(InitialRotationZ, FinalRotationZ, Alpha);
+    float NewRotationZ = FMath::Lerp(InitialRotationZ, FinalRotationZ, Alpha);
 
     BillboardComponent->SetRelativeRotation(FRotator3d(InitialRotationX, 0.0, NewRotationZ));
 }

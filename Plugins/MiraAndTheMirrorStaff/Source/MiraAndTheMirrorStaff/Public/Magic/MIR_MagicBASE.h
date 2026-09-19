@@ -16,22 +16,21 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicBASE : public AActor
     GENERATED_BODY()
 
 public:
-    // A debug-use mesh. Might be deleted, as each magic will likely use a Niagara
-    // system for their visuals.
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Mesh")
-        USkeletalMeshComponent* Mesh;
-
     // The component which handles the Niagara system to play.
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Magic|Niagara")
         UNiagaraComponent* NiagaraComponent = nullptr;
 
 private:
     // Timer handle for the despawn timer.
-    FTimerHandle DespawnHandle;
+    FTimerHandle FDespawnHandle;
 
 public:
     // Sets default values for this actor's properties
     AMIR_MagicBASE();
+
+private:
+    // Sets default values for the collision component and ice collision.
+    void SetupCollisions();
 
 protected:
     // Called when the game starts or when spawned
@@ -68,16 +67,6 @@ protected:
     // Calls `AllowMainAttack()` on an AMIR_ArcadeController reference if it is valid.
     void ReenableMainAttack();
 
-    /*
-    * When something overlaps with the Magic Base.
-    *
-    * @param OtherActor Represented by either an enemy or Indirect puzzle asset.
-    */
-    /*UFUNCTION()
-    void OnMagicBaseOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-        const FHitResult& SweepResult);*/
-
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -100,7 +89,7 @@ public:
 
     // A Billboard Component that acts as a pivot for Melee attacks.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic|Collision")
-        class UBillboardComponent* BillboardComponent;
+    class UBillboardComponent* BillboardComponent;
 
     // A Scene Component that acts as the root component.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Collision")
@@ -117,19 +106,19 @@ public:
      * preventing a single magic instance from damaging the same enemy more than
      * once while still allowing it to hit multiple different enemies.
      *
-     * @param Target The actor to register a hit against.
+     * @param ATarget The actor to register a hit against.
      *
-     * @returns True if this is the first hit on Target; false otherwise.
+     * @returns True if this is the first hit on ATarget; false otherwise.
      */
     UFUNCTION(BlueprintCallable, Category = "Magic|Combat")
-    bool TryRegisterHit(AActor* Target);
+        bool TryRegisterHit(AActor* ATarget);
 
 private:
     // Tracks which actors this magic instance has already damaged so that
     // a single spell cannot multi-hit the same enemy (e.g. from dual-capsule
     // overlaps, AoE expansion, or melee swing re-entry).
     UPROPERTY()
-    TSet<TObjectPtr<AActor>> DamagedActors;
+        TSet<TObjectPtr<AActor>> TDamagedActors;
 
     // Guard to ensure ReenableMainAttack only runs once per magic actor
     bool bHasReenabledAttack = false;

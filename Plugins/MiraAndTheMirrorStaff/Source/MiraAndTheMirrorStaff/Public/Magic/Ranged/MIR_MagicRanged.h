@@ -36,4 +36,7 @@ protected:
 
 	// Represents whether certain logic in `Tick()` has executed once.
 	bool bDoOnce = false;
+
+	// Should only play a sound effect one time. 
+	bool bCanPlaySound = true;
 };

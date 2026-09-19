@@ -52,5 +52,5 @@ protected:
 		float FinalSize = 300.0f;
 
 	// An array of both collision components.
-	const TArray<UCapsuleComponent*> CapsuleArray = { CollisionComponent, IceCollisionComponent };
+	const TArray<UCapsuleComponent*> TCapsuleArray = { CollisionComponent, IceCollisionComponent };
 };

@@ -39,44 +39,45 @@ AMIR_MagicRanged::AMIR_MagicRanged()
 void AMIR_MagicRanged::BeginPlay()
 {
     Super::BeginPlay();
-
-    //HandleDespawn(MagicLifespan);
 }
 
 void AMIR_MagicRanged::Tick(float DeltaTime)
 {
-    // Execute only when needed.
-    if (!bDoOnce)
+    // Execute the following code below the condition, only when needed.
+    if (bDoOnce)
     {
-        // The current Player Controller at index 0.
-        APlayerController* PlayerCont = UGameplayStatics::GetPlayerController(this, 0);
+        return;
+    }
 
-        // Validate Player Controller.
-        if (!PlayerCont)
-        {
-            // Invalid, so exit.
-            return;
-        }
+    // The current Player Controller at index 0.
+    APlayerController* PlayerCont = UGameplayStatics::GetPlayerController(this, 0);
 
-        // Set up remaining variables for `ProjectWorldToScreen()` below.
-        FVector WorldPosition = this->GetActorLocation();  // The world position of this actor.
-        FVector2D ScreenPosition;                          // The screen position of this actor.
+    // Validate Player Controller.
+    if (!PlayerCont)
+    {
+        // Invalid, so exit.
+        return;
+    }
 
-        // Project the actor's world position to a screen position.
-        UGameplayStatics::ProjectWorldToScreen(PlayerCont, WorldPosition, ScreenPosition, false);
+    // Set up remaining variables for `ProjectWorldToScreen()` below.
+    FVector WorldPosition = this->GetActorLocation();  // The world position of this actor.
+    FVector2D ScreenPosition;                          // The screen position of this actor.
 
-        // Get the viewport size for use in the conditional statement below.
-        int32 ViewportWidth;   // The viewport's width.
-        int32 ViewportHeight;  // The viewport's height.
-        PlayerCont->GetViewportSize(ViewportWidth, ViewportHeight);
+    // Project the actor's world position to a screen position.
+    UGameplayStatics::ProjectWorldToScreen(PlayerCont, WorldPosition, ScreenPosition, false);
 
-        // Check whether the actor, per its `ScreenPosition`, has exited the viewport.
-        if ((ScreenPosition.X <= 0.0) || (ScreenPosition.X >= ViewportWidth) ||
-            (ScreenPosition.Y <= 0.0) || (ScreenPosition.Y >= ViewportHeight))
-        {
-            // Has exited the viewport, so destroy it.
-            InstantHandleDespawn();
-            bDoOnce = true;  // Disable execution (as it would repeat otherwise).
-        }
+    // Get the viewport size for use in the conditional statement below.
+    int32 ViewportWidth;   // The viewport's width.
+    int32 ViewportHeight;  // The viewport's height.
+
+    PlayerCont->GetViewportSize(ViewportWidth, ViewportHeight);
+
+    // Check whether the actor, per its `ScreenPosition`, has exited the viewport.
+    if ((ScreenPosition.X <= 0.0) || (ScreenPosition.X >= ViewportWidth) ||
+        (ScreenPosition.Y <= 0.0) || (ScreenPosition.Y >= ViewportHeight))
+    {
+        // Has exited the viewport, so destroy it.
+        InstantHandleDespawn();
+        bDoOnce = true;  // Disable execution (as it would repeat otherwise).
     }
 }
