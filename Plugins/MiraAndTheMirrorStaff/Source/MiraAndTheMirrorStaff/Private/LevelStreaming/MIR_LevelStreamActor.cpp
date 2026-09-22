@@ -20,8 +20,7 @@ AMIR_LevelStreamActor::AMIR_LevelStreamActor()
 	RootComponent->SetMobility(EComponentMobility::Stationary);
 
 	// Function bindings.
-	OverlapVolume->OnComponentBeginOverlap.AddUniqueDynamic(this, 
-		&AMIR_LevelStreamActor::OverlapBegins);
+	OverlapVolume->OnComponentBeginOverlap.AddUniqueDynamic(this, &AMIR_LevelStreamActor::OverlapBegins);
 	OverlapVolume->OnComponentEndOverlap.AddUniqueDynamic(this, &AMIR_LevelStreamActor::OverlapEnds);
 }
 
@@ -30,66 +29,21 @@ void AMIR_LevelStreamActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!LevelToLoad.IsNull())
-	{
-		if (LevelToLoad.IsValid())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level is validated!"));
-		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level isn't null!"));
-		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level is null."));
-	}
-	
-}
-
-void AMIR_LevelStreamActor::OverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// The currently possessed player character.
-	ACharacter* MyCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-
-	if (OtherActor == MyCharacter && !LevelToLoad.IsNull())
-	{
-		// Credit to Austin for helping out with implmenting logic for loading level based on file path.
-
-		// The filepath of the level to load.
-		FSoftObjectPath levelLoadPath = UWorld::RemovePIEPrefix(LevelToLoad.ToSoftObjectPath().
-																GetLongPackageName());
-
-		/*GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(
-										 TEXT("Level will load! %s"), *levelLoadPath.ToString()));*/
-
-		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this,
-															  TSoftObjectPtr<UWorld>(levelLoadPath),
-															  this->GetActorLocation());
-	}
-	else
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Level will NOT load!"));
-	}
-}
-
-void AMIR_LevelStreamActor::OverlapEnds(UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	// The currently possessed player character.
-	ACharacter* MyCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-
-	if (OtherActor == MyCharacter && !LevelToLoad.IsNull())
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Unloading level."));
-		UArcadeFunctions::ArcadeUnloadStreamLevel(this, LoadedLevel);
-		LoadedLevel = nullptr;
-	}
-	else
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Failed to unload level."));
-	}
+	// DEBUG STATEMENTS:
+	//if (!LevelToLoad.IsNull())
+	//{
+	//	if (LevelToLoad.IsValid())
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level is validated!"));
+	//	}
+	//	else {
+	//		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level isn't null!"));
+	//	}
+	//}
+	//else
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("A Level is null."));
+	//}
 }
 
 // Called every frame
@@ -99,3 +53,65 @@ void AMIR_LevelStreamActor::Tick(float DeltaTime)
 
 }
 
+/*********************************************************************************************
+* OVERLAP EVENTS
+*********************************************************************************************/
+
+void AMIR_LevelStreamActor::OverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Perform streaming only if the player began the overlap.
+	if (ValidateOtherActorAsPlayer(OtherActor))
+	{
+		StreamLevel();
+	}
+}
+
+void AMIR_LevelStreamActor::OverlapEnds(UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Perform unstreaming only if the player ended the overlap.
+	if (ValidateOtherActorAsPlayer(OtherActor))
+	{
+		UnstreamLevel();
+	}
+}
+
+/*********************************************************************************************
+* VALIDATION OF OVERLAPPING ACTOR
+*********************************************************************************************/
+
+const bool AMIR_LevelStreamActor::ValidateOtherActorAsPlayer(const AActor* OtherActor)
+{
+	// If `OtherActor` is equal to the first player character in the world,
+	// return true; otherwise, false.
+	return OtherActor == UGameplayStatics::GetPlayerCharacter(this, 0) ? true : false;
+}
+
+/*********************************************************************************************
+* STREAMING & UNSTREAMING
+*********************************************************************************************/
+
+void AMIR_LevelStreamActor::StreamLevel()
+{
+	// Credit to Austin for helping out with implementing logic for streaming via file path.
+	if (!LevelToLoad.IsNull())
+	{
+		// The filepath of the level to load.
+		FSoftObjectPath levelLoadPath = UWorld::RemovePIEPrefix(LevelToLoad.ToSoftObjectPath().
+																GetLongPackageName());
+
+		LoadedLevel = UArcadeFunctions::ArcadeLoadStreamLevel(this,
+															  TSoftObjectPtr<UWorld>(levelLoadPath),
+															  this->GetActorLocation());
+	}
+}
+
+void AMIR_LevelStreamActor::UnstreamLevel()
+{
+	if (!LevelToLoad.IsNull())
+	{
+		UArcadeFunctions::ArcadeUnloadStreamLevel(this, LoadedLevel);
+		LoadedLevel = nullptr;
+	}
+}

@@ -8,6 +8,18 @@
 #include "ArcadeFunctions.h"
 #include "MIR_LevelStreamActor.generated.h"
 
+/**
+ * The Level-Stream Actor (LSA) is an actor that streams/unsteams one assigned level
+ * when the player character (MIR_PlayerChar) begins/ends an overlap with its BoxComponent
+ * (`OverlapVolume`).
+ * 
+ * When placed in the editor, its `LevelToLoad` member should be assigned to a UMAP reference
+ * so that the level can be loaded.
+ * 
+ * The optional member `bStreamImmediately` can be used to stream in a level immediately.
+ * However, this will disable overlap events, preventing the level from being unstreamed
+ * through said events.
+ */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_LevelStreamActor : public AActor
 {
@@ -27,12 +39,12 @@ protected:
 							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 							bool bFromSweep, const FHitResult& SweepResult);
 
-	// Attemps to unload a level upon end of overlap.
+	// Attempts to unload a level upon end of overlap.
 	UFUNCTION()
 		void OverlapEnds(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	// The level to load during Level Streaming.
+	// The level to load via Level Streaming.
 	UPROPERTY(EditAnywhere, Category = "Streaming|Level")
 		TSoftObjectPtr<UWorld> LevelToLoad;
 
@@ -41,10 +53,6 @@ protected:
 		ULevelStreamingDynamic* LoadedLevel = nullptr;
 
 public:	
-	// Represents the current file path as a string.
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Streaming|Level")
-		FString LevelPath;*/
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -53,4 +61,18 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"),
 			  Category = "Streaming|Volume")
 		UBoxComponent* OverlapVolume;
+
+	/**
+	 * Validates whether the `OtherActor` is the first player character in the world.
+	 * Should be called during overlap events.
+	 * 
+	 * @param OtherActor The actor which initiated/ended the overlap with the LSA.
+	 */
+	const bool ValidateOtherActorAsPlayer(const AActor* OtherActor);
+
+	// Streams in a level as long as it is valid.
+	void StreamLevel();
+
+	// Unstreams in a level as long as it is valid.
+	void UnstreamLevel();
 };

@@ -30,7 +30,8 @@ public class MiraAndTheMirrorStaff : ModuleRules
 				"EnhancedInput",
 				"AIModule",
 				"Niagara",
-				"NiagaraCore"
+				"NiagaraCore",
+				"UMG"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
