@@ -54,6 +54,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "AI|Combat", meta = (ClampMin = "0.1", UIMin = "0.1"))
 	float AttackTimeout = 2.0f;
 
+	// Whether this task requires a clear line of sight to the target before executing the attack
+	UPROPERTY(EditAnywhere, Category = "AI|Combat")
+	bool bRequireLineOfSight = true;
+
+	// Collision channel used to test line of sight against walls and obstacles
+	UPROPERTY(EditAnywhere, Category = "AI|Combat")
+	TEnumAsByte<ECollisionChannel> LineOfSightChannel = ECC_Visibility;
+
 	// Overrides the text drawn on the node inside the Behavior Tree graph
 	virtual FString GetStaticDescription() const override;
 };

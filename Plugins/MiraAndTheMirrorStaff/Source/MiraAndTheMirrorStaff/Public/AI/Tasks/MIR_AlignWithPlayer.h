@@ -69,6 +69,21 @@ public:
 			  meta = (ClampMin = "0.5", UIMin = "0.5"))
 	float AlignmentTimeout = 4.0f;
 
+	/** Whether alignment requires a clear line of sight to the player */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Alignment")
+	bool bRequireLineOfSight = true;
+
+	/** Collision channel used to test line of sight against walls and obstacles */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Alignment")
+	TEnumAsByte<ECollisionChannel> LineOfSightChannel = ECC_Visibility;
+
 	// Overrides the text drawn on the node inside the Behavior Tree graph
 	virtual FString GetStaticDescription() const override;
+
+private:
+	/** Tests if a clear line of sight exists between a candidate position and the target */
+	bool HasLineOfSight(UWorld* World, const FVector& FromLocation, const AActor* TargetActor, const AActor* IgnoredPawn) const;
+
+	/** Calculates the best alignment destination that has a clear line of sight to the player */
+	bool CalculateAlignmentTarget(APawn* ControlledPawn, AActor* PlayerActor, FVector& OutTarget, float& OutOffAxisDistance, float& OutCardinalYaw) const;
 };

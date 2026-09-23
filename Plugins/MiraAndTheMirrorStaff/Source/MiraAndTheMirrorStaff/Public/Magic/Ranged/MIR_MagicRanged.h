@@ -39,4 +39,16 @@ protected:
 
 	// Should only play a sound effect one time. 
 	bool bCanPlaySound = true;
+
+	// Handles impact with walls, geometry, and obstacles
+	UFUNCTION()
+	void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+						 UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+						 const FHitResult& Hit);
+
+	// Fallback overlap check to catch any overlap with WorldStatic geometry
+	UFUNCTION()
+	void OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+							 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+							 bool bFromSweep, const FHitResult& SweepResult);
 };

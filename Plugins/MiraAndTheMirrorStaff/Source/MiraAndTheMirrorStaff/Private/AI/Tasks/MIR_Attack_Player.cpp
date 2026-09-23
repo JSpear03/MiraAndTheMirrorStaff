@@ -102,6 +102,43 @@ EBTNodeResult::Type UMIR_Attack_Player::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
+	// Line-of-sight verification before attacking (prevents firing through walls)
+	if (bRequireLineOfSight && SelectedAttackMode == ECombatAttackMode::Magic)
+	{
+		AActor* TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent() ? 
+			OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()) : nullptr);
+
+		if (!TargetActor)
+		{
+			TargetActor = UGameplayStatics::GetPlayerCharacter(ControlledPawn->GetWorld(), 0);
+		}
+
+		if (TargetActor)
+		{
+			FHitResult HitResult;
+			FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(AttackLineOfSight), true);
+			TraceParams.AddIgnoredActor(ControlledPawn);
+			TraceParams.AddIgnoredActor(TargetActor);
+
+			FVector StartLocation = ControlledPawn->GetActorLocation();
+			FVector EndLocation = TargetActor->GetActorLocation();
+
+			bool bHitObstacle = ControlledPawn->GetWorld()->LineTraceSingleByChannel(
+				HitResult,
+				StartLocation,
+				EndLocation,
+				LineOfSightChannel,
+				TraceParams
+			);
+
+			if (bHitObstacle)
+			{
+				// A wall or obstacle is between the enemy and the target — abort attack
+				return EBTNodeResult::Failed;
+			}
+		}
+	}
+
 	// Read parameter set in editor node layout
 	switch (SelectedAttackMode)
 	{
