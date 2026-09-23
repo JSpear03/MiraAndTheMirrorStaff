@@ -43,6 +43,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State")
 		EPuzzleState CurrentState = InitialState;
 
+public:
+	// Whether magic projectiles can pass through this puzzle asset instead of being destroyed on contact.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic")
+		bool bAllowMagicPassThrough = false;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

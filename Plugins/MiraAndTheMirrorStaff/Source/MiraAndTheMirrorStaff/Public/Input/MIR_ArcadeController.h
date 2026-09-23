@@ -112,6 +112,28 @@ protected:
 			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 10.0, UIMin = 0.0, UIMax = 10.0))
 		float MainAttackCooldown = 2.0;
 
+	// Minimum cooldown floor (in seconds) between dagger sub-attacks when holding down the button.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack",
+			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 5.0, UIMin = 0.0, UIMax = 5.0))
+		float MinSubAttackCooldown = 0.4f;
+
+	// Timestamp of the last sub-attack input.
+	float LastSubAttackTime = -100.0f;
+
+	// Minimum cooldown floor (in seconds) between attacks even if the projectile despawns prematurely.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack",
+			  meta = (Units = "Seconds", ClampMin = 0.0, ClampMax = 5.0, UIMin = 0.0, UIMax = 5.0))
+		float MinMainAttackCooldown = 0.8f;
+
+	// Timestamp of the last main attack input.
+	float LastMainAttackTime = -100.0f;
+
+	// Timer handle for delaying AllowMainAttack if minimum cooldown has not yet passed.
+	FTimerHandle MainAttackUnlockTimerHandle;
+
+	// Internal helper to re-enable main attack and clear unlock timers.
+	void ExecuteAllowMainAttack();
+
 	// Called to setup input actions. 
 	virtual void SetupInputComponent() override;
 

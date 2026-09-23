@@ -10,6 +10,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Hazards/MIR_HazardBASE.h"
+#include "PuzzleAssets/MIR_PuzzleAssetBASE.h"
 
 AMIR_MagicRanged::AMIR_MagicRanged()
 {
@@ -107,6 +108,20 @@ void AMIR_MagicRanged::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor
         return;
     }
 
+    // Ignore puzzle assets configured to let magic pass through (torches, orbs, etc.)
+    if (AMIR_PuzzleAssetBASE* PuzzleAsset = Cast<AMIR_PuzzleAssetBASE>(OtherActor))
+    {
+        if (PuzzleAsset->bAllowMagicPassThrough)
+        {
+            return;
+        }
+    }
+
+    if (OtherActor && OtherActor->ActorHasTag(TEXT("PassThrough")))
+    {
+        return;
+    }
+
     // Hit a blocking surface (wall, floor, obstacle) - despawn projectile immediately
     InstantHandleDespawn();
 }
@@ -134,6 +149,20 @@ void AMIR_MagicRanged::OnProjectileOverlap(UPrimitiveComponent* OverlappedCompon
 
     // Ignore hazards (water hazards, frozen ice surfaces, lava, etc.)
     if (OtherActor && (OtherActor->IsA<AMIR_HazardBASE>() || OtherActor->ActorHasTag(TEXT("Hazard"))))
+    {
+        return;
+    }
+
+    // Ignore puzzle assets configured to let magic pass through (torches, orbs, etc.)
+    if (AMIR_PuzzleAssetBASE* PuzzleAsset = Cast<AMIR_PuzzleAssetBASE>(OtherActor))
+    {
+        if (PuzzleAsset->bAllowMagicPassThrough)
+        {
+            return;
+        }
+    }
+
+    if (OtherActor && OtherActor->ActorHasTag(TEXT("PassThrough")))
     {
         return;
     }

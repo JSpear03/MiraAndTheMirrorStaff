@@ -13,6 +13,9 @@ AMIR_PuzzleAssetDirectBASE::AMIR_PuzzleAssetDirectBASE()
 
 	// Set up Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
+
+	// Direct puzzle assets (torches, orbs, etc.) allow magic attacks to pass through by default
+	bAllowMagicPassThrough = true;
 }
 
 // Called when the game starts or when spawned
