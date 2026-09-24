@@ -289,6 +289,7 @@ void AMIR_ArcadeController::HandleSubAttackInput()
 	
 	UseSubAttack();
 	bCanUseSubAttack = false;
+	bCanUseMainAttack = false;
 
 	if (UWorld* World = GetWorld())
 	{
@@ -302,6 +303,7 @@ void AMIR_ArcadeController::HandleSubAttackInput()
 void AMIR_ArcadeController::UnlockSubAttack()
 {
 	bCanUseSubAttack = true;
+	bCanUseMainAttack = true;
 	SubAttackUnlockTimerHandle.Invalidate();
 }
 
