@@ -8,7 +8,7 @@ UMIR_ElementComponent::UMIR_ElementComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  
 	// You can turn these features off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 
@@ -22,7 +22,8 @@ void UMIR_ElementComponent::BeginPlay()
 }
 
 // Called every frame
-void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -34,25 +35,35 @@ void UMIR_ElementComponent::SetElementDetails(EElements ENewElement)
 	switch (ENewElement)
 	{
 	case EElements::None:  // Configure Component for None
+	{
+		FDefaultElementStruct DefaultElementStruct;  // Default struct for None.
 		ElementStruct = DefaultElementStruct;
 		break;
-
-	case EElements::Nothing:  // Configure Component for Melee
+	}
+	case EElements::Nothing:  // Configure Component for Nothing
+	{
+		FNothingStruct NothingStruct;  // Default struct for Nothing.
 		ElementStruct = NothingStruct;
 		break;
-
-	case EElements::Flame: // Configure Component for Ranged
+	}
+	case EElements::Flame: // Configure Component for Flame
+	{
+		FFlameStruct FlameStruct;  // Default struct for Flame.
 		ElementStruct = FlameStruct;
 		break;
-
-	case EElements::Ice:    // Configure Component for AoE
+	}
+	case EElements::Ice:    // Configure Component for Ice
+	{
+		FIceStruct IceStruct;  // Default struct for Ice.
 		ElementStruct = IceStruct;
 		break;
-
-	case EElements::Thunder:    // Configure Component for AoE
+	}
+	case EElements::Thunder:    // Configure Component for Thunder
+	{
+		FThunderStruct ThunderStruct;  // Default struct for Thunder.
 		ElementStruct = ThunderStruct;
 		break;
-
+	}
 	default:
 		break;  // Do nothing because FDefaultStruct is already defined.
 	}

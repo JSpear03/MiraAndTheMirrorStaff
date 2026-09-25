@@ -16,7 +16,8 @@ struct FDefaultTypeStruct
 	GENERATED_BODY()
 
 	// The name of this Attack Type.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Attack Type."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name",
+			  ToolTip = "The name of this Attack Type."))
 		EAttackTypes AttackTypeName = EAttackTypes::None;
 
 	// The damage value associated with this Attack Type.
@@ -26,11 +27,13 @@ struct FDefaultTypeStruct
 
 	// The mana-consumption value associated with this Attack Type.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 8, UIMin = 0, UIMax = 8,
-			  DisplayName = "ManaConsumption", ToolTip = "The mana-consumption value associated with this Attack Type."))
+			  DisplayName = "ManaConsumption",
+			  ToolTip = "The mana-consumption value associated with this Attack Type."))
 		int32 ManaConsumption = 0;
 
 	// The property of this Attack Type.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property", ToolTip = "The property of this Attack Type."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property",
+			  ToolTip = "The property of this Attack Type."))
 		EAttackProperties AttackTypeProperty = EAttackProperties::None;
 };
 

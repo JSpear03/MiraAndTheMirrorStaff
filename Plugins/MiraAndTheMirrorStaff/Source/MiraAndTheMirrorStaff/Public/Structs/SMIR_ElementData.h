@@ -16,7 +16,8 @@ struct FDefaultElementStruct
 	GENERATED_BODY()
 
 	// The name of this Element.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Element."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name",
+			  ToolTip = "The name of this Element."))
 		EElements ElementName = EElements::None;
 
 	// A Linear Color, which specifies a main color, used by this Element.
@@ -28,11 +29,6 @@ struct FDefaultElementStruct
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "SubColor",
 			  ToolTip = "A Linear Color, which specifies a sub-color, used by this Element."))
 		FLinearColor SubColor = FLinearColor::Black;
-
-	// The symbol of this Element, which would be used in the Gameplay UI.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Symbol",
-			  ToolTip = "The symbol of this Element, which would be used in the Gameplay UI."))
-		UTexture2D* ElementSymbol = nullptr;
 
 	// The Element that *this* Element applies double damage (2×) against.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Strength",
@@ -50,7 +46,8 @@ struct FDefaultElementStruct
 		TArray<EElements> ElementNeutralities = { EElements::None };
 
 	// The property of this Element.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property", ToolTip = "The property of this Element."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property",
+			  ToolTip = "The property of this Element."))
 		EElementProperties ElementProperty = EElementProperties::None;
 };
 
@@ -68,7 +65,6 @@ struct FNothingStruct : public FDefaultElementStruct
 		ElementName = EElements::Nothing;
 		MainColor = FLinearColor(0.0f, 1.0f, 0.393f, 1.0f);
 		SubColor = FLinearColor(0.0f, 0.042f, 0.017f, 1.0f);
-		ElementSymbol = nullptr;
 		ElementStrength = EElements::Nothing;
 		ElementWeakness = EElements::Nothing;
 		ElementNeutralities = { EElements::Nothing };
@@ -90,7 +86,6 @@ struct FFlameStruct : public FDefaultElementStruct
 		ElementName = EElements::Flame;
 		MainColor = FLinearColor(1.0f, 0.147f, 0.002f, 1.0f);
 		SubColor = FLinearColor(1.0f, 0.546f, 0.125f, 1.0f);
-		ElementSymbol = nullptr;
 		ElementStrength = EElements::Ice;
 		ElementWeakness = EElements::Thunder;
 		ElementNeutralities = { EElements::Nothing, EElements::Flame };
@@ -112,7 +107,6 @@ struct FIceStruct : public FDefaultElementStruct
 		ElementName = EElements::Ice;
 		MainColor = FLinearColor(0.491f, 0.839f, 0.905f, 1.0f);
 		SubColor = FLinearColor(0.095f, 0.503f, 0.939f, 1.0f);
-		ElementSymbol = nullptr;
 		ElementStrength = EElements::Thunder;
 		ElementWeakness = EElements::Flame;
 		ElementNeutralities = { EElements::Nothing, EElements::Ice };
@@ -134,7 +128,6 @@ struct FThunderStruct : public FDefaultElementStruct
 		ElementName = EElements::Thunder;
 		MainColor = FLinearColor(1.0f, 0.723f, 0.002f, 1.0f);
 		SubColor = FLinearColor(0.93f, 0.823f, 0.287f, 1.0f);
-		ElementSymbol = nullptr;
 		ElementStrength = EElements::Flame;
 		ElementWeakness = EElements::Ice;
 		ElementNeutralities = { EElements::Nothing, EElements::Thunder };
