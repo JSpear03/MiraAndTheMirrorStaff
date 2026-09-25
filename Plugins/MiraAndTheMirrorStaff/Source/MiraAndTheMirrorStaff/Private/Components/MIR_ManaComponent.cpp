@@ -10,11 +10,34 @@ UMIR_ManaComponent::UMIR_ManaComponent()
 {
 	// Set this component to be initialized when the game starts and to be ticked every frame.
 	// These features, if unneeded, may be turned off to improve performance.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
 
+#if WITH_EDITOR
+void UMIR_ManaComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	// The name of the changed property.
+	const FName PropertyName = PropertyChangedEvent.Property
+		? PropertyChangedEvent.Property->GetFName()
+		: NAME_None;
+	
+	// Clamp `TotalManaPower` and `ManaPower` as needed when either has been changed.
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(UMIR_ManaComponent, ManaPower) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(UMIR_ManaComponent, TotalManaPower) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(UMIR_ManaComponent, MaxManaPower))
+	{
+		// `TotalManaPower` must be clamped to `MaxManaPower`.
+		if (TotalManaPower > MaxManaPower) { SetTotalManaPower(TotalManaPower); }
+
+		// `ManaPower` must be clamped to `TotalManaPower`.
+		if (ManaPower > TotalManaPower) { SetManaPower(ManaPower); }
+	}
+}
+#endif
 
 // Called when the game starts
 void UMIR_ManaComponent::BeginPlay()
@@ -25,7 +48,6 @@ void UMIR_ManaComponent::BeginPlay()
 	
 }
 
-
 void UMIR_ManaComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	ClearCooldownTimer();  // Clean up cooldown timer if the player is prematurely destroyed.
@@ -34,25 +56,55 @@ void UMIR_ManaComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 // Called every frame
-void UMIR_ManaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UMIR_ManaComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
 
+/*********************************************************************************************
+* MANA | MANA POWER
+*********************************************************************************************/
+
+void UMIR_ManaComponent::SetManaPower(int32 NewManaPower)
+{
+	ManaPower = FMath::Clamp(NewManaPower, 0, TotalManaPower);
+}
+
 void UMIR_ManaComponent::ManaRecovery(int32 Amount) 
 {
-	ManaPower = FMath::Clamp(ManaPower + Amount, 0, TotalManaPower);
+	SetManaPower(ManaPower + Amount);
 }
 
 void UMIR_ManaComponent::ManaReduction(int32 Amount)
 {
-	ManaPower = FMath::Clamp(ManaPower - Amount, 0, TotalManaPower);
+	SetManaPower(ManaPower - Amount);
 }
+
+/*********************************************************************************************
+* MANA | TOTAL MANA POWER
+*********************************************************************************************/
+
+void UMIR_ManaComponent::SetTotalManaPower(int32 NewTotalMana)
+{
+	TotalManaPower = FMath::Clamp(NewTotalMana, 0, MaxManaPower);
+}
+
+void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
+{
+	SetTotalManaPower(TotalManaPower + BonusManaPower);
+	SetManaPower(TotalManaPower);  // Puts mana at full power.
+}
+
+/*********************************************************************************************
+* MANA | COOLDOWN
+*********************************************************************************************/
 
 void UMIR_ManaComponent::ManaCooldown() 
 {
+	// Cooldown should not execute if `ManaPower` is not zero.
 	if (ManaPower > 0)
 	{
 		return;
@@ -74,13 +126,11 @@ void UMIR_ManaComponent::ManaCooldown()
 			if (ManaPower != TotalManaPower)
 			{
 				// Not equal, so recover.
-				UE_LOG(LogTemp, Warning, TEXT("Recover Mana"));
 				ManaRecovery(ManaAmount);
 
 				if (ManaPower == TotalManaPower)
 				{
 					// Are equal post-recovery, so clear timer.
-					UE_LOG(LogTemp, Warning, TEXT("Clear Timer Post-Recovery"));
 					ClearCooldownTimer();
 					return;
 				}
@@ -88,7 +138,6 @@ void UMIR_ManaComponent::ManaCooldown()
 			else 
 			{
 				// Are equal, so clear timer.
-				UE_LOG(LogTemp, Warning, TEXT("Clear Timer"));
 				ClearCooldownTimer();
 				return;
 			}
@@ -101,12 +150,12 @@ void UMIR_ManaComponent::ManaCooldown()
 
 void UMIR_ManaComponent::ClearCooldownTimer()
 {
-	if (GetWorld())  // Validate
+	if (GetWorld())
 	{
 		// The TimerManager instance for the current world.
 		FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 
-		if (TimerManager.IsTimerActive(CooldownHandle))  // Validate
+		if (TimerManager.IsTimerActive(CooldownHandle))
 		{
 			// Perform cleanup by clearing timer and invalidating the handle.
 			TimerManager.ClearTimer(CooldownHandle);
@@ -123,11 +172,3 @@ bool UMIR_ManaComponent::IsCooldownActive() const
 	}
 	return false;
 }
-
-void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
-{
-	TotalManaPower = FMath::Clamp(TotalManaPower + BonusManaPower, 0, MaxManaPower);
-
-	ManaPower = TotalManaPower;  // Puts mana at full power.
-}
-
