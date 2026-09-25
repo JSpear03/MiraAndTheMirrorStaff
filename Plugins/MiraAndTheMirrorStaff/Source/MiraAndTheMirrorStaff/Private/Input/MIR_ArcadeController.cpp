@@ -26,7 +26,7 @@ void AMIR_ArcadeController::SetupInputComponent()
 
 	if (EnhancedInput)
 	{
-		// Triggered Bindings.
+		// Triggered Bindings (allows holding down to continually attack at cooldown rate).
 		EnhancedInput->BindAction(Move, ETriggered, this, &AMIR_ArcadeController::MoveCharacter);
 		EnhancedInput->BindAction(MainAttack, ETriggered, this,
 			&AMIR_ArcadeController::HandleMainAttackInput);
@@ -34,7 +34,7 @@ void AMIR_ArcadeController::SetupInputComponent()
 			&AMIR_ArcadeController::HandleRangedCopyInput);
 		EnhancedInput->BindAction(SubAttack, ETriggered, this,
 			&AMIR_ArcadeController::HandleSubAttackInput);
-		EnhancedInput->BindAction(Discard, ETriggered, this,
+		EnhancedInput->BindAction(Discard, EStarted, this,
 			&AMIR_ArcadeController::DiscardCopiedMagic);
 
 		// Started Bindings.
@@ -62,6 +62,7 @@ void AMIR_ArcadeController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().ClearTimer(SubAttackUnlockTimerHandle);
+		World->GetTimerManager().ClearTimer(MainAttackUnlockTimerHandle);
 	}
 
 	Super::EndPlay(EndPlayReason);
@@ -230,6 +231,8 @@ void AMIR_ArcadeController::HandleMainAttackInput()
 	bCanUseSubAttack = false;
 	if (UWorld* World = GetWorld())
 	{
+		LastMainAttackTime = World->GetTimeSeconds();
+		World->GetTimerManager().ClearTimer(MainAttackUnlockTimerHandle);
 		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, 
 			&AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
 	}
@@ -265,6 +268,8 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 	bCanUseSubAttack = false;
 	if (UWorld* World = GetWorld())
 	{
+		LastMainAttackTime = World->GetTimeSeconds();
+		World->GetTimerManager().ClearTimer(MainAttackUnlockTimerHandle);
 		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this, 
 			&AMIR_ArcadeController::UnlockSubAttack, SubAttackDelayAfterMain, false);
 	}
@@ -284,21 +289,69 @@ void AMIR_ArcadeController::HandleSubAttackInput()
 	
 	UseSubAttack();
 	bCanUseSubAttack = false;
+	bCanUseMainAttack = false;
+
+	if (UWorld* World = GetWorld())
+	{
+		LastSubAttackTime = World->GetTimeSeconds();
+		World->GetTimerManager().ClearTimer(SubAttackUnlockTimerHandle);
+		World->GetTimerManager().SetTimer(SubAttackUnlockTimerHandle, this,
+			&AMIR_ArcadeController::UnlockSubAttack, MinSubAttackCooldown, false);
+	}
 }
 
 void AMIR_ArcadeController::UnlockSubAttack()
 {
+	AllowSubAttack();
+}
+
+void AMIR_ArcadeController::AllowSubAttack()
+{
 	bCanUseSubAttack = true;
+	bCanUseMainAttack = true;
+	SubAttackUnlockTimerHandle.Invalidate();
 }
 
 void AMIR_ArcadeController::AllowMainAttack()
 {
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		ExecuteAllowMainAttack();
+		return;
+	}
+
+	const float TimeSinceAttack = World->GetTimeSeconds() - LastMainAttackTime;
+	const float RemainingCooldown = MinMainAttackCooldown - TimeSinceAttack;
+
+	if (RemainingCooldown > 0.0f)
+	{
+		// Minimum cooldown floor has not yet elapsed; schedule unlock when it finishes
+		World->GetTimerManager().SetTimer(MainAttackUnlockTimerHandle, this,
+			&AMIR_ArcadeController::ExecuteAllowMainAttack, RemainingCooldown, false);
+	}
+	else
+	{
+		ExecuteAllowMainAttack();
+	}
+}
+
+void AMIR_ArcadeController::ExecuteAllowMainAttack()
+{
 	bCanUseMainAttack = true;
-	bCanUseSubAttack = true;
 
 	if (UWorld* World = GetWorld())
 	{
-		World->GetTimerManager().ClearTimer(SubAttackUnlockTimerHandle);
+		// Only re-enable sub-attack if it is not currently on its own cooldown timer
+		if (!World->GetTimerManager().IsTimerActive(SubAttackUnlockTimerHandle))
+		{
+			bCanUseSubAttack = true;
+		}
+		World->GetTimerManager().ClearTimer(MainAttackUnlockTimerHandle);
+	}
+	else
+	{
+		bCanUseSubAttack = true;
 	}
 }
 

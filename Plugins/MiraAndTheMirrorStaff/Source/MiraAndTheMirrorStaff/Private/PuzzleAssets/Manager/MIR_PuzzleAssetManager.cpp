@@ -98,11 +98,18 @@ bool AMIR_PuzzleAssetManager::FindAllDirectsInState(EPuzzleState InState)
 {
 	// Represents how many DPAs in the `DirectAssetArray` are in the specified state.
 	int32 StateCounter = 0;
+	int32 ValidDirectCount = 0;
 
 	// Count how many DPAs are in the specified state.
 	/* The current DPA in the `DirectAssetArray`. */
 	for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 	{
+		if (!IsValid(CurrentDirect))
+		{
+			continue;
+		}
+
+		ValidDirectCount++;
 		// Check whether the current DPA is in the specified state.
 		if (CurrentDirect->GetCurrentState() == InState)
 		{
@@ -111,7 +118,7 @@ bool AMIR_PuzzleAssetManager::FindAllDirectsInState(EPuzzleState InState)
 	}
 
 	// Determine return value.
-	return (StateCounter == DirectAssetArray.Num()) ? true : false;
+	return (ValidDirectCount > 0 && StateCounter == ValidDirectCount);
 }
 
 /****************************************************************************************
@@ -163,7 +170,10 @@ void AMIR_PuzzleAssetManager::ActivateAllIndirects()
 	// The current IPA in the `IndirectAssetArray`.
 	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
 	{
-		CurrentIndirect->ActivatePuzzleAsset();
+		if (IsValid(CurrentIndirect))
+		{
+			CurrentIndirect->ActivatePuzzleAsset();
+		}
 	}
 }
 
@@ -172,7 +182,10 @@ void AMIR_PuzzleAssetManager::DeactivateAllIndirects()
 	// The current IPA in the `IndirectAssetArray`.
 	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
 	{
-		CurrentIndirect->DeactivatePuzzleAsset();
+		if (IsValid(CurrentIndirect))
+		{
+			CurrentIndirect->DeactivatePuzzleAsset();
+		}
 	}
 }
 
@@ -181,7 +194,7 @@ bool AMIR_PuzzleAssetManager::CheckMinimalActivity()
 	// The current IPA in the `IndirectAssetArray`.
 	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
 	{
-		if (CurrentIndirect->GetCurrentState() == EPuzzleState::Activate)
+		if (IsValid(CurrentIndirect) && CurrentIndirect->GetCurrentState() == EPuzzleState::Activate)
 		{
 			return true;
 		}
@@ -196,7 +209,7 @@ bool AMIR_PuzzleAssetManager::CheckMinimalInactivity()
 	// The current IPA in the `IndirectAssetArray`.
 	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
 	{
-		if (CurrentIndirect->GetCurrentState() == EPuzzleState::Deactivate)
+		if (IsValid(CurrentIndirect) && CurrentIndirect->GetCurrentState() == EPuzzleState::Deactivate)
 		{
 			return true;
 		}
@@ -254,7 +267,10 @@ void AMIR_PuzzleAssetManager::HandleAutoActivation()
 		/* The current DPA in the `DirectAssetArray`. */
 		for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 		{
-			CurrentDirect->ActivatePuzzleAsset();
+			if (IsValid(CurrentDirect))
+			{
+				CurrentDirect->ActivatePuzzleAsset();
+			}
 		}
 		ActivateAllIndirects();
 	}
@@ -268,7 +284,10 @@ void AMIR_PuzzleAssetManager::HandleAutoDeactivation()
 		/* The current DPA in the `DirectAssetArray`. */
 		for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 		{
-			CurrentDirect->DeactivatePuzzleAsset();
+			if (IsValid(CurrentDirect))
+			{
+				CurrentDirect->DeactivatePuzzleAsset();
+			}
 		}
 		DeactivateAllIndirects();
 	}
@@ -280,28 +299,22 @@ void AMIR_PuzzleAssetManager::HandleAutoDeactivation()
 
 void AMIR_PuzzleAssetManager::DetermineForwardActivation()
 {
-	// Represents whether all assets in the `IndirectAssetArray` are valid.
-	bool bValidIndirectAsset = true;
-
-	// Represents whether all assets in the `IndirectAssetArray` are in the deactive state.
-	bool bInitialStateDeactivation = true;
-
 	int32 ActiveCount = 0;	  // Represents how many IPAs are in the active state.
 	int32 InactiveCount = 0;  // Represents how many IPAs are in the inactive state.
+	int32 ValidCount = 0;
 
 	// The current IPA in the `IndirectAssetArray`.
 	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
 	{
-		// Validate.
-		if (!CurrentIndirect)
+		if (!IsValid(CurrentIndirect))
 		{
-			return;
+			continue;
 		}
 
+		ValidCount++;
 		// Check state.
 		if (CurrentIndirect->GetInitialState() == EPuzzleState::Activate)
 		{
-			bInitialStateDeactivation = false;
 			ActiveCount++;
 		}
 		else
@@ -310,23 +323,26 @@ void AMIR_PuzzleAssetManager::DetermineForwardActivation()
 		}
 	}
 
-	// Ensure that all IPAs are in the same state before continuing;
-	// the PAM may have unexpected results otherwise.
-	if (ActiveCount != IndirectAssetArray.Num() || InactiveCount != IndirectAssetArray.Num())
+	if (ValidCount == 0)
 	{
 		return;
 	}
+
+	// Ensure that all IPAs are in the same state before continuing;
+	// the PAM may have unexpected results otherwise.
+	if (ActiveCount != ValidCount && InactiveCount != ValidCount)
+	{
+		return;
+	}
+
+	if (ActiveCount == ValidCount)
+	{
+		// If the IPAs are already active, then the PAM needs to operate in reverse.
+		bIsForwardActivation = false;
+	}
 	else
 	{
-		if (!bInitialStateDeactivation)
-		{
-			// If the IPAs are already active, then the PAM needs to operate in reverse.
-			bIsForwardActivation = false;
-		}
-		else
-		{
-			// If the IPAs are already inactive, then the PAM needs to operate forward.
-			bIsForwardActivation = true;
-		}
+		// If the IPAs are already inactive, then the PAM needs to operate forward.
+		bIsForwardActivation = true;
 	}
 }
