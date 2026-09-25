@@ -302,6 +302,11 @@ void AMIR_ArcadeController::HandleSubAttackInput()
 
 void AMIR_ArcadeController::UnlockSubAttack()
 {
+	AllowSubAttack();
+}
+
+void AMIR_ArcadeController::AllowSubAttack()
+{
 	bCanUseSubAttack = true;
 	bCanUseMainAttack = true;
 	SubAttackUnlockTimerHandle.Invalidate();

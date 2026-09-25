@@ -224,4 +224,8 @@ public:
 	// Sets `bCanUseMainAttack` to True, re-enabling the Main Attack input.
 	UFUNCTION(BlueprintCallable, Category = "03_Main Attack")
 		void AllowMainAttack();
+
+	// Sets `bCanUseSubAttack` and `bCanUseMainAttack` to True, re-enabling attacks.
+	UFUNCTION(BlueprintCallable, Category = "03_Main Attack")
+		void AllowSubAttack();
 };
