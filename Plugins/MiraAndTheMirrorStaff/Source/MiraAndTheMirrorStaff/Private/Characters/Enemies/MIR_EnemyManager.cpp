@@ -28,15 +28,12 @@ void AMIR_EnemyManager::BeginPlay()
 	/* The current EnemyBASE in the `EnemyArray`. */
 	for (AMIR_EnemyBASE* CurrentEnemy : EnemyArray)
 	{
-		if (!CurrentEnemy)
-		{
-			continue;
-		}
+		if (!CurrentEnemy) { continue; }
 
 		CurrentEnemy->OnEnemyDied.AddDynamic(this, &AMIR_EnemyManager::VerifyEnemyInArray);
 	}
 
-	// Bind `TriggerBox` to `OnOverlapBegin()`.
+	// Bind TriggerBox's `OnComponentBeginOverlap()` to `OnOverlapBegin()`.
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AMIR_EnemyManager::OnOverlapBegin);
 }
 
@@ -56,19 +53,13 @@ void AMIR_EnemyManager::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Continue only if this is the first trigger in this actor's lifespan.
-	if (!bDoOnce)
-	{
-		return;
-	}
+	if (!bDoOnce) { return; }
 	
 	// The currently possessed player character.
 	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
 
-	// Perform validation (because only the player should trigger it).
-	if (!OtherActor || !PlayerChar)
-	{
-		return;
-	}
+	// Continue only if the player overlapped with this actor.
+	if (!OtherActor || !PlayerChar) { return; }
 
 	PlayBossMusic();
 
@@ -95,29 +86,17 @@ void AMIR_EnemyManager::VerifyEnemyInArray(AMIR_EnemyBASE* EnemyRef)
 	// The current EnemyBASE object reference.
 	AMIR_EnemyBASE* CurrentEnemy = Cast<AMIR_EnemyBASE>(EnemyRef);
 
-	if (!CurrentEnemy)
-	{
-		return;
-	}
+	// Exit if invalid.
+	if (!CurrentEnemy) { return; }
 
-	// Check whether `CurrentEnemy` is contained in the `EnemyArray`.
-	bool bIsCurrentEnemyFound = EnemyArray.Contains(CurrentEnemy);
+	// Continue only if `EnemyArray` contains the current enemy instance.
+	if (!EnemyArray.Contains(CurrentEnemy)) { return; }
 
-	// Exits to prevent any errors involve finding the current enemy from the enemy array.
-	if (!bIsCurrentEnemyFound)
-	{
-		return;
-	}
-
-	// Is contained, so increment death counter and continue only if it is greater
-	// than the length of `EnemyArray`.
+	// Is contained, so increment death counter.
 	EnemyDeathCount++;
 
-	// Does an action only when all enemies have died.
-	if (EnemyDeathCount < EnemyArray.Num())
-	{
-		return;
-	}
+	// Continue only if all enemies have died.
+	if (EnemyDeathCount < EnemyArray.Num()) { return; }
 
 	StopBossMusic();
 
