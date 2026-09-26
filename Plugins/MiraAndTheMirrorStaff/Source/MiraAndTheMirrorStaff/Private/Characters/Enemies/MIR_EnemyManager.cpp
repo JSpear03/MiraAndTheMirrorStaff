@@ -60,26 +60,26 @@ void AMIR_EnemyManager::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 	{
 		return;
 	}
+	
+	// The currently possessed player character.
+	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
+
+	// Perform validation (because only the player should trigger it).
+	if (!OtherActor || !PlayerChar)
+	{
+		return;
+	}
+
+	PlayBossMusic();
+
+	// Activate/deactivate appropriately.
+	if (bIsForwardActivation && EnemyDeathCount < EnemyArray.Num())
+	{
+		DeactivateAllIndirects();
+	}
 	else
 	{
-		// The currently possessed player character.
-		AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
-
-		// Perform validation (because only the player should trigger it).
-		if (!OtherActor || !PlayerChar)
-		{
-			return;
-		}
-
-		// Activate/deactivate appropriately.
-		if (bIsForwardActivation && EnemyDeathCount < EnemyArray.Num())
-		{
-			DeactivateAllIndirects();
-		}
-		else
-		{
-			ActivateAllIndirects();
-		}
+		ActivateAllIndirects();
 	}
 
 	// Prevent repeated triggers.
@@ -101,26 +101,34 @@ void AMIR_EnemyManager::VerifyEnemyInArray(AMIR_EnemyBASE* EnemyRef)
 	}
 
 	// Check whether `CurrentEnemy` is contained in the `EnemyArray`.
-	if (EnemyArray.Contains(CurrentEnemy))
+	bool bIsCurrentEnemyFound = EnemyArray.Contains(CurrentEnemy);
+
+	// Exits to prevent any errors involve finding the current enemy from the enemy array.
+	if (!bIsCurrentEnemyFound)
 	{
-		// Is contained, so increment death counter and continue only if it is greater
-		// than the length of `EnemyArray`.
-		EnemyDeathCount++;
+		return;
+	}
 
-		if (EnemyDeathCount < EnemyArray.Num())
-		{
-			return;
-		}
+	// Is contained, so increment death counter and continue only if it is greater
+	// than the length of `EnemyArray`.
+	EnemyDeathCount++;
 
-		// Do IPA activation/deactivation based on mode.
-		if (bIsForwardActivation)
-		{
-			ActivateAllIndirects();
-		}
-		else
-		{
-			DeactivateAllIndirects();
-		}
+	// Does an action only when all enemies have died.
+	if (EnemyDeathCount < EnemyArray.Num())
+	{
+		return;
+	}
+
+	StopBossMusic();
+
+	// Do IPA activation/deactivation based on mode.
+	if (bIsForwardActivation)
+	{
+		ActivateAllIndirects();
+	}
+	else
+	{
+		DeactivateAllIndirects();
 	}
 }
 

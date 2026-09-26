@@ -100,4 +100,12 @@ public:
 	*/
 	void DeactivateAllIndirects();
 
+	// Stops current level music and plays boss music. 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Music")
+		void PlayBossMusic();
+
+	// Stops boss music and plays the current level music again.
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Music")
+		void StopBossMusic();
+
 };
