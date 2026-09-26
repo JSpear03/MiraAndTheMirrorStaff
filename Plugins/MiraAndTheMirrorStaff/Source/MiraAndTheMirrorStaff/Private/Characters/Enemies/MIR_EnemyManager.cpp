@@ -28,15 +28,12 @@ void AMIR_EnemyManager::BeginPlay()
 	/* The current EnemyBASE in the `EnemyArray`. */
 	for (AMIR_EnemyBASE* CurrentEnemy : EnemyArray)
 	{
-		if (!CurrentEnemy)
-		{
-			continue;
-		}
+		if (!CurrentEnemy) { continue; }
 
 		CurrentEnemy->OnEnemyDied.AddDynamic(this, &AMIR_EnemyManager::VerifyEnemyInArray);
 	}
 
-	// Bind `TriggerBox` to `OnOverlapBegin()`.
+	// Bind TriggerBox's `OnComponentBeginOverlap()` to `OnOverlapBegin()`.
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AMIR_EnemyManager::OnOverlapBegin);
 }
 
@@ -56,30 +53,24 @@ void AMIR_EnemyManager::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Continue only if this is the first trigger in this actor's lifespan.
-	if (!bDoOnce)
+	if (!bDoOnce) { return; }
+	
+	// The currently possessed player character.
+	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
+
+	// Continue only if the player overlapped with this actor.
+	if (!OtherActor || !PlayerChar) { return; }
+
+	PlayBossMusic();
+
+	// Activate/deactivate appropriately.
+	if (bIsForwardActivation && EnemyDeathCount < EnemyArray.Num())
 	{
-		return;
+		DeactivateAllIndirects();
 	}
 	else
 	{
-		// The currently possessed player character.
-		AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
-
-		// Perform validation (because only the player should trigger it).
-		if (!OtherActor || !PlayerChar)
-		{
-			return;
-		}
-
-		// Activate/deactivate appropriately.
-		if (bIsForwardActivation && EnemyDeathCount < EnemyArray.Num())
-		{
-			DeactivateAllIndirects();
-		}
-		else
-		{
-			ActivateAllIndirects();
-		}
+		ActivateAllIndirects();
 	}
 
 	// Prevent repeated triggers.
@@ -95,32 +86,28 @@ void AMIR_EnemyManager::VerifyEnemyInArray(AMIR_EnemyBASE* EnemyRef)
 	// The current EnemyBASE object reference.
 	AMIR_EnemyBASE* CurrentEnemy = Cast<AMIR_EnemyBASE>(EnemyRef);
 
-	if (!CurrentEnemy)
+	// Exit if invalid.
+	if (!CurrentEnemy) { return; }
+
+	// Continue only if `EnemyArray` contains the current enemy instance.
+	if (!EnemyArray.Contains(CurrentEnemy)) { return; }
+
+	// Is contained, so increment death counter.
+	EnemyDeathCount++;
+
+	// Continue only if all enemies have died.
+	if (EnemyDeathCount < EnemyArray.Num()) { return; }
+
+	StopBossMusic();
+
+	// Do IPA activation/deactivation based on mode.
+	if (bIsForwardActivation)
 	{
-		return;
+		ActivateAllIndirects();
 	}
-
-	// Check whether `CurrentEnemy` is contained in the `EnemyArray`.
-	if (EnemyArray.Contains(CurrentEnemy))
+	else
 	{
-		// Is contained, so increment death counter and continue only if it is greater
-		// than the length of `EnemyArray`.
-		EnemyDeathCount++;
-
-		if (EnemyDeathCount < EnemyArray.Num())
-		{
-			return;
-		}
-
-		// Do IPA activation/deactivation based on mode.
-		if (bIsForwardActivation)
-		{
-			ActivateAllIndirects();
-		}
-		else
-		{
-			DeactivateAllIndirects();
-		}
+		DeactivateAllIndirects();
 	}
 }
 
