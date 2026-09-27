@@ -81,7 +81,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "02_Interaction",
 		meta = (AllowPrivateAccess = "true"))
-		float InteractRange = 250.0f;
+		float InteractRange = 90.0f;
 
 	// A reference to the currently summoned magic.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat|Magic",
