@@ -52,6 +52,17 @@ protected:
 			  meta = (KeyWords = "Struct"))
 		FDefaultTypeStruct AttackTypeStruct;
 
+	virtual void PostLoad() override;
+
+	// Ensures AttackTypeStruct is populated even on CDOs or before BeginPlay().
+	void EnsureDetailsInitialized() const
+	{
+		if (AttackTypeStruct.AttackTypeName == EAttackTypes::None && (CurrentAttackType != EAttackTypes::None || CurrentAttackSubtype != EAttackSubtypes::None))
+		{
+			const_cast<UMIR_AttackTypeComponent*>(this)->SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
+		}
+	}
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
@@ -61,25 +72,41 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
 			  meta = (KeyWords = "Get Name", ReturnDisplayName = "Name",
 			  ToolTip = "Returns the `AttackTypeName` member variable."))
-		EAttackTypes GetAttackTypeName() const { return AttackTypeStruct.AttackTypeName; }
+		EAttackTypes GetAttackTypeName() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.AttackTypeName;
+		}
 
 	// Returns the `Damage` member variable.
 	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
 			  meta = (KeyWords = "Get Damage", ReturnDisplayName = "Damage",
 			  ToolTip = "Returns the `Damage` member variable."))
-		int32 GetDamage() const { return AttackTypeStruct.Damage; }
+		int32 GetDamage() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.Damage;
+		}
 
 	// Returns the `ManaConsumption` member variable.
 	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
 			  meta = (KeyWords = "Get Mana", ReturnDisplayName = "ManaConsumption",
 			  ToolTip = "Returns the `ManaConsumption` member variable."))
-		int32 GetManaConsumption() const { return AttackTypeStruct.ManaConsumption; }
+		int32 GetManaConsumption() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.ManaConsumption;
+		}
 	
 	// Returns the `AttackTypeProperty` member variable.
 	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
 			  meta = (KeyWords = "Get Property", ReturnDisplayName = "Property",
 			  ToolTip = "Returns the `AttackTypeProperty` member variable."))
-		EAttackProperties GetAttackTypeProperty() const { return AttackTypeStruct.AttackTypeProperty; }
+		EAttackProperties GetAttackTypeProperty() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.AttackTypeProperty;
+		}
 
 	/**
 	 * @brief Sets the `AttackTypeStruct` member variable based on an Enum.

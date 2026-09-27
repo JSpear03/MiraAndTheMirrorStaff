@@ -9,7 +9,13 @@ UMIR_AttackTypeComponent::UMIR_AttackTypeComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  
 	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
+}
 
+void UMIR_AttackTypeComponent::PostLoad()
+{
+	Super::PostLoad();
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
 }
 
 // Called when the game starts
@@ -102,4 +108,5 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 void UMIR_AttackTypeComponent::SetCurrentAttackType(EAttackTypes ENewAttackType)
 {
 	CurrentAttackType = ENewAttackType;
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
 }

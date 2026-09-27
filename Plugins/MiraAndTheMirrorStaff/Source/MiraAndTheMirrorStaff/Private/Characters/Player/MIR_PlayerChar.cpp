@@ -8,7 +8,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/MIR_AttackTypeComponent.h"
 #include "Components/MIR_ElementComponent.h"
+#include "Animation/AnimSequenceBase.h"
 //#include "Input/MIR_ArcadeController.h"
+
 
 // Sets default values.
 AMIR_PlayerChar::AMIR_PlayerChar()
@@ -62,7 +64,39 @@ void AMIR_PlayerChar::BeginPlay()
 void AMIR_PlayerChar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Push movement speed directly to the AnimInstance so BlendSpace (Idle/Run) always updates
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		if (UAnimInstance* AnimInst = MeshComp->GetAnimInstance())
+		{
+			const float GroundSpeed = GetVelocity().Size2D();
+
+			const FName SpeedPropNames[] = {
+				FName("VelocityLengthXY"),
+				FName("Velocity"),
+				FName("Speed"),
+				FName("CurrentVelocity")
+			};
+
+			for (const FName& PropName : SpeedPropNames)
+			{
+				if (FProperty* Prop = AnimInst->GetClass()->FindPropertyByName(PropName))
+				{
+					if (FFloatProperty* FloatProp = CastField<FFloatProperty>(Prop))
+					{
+						FloatProp->SetPropertyValue_InContainer(AnimInst, GroundSpeed);
+					}
+					else if (FDoubleProperty* DoubleProp = CastField<FDoubleProperty>(Prop))
+					{
+						DoubleProp->SetPropertyValue_InContainer(AnimInst, static_cast<double>(GroundSpeed));
+					}
+				}
+			}
+		}
+	}
 }
+
 
 /************************************************************************************
  * SUSTAINING DAMAGE
@@ -262,3 +296,28 @@ void AMIR_PlayerChar::RespawnAtLastPoint()
 	GetCharacterMovement()->StopMovementImmediately();
 	SetActorLocation(LastRespawnPoint->GetActorLocation(), false, nullptr, ETeleportType::TeleportPhysics);
 }
+
+/************************************************************************************
+ * COMBAT ANIMATIONS
+ ***********************************************************************************/
+
+UAnimSequenceBase* AMIR_PlayerChar::GetAttackAnimation(EAttackTypes AttackType) const
+{
+	switch (AttackType)
+	{
+	case EAttackTypes::Melee:
+		return MeleeAttackAnim;
+	case EAttackTypes::Ranged:
+		return RangedAttackAnim;
+	case EAttackTypes::AoE:
+		return AOEAttackAnim;
+	default:
+		return MeleeAttackAnim;
+	}
+}
+
+UAnimSequenceBase* AMIR_PlayerChar::GetSubAttackAnimation() const
+{
+	return DaggerAttackAnim ? DaggerAttackAnim.Get() : MeleeAttackAnim.Get();
+}
+
