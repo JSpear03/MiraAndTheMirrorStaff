@@ -16,19 +16,7 @@
 class AMIR_RespawnPoint;
 class UAnimSequenceBase;
 
-//UENUM(BlueprintType)
-
-//enum class EMIR_KeyItem : uint8
-//{
-//	MirrorStaff,
-//	SkyboundShoes,
-//	SpiritStole,
-//	KeyGemstone,
-//	KeyGemstoneRed,
-//	KeyGemstoneBlue,
-//	KeyGemstoneGreen,
-//	KeyGemstoneYellow,
-//};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRespawn);
 
 /**
  * The character that the player will control in this game.
@@ -225,4 +213,8 @@ public:
 	// Sets new element based on the element name. 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Elements")
 		void CopyElement();
+
+	// Delegate object to move camera to a move point nearest to the respawn point.
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Respawn")
+		FOnRespawn OnRespawn;
 };

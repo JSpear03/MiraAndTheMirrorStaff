@@ -295,6 +295,7 @@ void AMIR_PlayerChar::RespawnAtLastPoint()
 	// slide the player straight back into the hazard.
 	GetCharacterMovement()->StopMovementImmediately();
 	SetActorLocation(LastRespawnPoint->GetActorLocation(), false, nullptr, ETeleportType::TeleportPhysics);
+	OnRespawn.Broadcast();
 }
 
 /************************************************************************************
