@@ -23,6 +23,7 @@
 #include "Animation/AnimSequenceBase.h"
 #include "UObject/UnrealType.h"
 #include "Sound/SoundBase.h"
+#include "TimerManager.h"
 
 
 // Called to setup input actions.
@@ -127,25 +128,31 @@ AMIR_PlayerChar* AMIR_ArcadeController::GetPlayerCharacter() const
 
 void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 {
-	if (!bCanMove || CurrentAttackState != EAttackTypes::None)
-	{
-		return;
-	}
-
-	// If player is holding an attack button and the attack is ready to repeat, keep Mira rooted between repeat swings
-	if ((bIsMainAttackHeld || bIsRangedCopyHeld) && bCanUseMainAttack)
-	{
-		return;
-	}
-	if (bIsSubAttackHeld && bCanUseSubAttack)
-	{
-		return;
-	}
-
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
 	if (!PlayerCharacter)
 	{
 		return;
+	}
+
+	UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement();
+	const bool bIsAirborne = MoveComp && MoveComp->IsFalling();
+
+	// Rooting only applies on the ground.
+	// Jumps and airborne momentum are completely unaffected by attack animations.
+	if (!bIsAirborne)
+	{
+		if (!bCanMove || CurrentAttackState != EAttackTypes::None)
+		{
+			return;
+		}
+
+		// If player is holding an attack button and the attack is ready to repeat, keep Mira rooted between repeat swings
+		if ((bIsMainAttackHeld && CanPerformAttack(EMagicAttacks::MainAttack)) ||
+			(bIsRangedCopyHeld && CanPerformAttack(EMagicAttacks::RangedCopy)) ||
+			(bIsSubAttackHeld && CanPerformAttack(EMagicAttacks::SubAttack)))
+		{
+			return;
+		}
 	}
 
 	FRotator ControllerRotation = PlayerCharacter->GetControlRotation();
@@ -291,17 +298,17 @@ void AMIR_ArcadeController::CheckAutoRepeatAttack()
 	}
 
 	// Priority 1: Main Attack
-	if (bIsMainAttackHeld && bCanUseMainAttack)
+	if (bIsMainAttackHeld && CanPerformAttack(EMagicAttacks::MainAttack))
 	{
 		HandleMainAttackInput();
 	}
 	// Priority 2: Ranged Copy
-	else if (bIsRangedCopyHeld && bCanUseMainAttack)
+	else if (bIsRangedCopyHeld && CanPerformAttack(EMagicAttacks::RangedCopy))
 	{
 		HandleRangedCopyInput();
 	}
 	// Priority 3: Sub Attack
-	else if (bIsSubAttackHeld && bCanUseSubAttack)
+	else if (bIsSubAttackHeld && CanPerformAttack(EMagicAttacks::SubAttack))
 	{
 		HandleSubAttackInput();
 	}
@@ -309,51 +316,24 @@ void AMIR_ArcadeController::CheckAutoRepeatAttack()
 
 void AMIR_ArcadeController::HandleMainAttackInput()
 {
-	// Reject attack input if attacks are on cooldown, already in an attack animation, or cannot move
-	if (!bCanUseMainAttack || CurrentAttackState != EAttackTypes::None || !bCanMove)
+	// Reject attack input if attacks cannot be performed or character cannot move
+	if (!bCanMove || !CanPerformAttack(EMagicAttacks::MainAttack))
 	{
 		return;
 	}
 
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
-	if (PlayerCharacter && PlayerCharacter->ManaComponent && 
-		PlayerCharacter->ManaComponent->IsCooldownActive())
-	{
-		return;
-	}
 
-	// Validate mana power before committing to the attack
-	TSubclassOf<AMIR_MagicBASE> MagicClass = GetAppropriateMagic(EMagicAttacks::MainAttack);
-	if (!MagicClass)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AMIR_ArcadeController: Cannot attack - no MagicClass found for MainAttack slot."));
-		return;
-	}
-
-	if (PlayerCharacter && PlayerCharacter->ManaComponent)
-	{
-		int32 ManaCost = 0;
-		if (AMIR_MagicBASE* CDO = MagicClass->GetDefaultObject<AMIR_MagicBASE>())
-		{
-			if (CDO->AttackTypeComponent)
-			{
-				ManaCost = CDO->AttackTypeComponent->GetManaConsumption();
-			}
-		}
-
-		if (PlayerCharacter->ManaComponent->ManaPower < ManaCost)
-		{
-			return;
-		}
-	}
-
-	// Root Mira during the attack animation
-	SetCanMove(false);
+	// Root Mira on the ground during attack animations; jumps and mid-air momentum are not affected
 	if (PlayerCharacter)
 	{
 		if (UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement())
 		{
-			MoveComp->StopMovementImmediately();
+			if (!MoveComp->IsFalling())
+			{
+				SetCanMove(false);
+				MoveComp->StopMovementImmediately();
+			}
 		}
 	}
 
@@ -376,56 +356,24 @@ void AMIR_ArcadeController::HandleMainAttackInput()
 
 void AMIR_ArcadeController::HandleRangedCopyInput()
 {
-	// Reject attack input if attacks are on cooldown, already in an attack animation, or cannot move
-	if (!bCanUseMainAttack || CurrentAttackState != EAttackTypes::None || !bCanMove)
+	// Reject attack input if attacks cannot be performed or character cannot move
+	if (!bCanMove || !CanPerformAttack(EMagicAttacks::RangedCopy))
 	{
 		return;
 	}
 
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
-	if (PlayerCharacter && PlayerCharacter->ManaComponent && 
-		PlayerCharacter->ManaComponent->IsCooldownActive())
-	{
-		return;
-	}
-	else if (PlayerCharacter && !PlayerCharacter->bHasMirrorStaff)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AMIR_ArcadeController: Cannot use Mirror Staff - Player does not have Mirror Staff (bHasMirrorStaff is false)."));
-		return;
-	}
 
-	// Validate mana power before committing to the attack
-	TSubclassOf<AMIR_MagicBASE> MagicClass = GetAppropriateMagic(EMagicAttacks::RangedCopy);
-	if (!MagicClass)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AMIR_ArcadeController: Cannot attack - no MagicClass found for RangedCopy slot."));
-		return;
-	}
-
-	if (PlayerCharacter && PlayerCharacter->ManaComponent)
-	{
-		int32 ManaCost = 0;
-		if (AMIR_MagicBASE* CDO = MagicClass->GetDefaultObject<AMIR_MagicBASE>())
-		{
-			if (CDO->AttackTypeComponent)
-			{
-				ManaCost = CDO->AttackTypeComponent->GetManaConsumption();
-			}
-		}
-
-		if (PlayerCharacter->ManaComponent->ManaPower < ManaCost)
-		{
-			return;
-		}
-	}
-
-	// Root Mira during the attack animation
-	SetCanMove(false);
+	// Root Mira on the ground during attack animations; jumps and mid-air momentum are not affected
 	if (PlayerCharacter)
 	{
 		if (UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement())
 		{
-			MoveComp->StopMovementImmediately();
+			if (!MoveComp->IsFalling())
+			{
+				SetCanMove(false);
+				MoveComp->StopMovementImmediately();
+			}
 		}
 	}
 
@@ -449,20 +397,23 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 void AMIR_ArcadeController::HandleSubAttackInput()
 {
 	// Sub-Attack cannot interrupt an ongoing attack or move lock
-	if (!bCanUseSubAttack || CurrentAttackState != EAttackTypes::None || !bCanMove)
+	if (!bCanMove || !CanPerformAttack(EMagicAttacks::SubAttack))
 	{
 		return;
 	}
 
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
 
-	// Root Mira during the attack animation
-	SetCanMove(false);
+	// Root Mira on the ground during attack animations; jumps and mid-air momentum are not affected
 	if (PlayerCharacter)
 	{
 		if (UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement())
 		{
-			MoveComp->StopMovementImmediately();
+			if (!MoveComp->IsFalling())
+			{
+				SetCanMove(false);
+				MoveComp->StopMovementImmediately();
+			}
 		}
 	}
 	
@@ -544,6 +495,11 @@ void AMIR_ArcadeController::ExecuteAllowMainAttack()
 
 void AMIR_ArcadeController::UseMainAttack_Implementation()
 {
+	if (!CanCastMagic(EMagicAttacks::MainAttack))
+	{
+		return;
+	}
+
 	CurrentMagicSlot = EMagicAttacks::MainAttack;
 	TSubclassOf<AMIR_MagicBASE> MagicClass = GetAppropriateMagic(EMagicAttacks::MainAttack);
 	if (!MagicClass)
@@ -568,6 +524,11 @@ void AMIR_ArcadeController::UseMainAttack_Implementation()
 
 void AMIR_ArcadeController::UseMirrorStaff_Implementation()
 {
+	if (!CanCastMagic(EMagicAttacks::RangedCopy))
+	{
+		return;
+	}
+
 	CurrentMagicSlot = EMagicAttacks::RangedCopy;
 	CurrentAttackState = EAttackTypes::Ranged;
 	UpdateAnimInstanceAttackType(EAttackTypes::Ranged);
@@ -582,6 +543,11 @@ void AMIR_ArcadeController::UseMirrorStaff_Implementation()
 
 void AMIR_ArcadeController::UseSubAttack_Implementation()
 {
+	if (!CanCastMagic(EMagicAttacks::SubAttack))
+	{
+		return;
+	}
+
 	CurrentMagicSlot = EMagicAttacks::SubAttack;
 	CurrentAttackState = EAttackTypes::Melee;
 	UpdateAnimInstanceAttackType(EAttackTypes::Melee);
@@ -596,17 +562,25 @@ void AMIR_ArcadeController::UseSubAttack_Implementation()
 
 
 
-void AMIR_ArcadeController::DiscardCopiedMagic_Implementation()
+void AMIR_ArcadeController::ResetCopiedMagic()
 {
 	if (AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter())
 	{
-		PlayerCharacter->SetStoredMagic(nullptr);
-		if (PlayerCharacter->ElementComponent)
+		if (PlayerCharacter->GetStoredMagic() != nullptr)
 		{
-			PlayerCharacter->ElementComponent->SetElementDetails(EElements::None);
+			PlayerCharacter->SetStoredMagic(nullptr);
+			if (PlayerCharacter->ElementComponent)
+			{
+				PlayerCharacter->ElementComponent->SetElementDetails(EElements::None);
+			}
+			PlayerCharacter->CopyElement();
 		}
-		PlayerCharacter->CopyElement();
 	}
+}
+
+void AMIR_ArcadeController::DiscardCopiedMagic_Implementation()
+{
+	ResetCopiedMagic();
 	CurrentMagicSlot = EMagicAttacks::None;
 	CurrentAttackState = EAttackTypes::None;
 	UpdateAnimInstanceAttackType(EAttackTypes::None);
@@ -678,6 +652,146 @@ EAttackTypes AMIR_ArcadeController::GetAttackTypeForMagic(TSubclassOf<AMIR_Magic
 	return EAttackTypes::None;
 }
 
+int32 AMIR_ArcadeController::GetManaCostForMagic(TSubclassOf<AMIR_MagicBASE> MagicClass) const
+{
+	if (!MagicClass)
+	{
+		return 0;
+	}
+
+	if (AMIR_MagicBASE* CDO = MagicClass->GetDefaultObject<AMIR_MagicBASE>())
+	{
+		if (CDO->AttackTypeComponent)
+		{
+			// Copy actions (e.g. MeleeCopy or RangedCopy) have property Copy and cost 0
+			if (CDO->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
+			{
+				return 0;
+			}
+
+			int32 Cost = CDO->AttackTypeComponent->GetManaConsumption();
+			if (Cost > 0)
+			{
+				return Cost;
+			}
+		}
+	}
+
+	// Class-based fallback if component wasn't initialized or returned default
+	if (MagicClass->IsChildOf(AMIR_MagicAOE::StaticClass()))
+	{
+		return 3;
+	}
+	if (MagicClass->IsChildOf(AMIR_MagicMelee::StaticClass()))
+	{
+		return 2;
+	}
+	if (MagicClass->IsChildOf(AMIR_MagicRanged::StaticClass()))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+bool AMIR_ArcadeController::CanCastMagic(EMagicAttacks AttackSlot) const
+{
+	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
+	if (!PlayerCharacter)
+	{
+		return false;
+	}
+
+	if (AttackSlot == EMagicAttacks::RangedCopy && !PlayerCharacter->bHasMirrorStaff)
+	{
+		return false;
+	}
+
+	TSubclassOf<AMIR_MagicBASE> MagicClass = GetAppropriateMagic(AttackSlot);
+	if (!MagicClass)
+	{
+		return false;
+	}
+
+	// Sub-Attack (dagger) consumes no mana
+	if (AttackSlot == EMagicAttacks::SubAttack)
+	{
+		return true;
+	}
+
+	if (PlayerCharacter->ManaComponent)
+	{
+		// During mana cooldown, no magic can be cast
+		if (PlayerCharacter->ManaComponent->IsCooldownActive())
+		{
+			return false;
+		}
+
+		// If mana is completely depleted, no magic can be cast
+		if (PlayerCharacter->ManaComponent->ManaPower <= 0)
+		{
+			return false;
+		}
+
+		const int32 ManaCost = GetManaCostForMagic(MagicClass);
+
+		// Insufficient mana to cast this magic
+		if (PlayerCharacter->ManaComponent->ManaPower < ManaCost)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool AMIR_ArcadeController::CanPerformAttack(EMagicAttacks AttackSlot) const
+{
+	if (CurrentAttackState != EAttackTypes::None)
+	{
+		return false;
+	}
+
+	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
+	if (!PlayerCharacter)
+	{
+		return false;
+	}
+
+	switch (AttackSlot)
+	{
+	case EMagicAttacks::MainAttack:
+	{
+		if (!bCanUseMainAttack)
+		{
+			return false;
+		}
+		return CanCastMagic(EMagicAttacks::MainAttack);
+	}
+
+	case EMagicAttacks::RangedCopy:
+	{
+		if (!bCanUseMainAttack || !PlayerCharacter->bHasMirrorStaff)
+		{
+			return false;
+		}
+		return CanCastMagic(EMagicAttacks::RangedCopy);
+	}
+
+	case EMagicAttacks::SubAttack:
+	{
+		if (!bCanUseSubAttack)
+		{
+			return false;
+		}
+		return CanCastMagic(EMagicAttacks::SubAttack);
+	}
+
+	default:
+		return false;
+	}
+}
+
 EAttackTypes AMIR_ArcadeController::GetAttackTypeName() const
 {
 	if (CurrentAttackState != EAttackTypes::None)
@@ -723,6 +837,11 @@ AMIR_MagicBASE* AMIR_ArcadeController::SpawnMagic_Implementation(EMagicAttacks A
 		return nullptr;
 	}
 
+	if (!CanCastMagic(AttackSlot))
+	{
+		return nullptr;
+	}
+
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
 	if (!PlayerCharacter)
 	{
@@ -741,18 +860,10 @@ AMIR_MagicBASE* AMIR_ArcadeController::SpawnMagic_Implementation(EMagicAttacks A
 		return nullptr;
 	}
 
-
 	// Deduct mana (SubAttack dagger does not consume mana)
 	if (AttackSlot != EMagicAttacks::SubAttack)
 	{
-		int32 ManaCost = 0;
-		if (AMIR_MagicBASE* CDO = MagicClass->GetDefaultObject<AMIR_MagicBASE>())
-		{
-			if (CDO->AttackTypeComponent)
-			{
-				ManaCost = CDO->AttackTypeComponent->GetManaConsumption();
-			}
-		}
+		const int32 ManaCost = GetManaCostForMagic(MagicClass);
 
 		if (PlayerCharacter->ManaComponent)
 		{
@@ -766,8 +877,26 @@ AMIR_MagicBASE* AMIR_ArcadeController::SpawnMagic_Implementation(EMagicAttacks A
 				return nullptr;
 			}
 
-			PlayerCharacter->ManaComponent->ManaReduction(ManaCost);
-			PlayerCharacter->ManaComponent->ManaCooldown();
+			if (ManaCost > 0)
+			{
+				PlayerCharacter->ManaComponent->ManaReduction(ManaCost);
+
+				// If remaining mana is insufficient for another cast of this spell, drain to 0 so cooldown can begin
+				if (PlayerCharacter->ManaComponent->ManaPower < ManaCost)
+				{
+					PlayerCharacter->ManaComponent->SetManaPower(0);
+				}
+
+				PlayerCharacter->ManaComponent->ManaCooldown();
+
+				// Once mana runs out (<= 0), reset copied spell back to BP_MIR_MeleeCopy
+				if (PlayerCharacter->ManaComponent->ManaPower <= 0)
+				{
+					ResetCopiedMagic();
+					bIsMainAttackHeld = false;
+					bIsRangedCopyHeld = false;
+				}
+			}
 		}
 	}
 
@@ -927,11 +1056,13 @@ void AMIR_ArcadeController::OnAttackAnimationFinished()
 	bCanUseSubAttack = true;
 	SetCanMove(true);
 
-	// If any attack button is held, chain into the next attack on the next tick.
+	// If any attack button is held and can actually be performed, chain into the next attack on the next tick.
 	// We wait 1 tick so the AnimBP state machine can process the transition out of
 	// the current attack state before re-entering, which avoids the T-pose pop.
 	// During this 1-tick gap, MoveCharacter's held-input guard keeps Mira rooted.
-	if (bIsMainAttackHeld || bIsRangedCopyHeld || bIsSubAttackHeld)
+	if ((bIsMainAttackHeld && CanPerformAttack(EMagicAttacks::MainAttack)) ||
+		(bIsRangedCopyHeld && CanPerformAttack(EMagicAttacks::RangedCopy)) ||
+		(bIsSubAttackHeld && CanPerformAttack(EMagicAttacks::SubAttack)))
 	{
 		if (UWorld* World = GetWorld())
 		{

@@ -248,6 +248,9 @@ protected:
 		void DiscardCopiedMagic();
 	virtual void DiscardCopiedMagic_Implementation();
 
+	// Resets stored copied magic and player element back to default (MeleeCopy).
+	void ResetCopiedMagic();
+
 	// Called to interact with an object. 
 	void UseInteract();
 
@@ -297,6 +300,17 @@ public:
 	// Returns the EAttackTypes category (Melee, Ranged, AoE) for a given magic class.
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Magic")
 		EAttackTypes GetAttackTypeForMagic(TSubclassOf<AMIR_MagicBASE> MagicClass) const;
+
+	// Returns the mana cost for a given magic class.
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Magic")
+		int32 GetManaCostForMagic(TSubclassOf<AMIR_MagicBASE> MagicClass) const;
+
+	// Validates whether the magic associated with AttackSlot can be cast (valid class, sufficient mana, not on cooldown).
+	bool CanCastMagic(EMagicAttacks AttackSlot) const;
+
+	// Checks if the specified attack can currently be performed (cooldown, state, mana, etc.).
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|State")
+		bool CanPerformAttack(EMagicAttacks AttackSlot) const;
 
 	// Returns the current attack type name for AB_MIR_MiraAnimations state machine transitions.
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|State")
