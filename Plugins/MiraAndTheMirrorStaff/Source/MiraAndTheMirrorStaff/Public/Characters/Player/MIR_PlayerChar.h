@@ -10,11 +10,14 @@
 #include "Components/MIR_ManaComponent.h"
 #include "Magic/MIR_MagicBASE.h"
 #include "Enums/EMIR_KeyItem.h"
+#include "Enums/EMIR_AttackTypes.h"
 #include "MIR_PlayerChar.generated.h"
 
 class AMIR_RespawnPoint;
+class UAnimSequenceBase;
 
 //UENUM(BlueprintType)
+
 //enum class EMIR_KeyItem : uint8
 //{
 //	MirrorStaff,
@@ -58,6 +61,29 @@ private:
 		TSubclassOf<class AMIR_MagicRanged> RangedCopyRef;
 
 public:
+	// Attack animation references configured per attack type.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> MeleeAttackAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> RangedAttackAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> AOEAttackAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> DaggerAttackAnim;
+
+	// Helper to get the animation configured for a given attack type
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Animations")
+		class UAnimSequenceBase* GetAttackAnimation(EAttackTypes AttackType) const;
+
+	// Helper to get the dagger / sub-attack animation
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Animations")
+		class UAnimSequenceBase* GetSubAttackAnimation() const;
+
+public:
+
 	// Key item flags. Set to true when obtained so any logic gates
 	// involving their inputs (Jump, Dash, etc.) can succeed.
 
