@@ -3,10 +3,10 @@
 
 #include "Structs/SMIR_ElementData.h"
 
-//SMIR_AttackTypeData::SMIR_AttackTypeData()
+//SMIR_ElementData::SMIR_ElementData()
 //{
 //}
 //
-//SMIR_AttackTypeData::~SMIR_AttackTypeData()
+//SMIR_ElementData::~SMIR_ElementData()
 //{
 //}

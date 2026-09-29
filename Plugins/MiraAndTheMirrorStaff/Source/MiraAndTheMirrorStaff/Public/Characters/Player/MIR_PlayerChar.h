@@ -15,6 +15,7 @@
 
 class AMIR_RespawnPoint;
 class UAnimSequenceBase;
+class AMIR_CameraMovePoints;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRespawn);
 
@@ -146,6 +147,10 @@ public:
 	// Spawn transform for AoE magic.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
 		UArrowComponent* AOEArrow;
+
+	// The CMP most recently overlapped with.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		TObjectPtr<AMIR_CameraMovePoints> CurrentCMP = nullptr;
 
 	// Sets default values for Player Character's properties.
 	AMIR_PlayerChar();
