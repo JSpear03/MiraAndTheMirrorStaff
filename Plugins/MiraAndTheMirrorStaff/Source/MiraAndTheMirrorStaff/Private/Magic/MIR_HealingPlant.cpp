@@ -3,6 +3,8 @@
 
 #include "Magic/MIR_HealingPlant.h"
 #include "Magic/MIR_MagicBASE.h"
+#include "Characters/Player/MIR_PlayerChar.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMIR_HealingPlant::AMIR_HealingPlant()
@@ -12,10 +14,12 @@ AMIR_HealingPlant::AMIR_HealingPlant()
 	PrimaryActorTick.bCanEverTick = false;
 
 	CapsuleCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collision"));
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 
 	RootComponent = CapsuleCollision;
 	Mesh->SetupAttachment(RootComponent);
+	BoxCollision->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +29,8 @@ void AMIR_HealingPlant::BeginPlay()
 	
 	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, 
 		&AMIR_HealingPlant::OnHealingPlantOverlap);
+	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AMIR_HealingPlant::OnBoxCollisionBeginOverlap);
+	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &AMIR_HealingPlant::OnBoxCollisionEndOverlap);
 }
 
 void AMIR_HealingPlant::OnHealingPlantOverlap(UPrimitiveComponent* OverlappedComponent, 
@@ -45,6 +51,49 @@ void AMIR_HealingPlant::OnHealingPlantOverlap(UPrimitiveComponent* OverlappedCom
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Do Copy"));
 
 		OpenEpilogue();
+	}
+}
+
+void AMIR_HealingPlant::OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
+	const FHitResult& SweepResult)
+{
+	// The currently possessed player character.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
+		GetPlayerCharacter(GetWorld(), 0));
+
+	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
+	{
+		return;
+	}
+
+	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
+
+	// Only shows healing message when player interacts.
+	if (bIsChildOfPlayer)
+	{
+		OpenPlantCopyUI();
+	}
+}
+
+void AMIR_HealingPlant::OnBoxCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
+{
+	// The currently possessed player character.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
+		GetPlayerCharacter(GetWorld(), 0));
+
+	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
+	{
+		return;
+	}
+
+	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
+	
+	// Stops showing copy message when player moves out of the box. 
+	if (bIsChildOfPlayer)
+	{
+		ClosePlantCopyUI();
 	}
 }
 

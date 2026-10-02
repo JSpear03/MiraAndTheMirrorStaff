@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h" 
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "MIR_HealingPlant.generated.h"
 
 UCLASS()
@@ -15,6 +16,9 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_HealingPlant : public AActor
 	// Healing plant collision.
 	UPROPERTY(EditAnywhere, Category = "Collision")
 		UCapsuleComponent* CapsuleCollision;
+
+	UPROPERTY(EditAnywhere, Category = "Collision")
+		UBoxComponent* BoxCollision;
 
 	// Healing plant mesh.
 	UPROPERTY(EditAnywhere, Category = "Mesh")
@@ -34,9 +38,28 @@ protected:
 	* @param OtherActor is represented by the magic attack.
 	*/
 	UFUNCTION()
-	void OnHealingPlantOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-		const FHitResult& SweepResult);
+		void OnHealingPlantOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+			const FHitResult& SweepResult);
+
+	/*
+	* When something overlaps with the box collision.
+	*
+	* @param OtherActor is represented by the player.
+	*/
+	UFUNCTION()
+		void OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+			const FHitResult& SweepResult);
+
+	/*
+	* When something stops colliding with the box collision.
+	*
+	* @param OtherActor is represented by the player.
+	*/
+	UFUNCTION()
+		void OnBoxCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 public:	
 	// Called every frame
@@ -45,5 +68,13 @@ public:
 	// Transitions to the epilogue level containing the Epilogue UI.  
 	UFUNCTION(BlueprintImplementableEvent, Category = "Epilouge")
 		void OpenEpilogue();
+
+	// Inserts copy message to the viewport.
+	UFUNCTION(BlueprintImplementableEvent, Category = "Plant")
+		void OpenPlantCopyUI();
+
+	// Removes copy message from the viewport.
+	UFUNCTION(BlueprintImplementableEvent, Category = "Plant")
+		void ClosePlantCopyUI();
 
 };
