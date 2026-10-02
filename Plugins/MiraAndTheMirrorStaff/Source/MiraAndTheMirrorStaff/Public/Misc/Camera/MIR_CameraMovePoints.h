@@ -239,20 +239,4 @@ public:
 	 * the function's interior logic (NOT via a return statement).
 	 */
 	void CalculatePlayerBoundaryDistance(AMIR_PlayerChar* PlayerCharRef, FVector& ToPanBoundary);
-
-protected:
-
-	// ===== PANNING =====
-
-	/**
-	 * Finds the first camera instance and, if it's valid, executes panning.
-	 * 
-	 * @param TargetBoundary The boundary to pan to.
-	 * 
-	 * @see `DetermineToPanBoundary()`
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Panning",
-			  meta = (KeyWords = "Access Camera"))
-		void AccessCamera(const FVector& TargetBoundary);
-
 };

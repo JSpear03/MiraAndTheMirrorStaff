@@ -2,6 +2,8 @@
 
 
 #include "Misc/Camera/MIR_CameraMovePoints.h"
+#include "Kismet/GameplayStatics.h"
+#include "Misc/Camera/MIR_Camera.h"
 
 /** Static-variable initializations. */
 // The base length of a room on the x-axis.
@@ -259,8 +261,26 @@ void AMIR_CameraMovePoints::DetermineToPanBoundary(AMIR_PlayerChar* PlayerCharRe
 {
 	// The boundary to be panned to; it is closest to the player.
 	FVector ToPanBoundary = FVector::ZeroVector;
+
 	CalculatePlayerBoundaryDistance(PlayerCharRef, ToPanBoundary);
-	AccessCamera(ToPanBoundary);
+
+	// The first found MIR_Camera instance in the World.
+	AMIR_Camera* CameraRef =
+		Cast<AMIR_Camera>(UGameplayStatics::GetActorOfClass(GetWorld(), AMIR_Camera::StaticClass()));
+
+	if (!CameraRef) { return; }
+
+	// Stop the camera from following the player (a separate action from panning).
+	CameraRef->CloseFollowGate();
+
+	// New max and min boundaries for the MIR_Camera instance to adhere to.
+	TArray<FVector2D> NewBoundaries =
+		{ FVector2D(Max_X->GetComponentLocation().X, Max_Y->GetComponentLocation().Y),
+		  FVector2D(Min_X->GetComponentLocation().X, Min_Y->GetComponentLocation().Y) };
+
+	// Make the camera pan to the room enveloped by this CMP.
+	CameraRef->PanToNewRoomBoundary(ToPanBoundary, NewBoundaries, bUseBoundaryOnLerp,
+									ERoomDeterminer, GetActorLocation());
 }
 
 void AMIR_CameraMovePoints::CalculatePlayerBoundaryDistance(AMIR_PlayerChar* PlayerCharRef,
