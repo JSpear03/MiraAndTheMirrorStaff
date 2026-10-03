@@ -321,7 +321,8 @@ private:
 	 * boundary.
 	 * Called when `OnRespawn` is dispatched by MIR_PlayerChar.
 	 */
-	void MoveTowardRespawnPoint();
+	UFUNCTION()
+		void MoveTowardRespawnPoint();
 
 	// ===== HELPERS =====
 

@@ -15,4 +15,17 @@ UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_HazardBottomlessPit : public AMIR_HazardBASE
 {
 	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties.
+	AMIR_HazardBottomlessPit();
+
+protected:
+	// Called when the game starts or when spawned.
+	virtual void BeginPlay() override;
+
+	// Called when an actor enters the hazard's collision box.
+	virtual void OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+		bool bFromSweep, const FHitResult& SweepResult) override;
 };
