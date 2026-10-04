@@ -40,6 +40,18 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "State")
 		FOnEnemyDied OnEnemyDied;
 
+	// Whether this enemy is a boss variant that should stay defeated permanently once killed.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boss")
+		bool bIsBossVariant = false;
+
+	// Optional unique identifier for this boss. Defaults to LevelName_ClassName if empty.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boss", meta = (EditCondition = "bIsBossVariant"))
+		FName BossID;
+
+	// Returns the effective unique ID used for boss defeat save persistence.
+	UFUNCTION(BlueprintPure, Category = "Boss")
+		FName GetEffectiveBossID() const;
+
 	// Sets default values for Base Enemy. 
 	AMIR_EnemyBASE();
 

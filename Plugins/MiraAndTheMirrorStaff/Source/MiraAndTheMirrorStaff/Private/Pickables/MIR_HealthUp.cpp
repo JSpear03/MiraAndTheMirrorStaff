@@ -2,6 +2,7 @@
 
 
 #include "Pickables/MIR_HealthUp.h"
+#include "Save/MIR_SaveSubsystem.h"
 
 // Sets default values
 AMIR_HealthUp::AMIR_HealthUp()
@@ -18,6 +19,11 @@ void AMIR_HealthUp::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (IsActorBeingDestroyed())
+	{
+		return;
+	}
+
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMIR_HealthUp::OnHealthOverlap);
 }
 
@@ -35,6 +41,14 @@ void AMIR_HealthUp::OnHealthOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	}
 
 	PlayerCharacter->HealthComponent->IncreaseTotalHealth(HealthBonus);
+
+	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+		{
+			SaveSubsystem->MarkPickupCollected(GetEffectivePickupID());
+		}
+	}
 
 	Destroy();
 }

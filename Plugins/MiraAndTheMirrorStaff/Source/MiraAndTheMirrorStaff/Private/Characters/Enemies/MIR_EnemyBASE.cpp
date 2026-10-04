@@ -4,6 +4,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/MIR_Combat_Component.h"
 #include "Kismet/GameplayStatics.h"
+#include "Save/MIR_SaveSubsystem.h"
+#include "Misc/PackageName.h"
+#include "UObject/Package.h"
 
 
 // Sets default values.
@@ -19,6 +22,28 @@ AMIR_EnemyBASE::AMIR_EnemyBASE()
 void AMIR_EnemyBASE::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (bIsBossVariant)
+	{
+		FName EffectiveID = GetEffectiveBossID();
+		if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+		{
+			if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+			{
+				const bool bDefeated = SaveSubsystem->IsBossDefeated(EffectiveID);
+				UE_LOG(LogTemp, Log, TEXT("AMIR_EnemyBASE::BeginPlay - Boss [%s] defeated: %d"),
+					*EffectiveID.ToString(), bDefeated ? 1 : 0);
+
+				if (bDefeated)
+				{
+					SetActorHiddenInGame(true);
+					SetActorEnableCollision(false);
+					Destroy();
+					return;
+				}
+			}
+		}
+	}
 
 	OnEnemyDied.AddDynamic(this, &AMIR_EnemyBASE::EnemyDied);
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMIR_EnemyBASE::OnOverlapBegin);
@@ -118,9 +143,92 @@ void AMIR_EnemyBASE::CheckHealth()
 			CombatComponent->SetDeactivated(true);
 		}
 
+		if (bIsBossVariant)
+		{
+			if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+			{
+				if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+				{
+					SaveSubsystem->MarkBossDefeated(GetEffectiveBossID());
+					UE_LOG(LogTemp, Log, TEXT("AMIR_EnemyBASE - Marked boss defeated: %s"),
+						*GetEffectiveBossID().ToString());
+				}
+			}
+		}
+
 		OnEnemyDied.Broadcast(this);
 		SetNewMaterial();
 	}
+}
+
+FName AMIR_EnemyBASE::GetEffectiveBossID() const
+{
+	if (!BossID.IsNone())
+	{
+		return BossID;
+	}
+
+	// 1. Get the package name of the level this boss belongs to (handles streaming sublevels)
+	FString LevelPackageName;
+	if (ULevel* Level = GetLevel())
+	{
+		if (UPackage* Package = Level->GetPackage())
+		{
+			LevelPackageName = Package->GetName();
+		}
+	}
+
+	if (LevelPackageName.IsEmpty() && GetWorld())
+	{
+		LevelPackageName = GetWorld()->GetMapName();
+	}
+
+	// 2. Strip PIE prefix if present (e.g. UEDPIE_0_)
+	int32 PieIndex = LevelPackageName.Find(TEXT("UEDPIE_"));
+	if (PieIndex != INDEX_NONE)
+	{
+		int32 SlashAfter = LevelPackageName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex);
+		if (SlashAfter != INDEX_NONE)
+		{
+			LevelPackageName.RemoveAt(PieIndex, SlashAfter - PieIndex + 1);
+		}
+		else
+		{
+			int32 NextUnderscore = LevelPackageName.Find(TEXT("_"), ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex + 7);
+			int32 CharsToRemove = (NextUnderscore != INDEX_NONE) ? (NextUnderscore - PieIndex + 1) : 9;
+			LevelPackageName.RemoveAt(PieIndex, CharsToRemove);
+		}
+	}
+
+	// 3. ArcadeLoadStreamLevel appends a 32-character hex FGuid to dynamic level instance names
+	if (LevelPackageName.Len() > 32)
+	{
+		bool bEndsWithGuid = true;
+		int32 SuffixStart = LevelPackageName.Len() - 32;
+		for (int32 i = SuffixStart; i < LevelPackageName.Len(); ++i)
+		{
+			TCHAR c = LevelPackageName[i];
+			if (!FChar::IsHexDigit(c))
+			{
+				bEndsWithGuid = false;
+				break;
+			}
+		}
+
+		if (bEndsWithGuid)
+		{
+			LevelPackageName.LeftInline(SuffixStart);
+		}
+	}
+
+	// Extract the short clean level asset name (e.g. "L_MIR_VGRoomD6")
+	FString CleanLevelName = FPackageName::GetShortName(LevelPackageName);
+
+	// 4. Use the clean class name (e.g. "BP_MIR_BigSlimeFlame")
+	FString ClassName = GetClass()->GetName();
+	ClassName.RemoveFromEnd(TEXT("_C"));
+
+	return FName(*FString::Printf(TEXT("%s_%s"), *CleanLevelName, *ClassName));
 }
 
 // Called every frame.

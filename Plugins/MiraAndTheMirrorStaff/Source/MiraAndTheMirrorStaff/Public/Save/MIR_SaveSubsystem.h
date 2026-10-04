@@ -191,6 +191,40 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Gemstones")
 	void SetHasYellowKeystone(bool bPossessionStatus = false);
 
+	/**
+	 * Marks a pickup ID as collected in the current save.
+	 *
+	 * @param PickupID Unique identifier for the pickup.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Save|Pickups")
+	void MarkPickupCollected(FName PickupID);
+
+	/**
+	 * Checks if a pickup ID has already been collected.
+	 *
+	 * @param PickupID Unique identifier for the pickup.
+	 * @return True if already collected.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Save|Pickups")
+	bool IsPickupCollected(FName PickupID);
+
+	/**
+	 * Marks a boss ID as defeated in the current save.
+	 *
+	 * @param BossID Unique identifier for the boss.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Save|Bosses")
+	void MarkBossDefeated(FName BossID);
+
+	/**
+	 * Checks if a boss ID has already been defeated.
+	 *
+	 * @param BossID Unique identifier for the boss.
+	 * @return True if already defeated.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Save|Bosses")
+	bool IsBossDefeated(FName BossID);
+
 private:
 	// Creates a new save file, and then returns it.
 	UMIR_SaveGame* CreateNewSave();

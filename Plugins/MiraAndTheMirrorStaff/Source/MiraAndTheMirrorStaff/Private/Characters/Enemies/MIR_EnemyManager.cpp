@@ -24,14 +24,20 @@ void AMIR_EnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Bind EnemyBASE delegates to `VerifyEnemyInArray()`.
-	/* The current EnemyBASE in the `EnemyArray`. */
+	// Check for any enemies that were already defeated and destroyed on BeginPlay.
+	int32 AlreadyDefeatedCount = 0;
 	for (AMIR_EnemyBASE* CurrentEnemy : EnemyArray)
 	{
-		if (!CurrentEnemy) { continue; }
+		if (!CurrentEnemy || CurrentEnemy->IsActorBeingDestroyed())
+		{
+			AlreadyDefeatedCount++;
+			continue;
+		}
 
 		CurrentEnemy->OnEnemyDied.AddDynamic(this, &AMIR_EnemyManager::VerifyEnemyInArray);
 	}
+
+	EnemyDeathCount = AlreadyDefeatedCount;
 
 	// Bind TriggerBox's `OnComponentBeginOverlap()` to `OnOverlapBegin()`.
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AMIR_EnemyManager::OnOverlapBegin);
@@ -60,6 +66,13 @@ void AMIR_EnemyManager::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 
 	// Continue only if the player overlapped with this actor.
 	if (!OtherActor || !PlayerChar) { return; }
+
+	// If all enemies in this encounter are already defeated, do not trigger gates or music.
+	if (EnemyArray.Num() > 0 && EnemyDeathCount >= EnemyArray.Num())
+	{
+		bDoOnce = false;
+		return;
+	}
 
 	PlayBossMusic();
 

@@ -9,6 +9,7 @@
 #include "Components/MIR_AttackTypeComponent.h"
 #include "Components/MIR_ElementComponent.h"
 #include "Animation/AnimSequenceBase.h"
+#include "Save/MIR_SaveSubsystem.h"
 //#include "Input/MIR_ArcadeController.h"
 
 
@@ -234,18 +235,36 @@ void AMIR_PlayerChar::SetCanGetHit(bool bGetHit)
 
 void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 {
+	UMIR_SaveSubsystem* SaveSubsystem = nullptr;
+	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>();
+	}
+
 	switch (KeyItem)
 	{
 	case EMIR_KeyItem::MirrorStaff:
 		bHasMirrorStaff = true;
+		if (SaveSubsystem)
+		{
+			SaveSubsystem->SetHasMirrorStaff(true);
+		}
 		break;
 
 	case EMIR_KeyItem::SkyboundShoes:
 		bHasSkyboundShoes = true;
+		if (SaveSubsystem)
+		{
+			SaveSubsystem->SetHasSkyboundShoes(true);
+		}
 		break;
 
 	case EMIR_KeyItem::SpiritStole:
 		bHasSpiritStole = true;
+		if (SaveSubsystem)
+		{
+			SaveSubsystem->SetHasSpiritStole(true);
+		}
 		break;
 
 	case EMIR_KeyItem::KeyGemstone:  // TODO: Deprecate; the Bools are a better solution.
@@ -254,18 +273,34 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 
 	case EMIR_KeyItem::KeyGemstoneRed:
 		bIsGemRed = true;
+		if (SaveSubsystem)
+		{
+			SaveSubsystem->SetHasRedKeystone(true);
+		}
 		break;
 
 	case EMIR_KeyItem::KeyGemstoneBlue:
 		bIsGemBlue = true;
+		if (SaveSubsystem)
+		{
+			SaveSubsystem->SetHasBlueKeystone(true);
+		}
 		break;
 
 	case EMIR_KeyItem::KeyGemstoneGreen:
 		bIsGemGreen = true;
+		if (SaveSubsystem)
+		{
+			SaveSubsystem->SetHasGreenKeystone(true);
+		}
 		break;
 
 	case EMIR_KeyItem::KeyGemstoneYellow:
 		bIsGemYellow = true;
+		if (SaveSubsystem)
+		{
+			SaveSubsystem->SetHasYellowKeystone(true);
+		}
 		break;
 
 	default:
