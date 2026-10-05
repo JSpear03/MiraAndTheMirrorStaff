@@ -24,14 +24,20 @@ void AMIR_EnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Bind EnemyBASE delegates to `VerifyEnemyInArray()`.
-	/* The current EnemyBASE in the `EnemyArray`. */
+	// Check for any enemies that were already defeated and destroyed on BeginPlay.
+	int32 AlreadyDefeatedCount = 0;
 	for (AMIR_EnemyBASE* CurrentEnemy : EnemyArray)
 	{
-		if (!CurrentEnemy) { continue; }
+		if (!CurrentEnemy || CurrentEnemy->IsActorBeingDestroyed())
+		{
+			AlreadyDefeatedCount++;
+			continue;
+		}
 
 		CurrentEnemy->OnEnemyDied.AddDynamic(this, &AMIR_EnemyManager::VerifyEnemyInArray);
 	}
+
+	EnemyDeathCount = AlreadyDefeatedCount;
 
 	// Bind TriggerBox's `OnComponentBeginOverlap()` to `OnOverlapBegin()`.
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AMIR_EnemyManager::OnOverlapBegin);
@@ -54,12 +60,27 @@ void AMIR_EnemyManager::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 {
 	// Continue only if this is the first trigger in this actor's lifespan.
 	if (!bDoOnce) { return; }
+
+	// Continue only if all enemies in `EnemyArray` are valid.
+	// This prevents an issue where IPAs cannot be deactivated if the enemies don't exist.
+	/* The currently evaluated enemy in `EnemyArray`. */
+	for (const AMIR_EnemyBASE* CurrentEnemy : EnemyArray)
+	{
+		if (!CurrentEnemy) { return; }
+	}
 	
 	// The currently possessed player character.
 	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
 
 	// Continue only if the player overlapped with this actor.
 	if (!OtherActor || !PlayerChar) { return; }
+
+	// If all enemies in this encounter are already defeated, do not trigger gates or music.
+	if (EnemyArray.Num() > 0 && EnemyDeathCount >= EnemyArray.Num())
+	{
+		bDoOnce = false;
+		return;
+	}
 
 	PlayBossMusic();
 

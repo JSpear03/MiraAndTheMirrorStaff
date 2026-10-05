@@ -2,6 +2,7 @@
 
 
 #include "Pickables/MIR_SpiritStoleItem.h"
+#include "Save/MIR_SaveSubsystem.h"
 
 // Sets default values. 
 AMIR_SpiritStoleItem::AMIR_SpiritStoleItem()
@@ -13,6 +14,11 @@ AMIR_SpiritStoleItem::AMIR_SpiritStoleItem()
 void AMIR_SpiritStoleItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsActorBeingDestroyed())
+	{
+		return;
+	}
 
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, 
 		&AMIR_SpiritStoleItem::OnSpiritStoleOverlap);
@@ -26,12 +32,21 @@ void AMIR_SpiritStoleItem::OnSpiritStoleOverlap(UPrimitiveComponent* OverlappedC
 	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
 	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
 
-	if (!OtherActor || !bIsChildOfPlayer)
+	if (!OtherActor || !bIsChildOfPlayer || !PlayerCharacter)
 	{
 		return;
 	}
 
 	PlayerCharacter->GrantKeyItem(EMIR_KeyItem::SpiritStole);
+
+	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+		{
+			SaveSubsystem->MarkPickupCollected(GetEffectivePickupID());
+			SaveSubsystem->SetHasSpiritStole(true);
+		}
+	}
 
 	Destroy();
 }

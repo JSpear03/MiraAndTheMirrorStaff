@@ -4,6 +4,7 @@
 #include "Components/MIR_ManaComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TimerManager.h"
+#include "Save/MIR_SaveSubsystem.h"
 
 // Sets default values for this component's properties
 UMIR_ManaComponent::UMIR_ManaComponent()
@@ -96,6 +97,14 @@ void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
 {
 	SetTotalManaPower(TotalManaPower + BonusManaPower);
 	SetManaPower(TotalManaPower);  // Puts mana at full power.
+
+	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		if (UMIR_SaveSubsystem* SaveSubsystem = GameInstance->GetSubsystem<UMIR_SaveSubsystem>())
+		{
+			SaveSubsystem->SetTotalMana(TotalManaPower);
+		}
+	}
 }
 
 /*********************************************************************************************

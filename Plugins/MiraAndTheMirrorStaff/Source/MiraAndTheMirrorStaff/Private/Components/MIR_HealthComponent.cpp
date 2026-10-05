@@ -2,6 +2,7 @@
 
 
 #include "Components/MIR_HealthComponent.h"
+#include "Save/MIR_SaveSubsystem.h"
 
 // Sets default values for this component's properties
 UMIR_HealthComponent::UMIR_HealthComponent()
@@ -93,4 +94,12 @@ void UMIR_HealthComponent::IncreaseTotalHealth(int32 BonusHealth)
 {
 	SetTotalHealth(TotalHealth + BonusHealth);
 	SetHealth(TotalHealth);  // Sets current health to full health. 
+
+	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		if (UMIR_SaveSubsystem* SaveSubsystem = GameInstance->GetSubsystem<UMIR_SaveSubsystem>())
+		{
+			SaveSubsystem->SetTotalHealth(TotalHealth);
+		}
+	}
 }

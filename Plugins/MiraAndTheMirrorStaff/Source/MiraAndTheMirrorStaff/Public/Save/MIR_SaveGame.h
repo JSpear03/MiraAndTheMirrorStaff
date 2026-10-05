@@ -78,4 +78,12 @@ public:
 	// Specifies whether the player has obtained the yellow Key Gemstone.
 	UPROPERTY(SaveGame, BlueprintReadOnly, Category = "Save|Player Items|Gemstones")
 		bool bHasYellowKeystone = false;
+
+	// List of unique pickup IDs that have been collected so they don't respawn.
+	UPROPERTY(SaveGame, BlueprintReadOnly, Category = "Save|Pickups")
+		TArray<FName> CollectedPickups;
+
+	// List of unique boss IDs that have been defeated so they don't respawn.
+	UPROPERTY(SaveGame, BlueprintReadOnly, Category = "Save|Bosses")
+		TArray<FName> DefeatedBosses;
 };

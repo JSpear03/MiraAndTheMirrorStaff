@@ -19,7 +19,7 @@ void UMIR_SaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	// Load synchronously on startup — the payload is tiny and this avoids a race where
+	// Load synchronously on startup - the payload is tiny and this avoids a race where
 	// GetSave() creates a fresh save before an async load lands.
 	if (UGameplayStatics::DoesSaveGameExist(GetSlotName(), SaveUserIndex))
 	{
@@ -141,6 +141,40 @@ void UMIR_SaveSubsystem::SetHasGreenKeystone(bool bPossessionStatus)
 void UMIR_SaveSubsystem::SetHasYellowKeystone(bool bPossessionStatus)
 {
 	GetSave()->bHasYellowKeystone = bPossessionStatus;
+}
+
+void UMIR_SaveSubsystem::MarkPickupCollected(FName PickupID)
+{
+	if (!PickupID.IsNone())
+	{
+		GetSave()->CollectedPickups.AddUnique(PickupID);
+	}
+}
+
+bool UMIR_SaveSubsystem::IsPickupCollected(FName PickupID)
+{
+	if (PickupID.IsNone())
+	{
+		return false;
+	}
+	return GetSave()->CollectedPickups.Contains(PickupID);
+}
+
+void UMIR_SaveSubsystem::MarkBossDefeated(FName BossID)
+{
+	if (!BossID.IsNone())
+	{
+		GetSave()->DefeatedBosses.AddUnique(BossID);
+	}
+}
+
+bool UMIR_SaveSubsystem::IsBossDefeated(FName BossID)
+{
+	if (BossID.IsNone())
+	{
+		return false;
+	}
+	return GetSave()->DefeatedBosses.Contains(BossID);
 }
 
 /*********************************************************************************************

@@ -2,6 +2,7 @@
 
 
 #include "Pickables/MIR_KeyGemstone.h"
+#include "Save/MIR_SaveSubsystem.h"
 
 // Sets default values.
 AMIR_KeyGemstone::AMIR_KeyGemstone()
@@ -13,6 +14,11 @@ AMIR_KeyGemstone::AMIR_KeyGemstone()
 void AMIR_KeyGemstone::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsActorBeingDestroyed())
+	{
+		return;
+	}
 
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this,
 		&AMIR_KeyGemstone::OnGemstoneOverlap);
@@ -26,7 +32,7 @@ void AMIR_KeyGemstone::OnGemstoneOverlap(UPrimitiveComponent* OverlappedComponen
 	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
 	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
 
-	if (!OtherActor || !bIsChildOfPlayer)
+	if (!OtherActor || !bIsChildOfPlayer || !PlayerCharacter)
 	{
 		return;
 	}
@@ -34,6 +40,14 @@ void AMIR_KeyGemstone::OnGemstoneOverlap(UPrimitiveComponent* OverlappedComponen
 	PlayerCharacter->GrantKeyItem(EMIR_KeyItem::KeyGemstone);  // Increase Gem counter.
 
 	CheckGemColor(PlayerCharacter);
+
+	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+		{
+			SaveSubsystem->MarkPickupCollected(GetEffectivePickupID());
+		}
+	}
 	
 	Destroy();
 }

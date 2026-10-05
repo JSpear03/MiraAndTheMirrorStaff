@@ -31,6 +31,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 		UStaticMeshComponent* Mesh;
 
+	// Unique identifier for save tracking. If None, defaults to LevelName_ActorName.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save")
+		FName PickupID = NAME_None;
+
+	// Helper to resolve the effective PickupID.
+	UFUNCTION(BlueprintPure, Category = "Save")
+		FName GetEffectivePickupID() const;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
