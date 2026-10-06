@@ -180,18 +180,14 @@ void AMIR_ArcadeController::StartPlayerJumping()
 		PlayerCharacter->Jump();
 		bCanAnimateJump = true;
 
-		FTimerHandle CooldownTimerHandle;
-		FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-
-		const FTimerDelegate& CooldownTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager, 
-			&CooldownTimerHandle]
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(JumpAnimationTimerHandle);
+			World->GetTimerManager().SetTimer(JumpAnimationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this]()
 			{
-				TimerManager.ClearTimer(CooldownTimerHandle);
 				bCanAnimateJump = false;
-			}
-		);
-
-		TimerManager.SetTimer(CooldownTimerHandle, CooldownTimerDelegate, 0.5f, false);
+			}), 0.5f, false);
+		}
 	}
 }
 
@@ -566,6 +562,12 @@ void AMIR_ArcadeController::ResetCopiedMagic()
 {
 	if (AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter())
 	{
+		// The Magic Wand does not copy or discard spells; only Mirror Staff does
+		if (!PlayerCharacter->bHasMirrorStaff)
+		{
+			return;
+		}
+
 		if (PlayerCharacter->GetStoredMagic() != nullptr)
 		{
 			PlayerCharacter->SetStoredMagic(nullptr);
@@ -580,6 +582,17 @@ void AMIR_ArcadeController::ResetCopiedMagic()
 
 void AMIR_ArcadeController::DiscardCopiedMagic_Implementation()
 {
+	if (CurrentAttackState != EAttackTypes::None)
+	{
+		return;
+	}
+
+	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
+	if (!PlayerCharacter || !PlayerCharacter->bHasMirrorStaff)
+	{
+		return; // Cannot discard if player does not have the Mirror Staff
+	}
+
 	ResetCopiedMagic();
 	CurrentMagicSlot = EMagicAttacks::None;
 	CurrentAttackState = EAttackTypes::None;
@@ -612,6 +625,11 @@ TSubclassOf<AMIR_MagicBASE> AMIR_ArcadeController::GetAppropriateMagic(EMagicAtt
 		if (Stored)
 		{
 			return Stored;
+		}
+		// If player does not have the Mirror Staff, they cannot use MeleeCopy!
+		if (!PlayerCharacter->bHasMirrorStaff)
+		{
+			return nullptr;
 		}
 		return PlayerCharacter->GetMeleeCopyRef();
 	}
@@ -733,13 +751,7 @@ bool AMIR_ArcadeController::CanCastMagic(EMagicAttacks AttackSlot) const
 			return false;
 		}
 
-		const int32 ManaCost = GetManaCostForMagic(MagicClass);
-
-		// Insufficient mana to cast this magic
-		if (PlayerCharacter->ManaComponent->ManaPower < ManaCost)
-		{
-			return false;
-		}
+		// As long as ManaPower > 0, the attack is allowed; low mana will clamp down to 0
 	}
 
 	return true;
@@ -872,26 +884,29 @@ AMIR_MagicBASE* AMIR_ArcadeController::SpawnMagic_Implementation(EMagicAttacks A
 				return nullptr;
 			}
 
-			if (PlayerCharacter->ManaComponent->ManaPower < ManaCost)
+			if (PlayerCharacter->ManaComponent->ManaPower <= 0)
 			{
 				return nullptr;
 			}
 
 			if (ManaCost > 0)
 			{
-				PlayerCharacter->ManaComponent->ManaReduction(ManaCost);
-
-				// If remaining mana is insufficient for another cast of this spell, drain to 0 so cooldown can begin
-				if (PlayerCharacter->ManaComponent->ManaPower < ManaCost)
+				// Clamp deduction: consume remaining mana, clamping to 0 if ManaPower <= ManaCost
+				if (PlayerCharacter->ManaComponent->ManaPower <= ManaCost)
 				{
 					PlayerCharacter->ManaComponent->SetManaPower(0);
 				}
+				else
+				{
+					PlayerCharacter->ManaComponent->ManaReduction(ManaCost);
+				}
 
-				PlayerCharacter->ManaComponent->ManaCooldown();
-
-				// Once mana runs out (<= 0), reset copied spell back to BP_MIR_MeleeCopy
+				// If mana reaches 0, initiate cooldown and lose copied magic
 				if (PlayerCharacter->ManaComponent->ManaPower <= 0)
 				{
+					PlayerCharacter->ManaComponent->ManaCooldown();
+
+					// Lose copied spell on mana depletion to encourage copying more spells
 					ResetCopiedMagic();
 					bIsMainAttackHeld = false;
 					bIsRangedCopyHeld = false;
@@ -1268,5 +1283,5 @@ void AMIR_ArcadeController::SetSummonedMagicRef(AMIR_MagicBASE* const& MagicType
 
 AMIR_MagicBASE* AMIR_ArcadeController::GetSummonedMagicRef() const
 {
-	return SummonedMagicRef;
+	return IsValid(SummonedMagicRef) ? SummonedMagicRef : nullptr;
 }

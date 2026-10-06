@@ -4,6 +4,9 @@
 #include "Misc/Camera/MIR_CameraMovePoints.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Camera/MIR_Camera.h"
+#include "Save/MIR_SaveSubsystem.h"
+#include "Misc/PackageName.h"
+#include "UObject/Package.h"
 
 /** Static-variable initializations. */
 // The base length of a room on the x-axis.
@@ -84,7 +87,31 @@ void AMIR_CameraMovePoints::BeginPlay()
 	Super::BeginPlay();
 
 	ConstructBoundaryLocationsArray();
-	
+
+	// If player is already inside this CMP on spawn/stream, register it
+	if (CameraMoveTrigger)
+	{
+		TArray<AActor*> OverlappingActors;
+		CameraMoveTrigger->GetOverlappingActors(OverlappingActors, AMIR_PlayerChar::StaticClass());
+		if (OverlappingActors.Num() > 0)
+		{
+			if (AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OverlappingActors[0]))
+			{
+				PlayerChar->CurrentCMP = this;
+				if (UGameInstance* GI = GetGameInstance())
+				{
+					if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+					{
+						const FName RoomID = GetCleanRoomID();
+						if (!RoomID.IsNone())
+						{
+							SaveSubsystem->MarkRoomVisited(RoomID);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 // Called every frame
@@ -111,6 +138,19 @@ void AMIR_CameraMovePoints::OverlapBegins(UPrimitiveComponent* OverlappedCompone
 
 	// Assign self for access in BP_MIR_Camera.
 	PlayerChar->CurrentCMP = this;
+
+	// Mark room as visited in SaveSubsystem
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+		{
+			const FName RoomID = GetCleanRoomID();
+			if (!RoomID.IsNone())
+			{
+				SaveSubsystem->MarkRoomVisited(RoomID);
+			}
+		}
+	}
 
 	// Determine closest boundary to player.
 	DetermineToPanBoundary(PlayerChar);
@@ -313,4 +353,62 @@ void AMIR_CameraMovePoints::CalculatePlayerBoundaryDistance(AMIR_PlayerChar* Pla
 
 	// The boundary to pan to must be the closest one.
 	ToPanBoundary = ClosestBoundary;
+}
+
+FName AMIR_CameraMovePoints::GetCleanRoomID() const
+{
+	FString LevelPackageName;
+	if (const ULevel* Level = GetLevel())
+	{
+		if (const UPackage* Package = Level->GetPackage())
+		{
+			LevelPackageName = Package->GetName();
+		}
+	}
+
+	if (LevelPackageName.IsEmpty() && GetWorld())
+	{
+		LevelPackageName = GetWorld()->GetMapName();
+	}
+
+	// Strip PIE prefix if present (e.g. UEDPIE_0_)
+	int32 PieIndex = LevelPackageName.Find(TEXT("UEDPIE_"));
+	if (PieIndex != INDEX_NONE)
+	{
+		int32 SlashAfter = LevelPackageName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex);
+		if (SlashAfter != INDEX_NONE)
+		{
+			LevelPackageName.RemoveAt(PieIndex, SlashAfter - PieIndex + 1);
+		}
+		else
+		{
+			int32 NextUnderscore = LevelPackageName.Find(TEXT("_"), ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex + 7);
+			int32 CharsToRemove = (NextUnderscore != INDEX_NONE) ? (NextUnderscore - PieIndex + 1) : 9;
+			LevelPackageName.RemoveAt(PieIndex, CharsToRemove);
+		}
+	}
+
+	// ArcadeLoadStreamLevel appends a 32-character hex FGuid to the dynamic level instance name
+	if (LevelPackageName.Len() > 32)
+	{
+		bool bEndsWithGuid = true;
+		int32 SuffixStart = LevelPackageName.Len() - 32;
+		for (int32 i = SuffixStart; i < LevelPackageName.Len(); ++i)
+		{
+			TCHAR c = LevelPackageName[i];
+			if (!FChar::IsHexDigit(c))
+			{
+				bEndsWithGuid = false;
+				break;
+			}
+		}
+
+		if (bEndsWithGuid)
+		{
+			LevelPackageName.LeftInline(SuffixStart);
+		}
+	}
+
+	FString CleanLevelName = FPackageName::GetShortName(LevelPackageName);
+	return FName(*CleanLevelName);
 }

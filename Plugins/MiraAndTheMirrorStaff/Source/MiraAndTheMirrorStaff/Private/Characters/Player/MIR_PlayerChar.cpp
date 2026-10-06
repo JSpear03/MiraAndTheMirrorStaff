@@ -10,6 +10,9 @@
 #include "Components/MIR_ElementComponent.h"
 #include "Animation/AnimSequenceBase.h"
 #include "Save/MIR_SaveSubsystem.h"
+#include "Misc/Camera/MIR_CameraMovePoints.h"
+#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 //#include "Input/MIR_ArcadeController.h"
 
 
@@ -59,6 +62,12 @@ void AMIR_PlayerChar::BeginPlay()
 
 	OnActorHit.AddDynamic(this, &AMIR_PlayerChar::HitEvent);
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMIR_PlayerChar::OnOverlapBegin);
+
+	// Periodically track active room and discover it in SaveSubsystem
+	GetWorldTimerManager().SetTimer(RoomCheckTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this]()
+	{
+		UpdateCurrentRoom();
+	}), 0.25f, true, 0.05f);
 }
 
 // Called every frame.
@@ -208,20 +217,18 @@ void AMIR_PlayerChar::ApplyHazardDamage(int32 Damage)
 
 void AMIR_PlayerChar::StartCooldownTimer()
 {
-	FTimerHandle CooldownTimerHandle;
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	if (UWorld* World = GetWorld())
+	{
+		FTimerManager& TimerManager = World->GetTimerManager();
+		TimerManager.ClearTimer(InvincibilityTimerHandle);
 
-	const FTimerDelegate& CooldownTimerDelegate = FTimerDelegate::CreateLambda([this, &TimerManager, &CooldownTimerHandle]
+		const FTimerDelegate CooldownTimerDelegate = FTimerDelegate::CreateWeakLambda(this, [this]()
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Fire Player Cooldown"));
-
-			TimerManager.ClearTimer(CooldownTimerHandle);
-
 			SetCanGetHit(true);  // Disable i-frames.
-		}
-	);
+		});
 
-	TimerManager.SetTimer(CooldownTimerHandle, CooldownTimerDelegate, CooldownSeconds, false);
+		TimerManager.SetTimer(InvincibilityTimerHandle, CooldownTimerDelegate, CooldownSeconds, false);
+	}
 }
 
 void AMIR_PlayerChar::SetCanGetHit(bool bGetHit)
@@ -245,6 +252,13 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 	{
 	case EMIR_KeyItem::MirrorStaff:
 		bHasMirrorStaff = true;
+		// Swap from Magic Wand (RangedNothing) to Mirror Staff (defaults to MeleeCopy)
+		SetStoredMagic(nullptr);
+		if (ElementComponent)
+		{
+			ElementComponent->SetElementDetails(EElements::None);
+		}
+		CopyElement();
 		if (SaveSubsystem)
 		{
 			SaveSubsystem->SetHasMirrorStaff(true);
@@ -355,5 +369,71 @@ UAnimSequenceBase* AMIR_PlayerChar::GetAttackAnimation(EAttackTypes AttackType) 
 UAnimSequenceBase* AMIR_PlayerChar::GetSubAttackAnimation() const
 {
 	return DaggerAttackAnim ? DaggerAttackAnim.Get() : MeleeAttackAnim.Get();
+}
+
+void AMIR_PlayerChar::UpdateCurrentRoom()
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	// 1. Check overlapping CMPs via capsule
+	TArray<AActor*> OverlappingActors;
+	GetCapsuleComponent()->GetOverlappingActors(OverlappingActors, AMIR_CameraMovePoints::StaticClass());
+
+	AMIR_CameraMovePoints* FoundCMP = nullptr;
+	if (OverlappingActors.Num() > 0)
+	{
+		FoundCMP = Cast<AMIR_CameraMovePoints>(OverlappingActors[0]);
+	}
+
+	// 2. If no direct capsule overlap (e.g. boundary seam / preloaded spawn), query all CMPs for box containment
+	if (!FoundCMP)
+	{
+		TArray<AActor*> AllCMPs;
+		UGameplayStatics::GetAllActorsOfClass(World, AMIR_CameraMovePoints::StaticClass(), AllCMPs);
+		float ClosestDistSq = MAX_flt;
+		const FVector PlayerLoc = GetActorLocation();
+
+		for (AActor* Actor : AllCMPs)
+		{
+			if (AMIR_CameraMovePoints* CMP = Cast<AMIR_CameraMovePoints>(Actor))
+			{
+				if (UBoxComponent* Box = CMP->GetCameraMoveTrigger())
+				{
+					if (Box->Bounds.GetBox().IsInsideOrOn(PlayerLoc))
+					{
+						FoundCMP = CMP;
+						break;
+					}
+				}
+
+				float DistSq = FVector::DistSquared(PlayerLoc, CMP->GetActorLocation());
+				if (DistSq < ClosestDistSq)
+				{
+					ClosestDistSq = DistSq;
+					FoundCMP = CMP;
+				}
+			}
+		}
+	}
+
+	if (FoundCMP)
+	{
+		CurrentCMP = FoundCMP;
+		if (UGameInstance* GI = GetGameInstance())
+		{
+			if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+			{
+				const FName RoomID = FoundCMP->GetCleanRoomID();
+				if (!RoomID.IsNone())
+				{
+					SaveSubsystem->MarkRoomVisited(RoomID);
+				}
+			}
+		}
+	}
 }
 

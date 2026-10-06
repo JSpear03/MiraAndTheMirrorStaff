@@ -182,7 +182,17 @@ private:
 	// Sets bCanGetHit to true or false.
 	void SetCanGetHit(bool bGetHit);
 
+	// Timer handle for invincibility frames cooldown.
+	FTimerHandle InvincibilityTimerHandle;
+
+	// Timer handle for active room tracking.
+	FTimerHandle RoomCheckTimerHandle;
+
 public:
+	// Automatically detects which CMP / room the player is in and records it as visited.
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	void UpdateCurrentRoom();
+
 	// Loads the Game-Over Screen if the player's health is 0.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Game Over")
 		void LoadingGameOver();

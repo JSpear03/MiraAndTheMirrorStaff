@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMath.h"
 #include "Misc/Camera/MIR_CameraMovePoints.h"
+#include "Save/MIR_SaveSubsystem.h"
 
 // Sets default values
 AMIR_Camera::AMIR_Camera()
@@ -145,6 +146,7 @@ void AMIR_Camera::SetStartingPos(AMIR_PlayerChar*& PlayerRef)
 
 	// The CMP closest to the player.
 	FVector NearestLocation = FVector::ZeroVector;
+	AMIR_CameraMovePoints* NearestCMP = nullptr;
 
 	// The previous-best distance between the player and a given CMP.
 	// Must be set to an arbitrarily high float so that a newly determined
@@ -153,8 +155,9 @@ void AMIR_Camera::SetStartingPos(AMIR_PlayerChar*& PlayerRef)
 
 	// Determine the closest CMP.
 	/* The currently evaluated CMP in the loop. */
-	for (AActor* CurrentCMP : ExistingCMPArray)
+	for (AActor* CurrentActor : ExistingCMPArray)
 	{
+		AMIR_CameraMovePoints* CurrentCMP = Cast<AMIR_CameraMovePoints>(CurrentActor);
 		if (!CurrentCMP) { continue; }
 
 		// The distance between the player and `CurrentCMP`.
@@ -165,6 +168,7 @@ void AMIR_Camera::SetStartingPos(AMIR_PlayerChar*& PlayerRef)
 		// (because this means it's closer to the player).
 		if (CurrentDistance < NearestDistance)
 		{
+			NearestCMP = CurrentCMP;
 			NearestLocation = CurrentCMP->GetActorLocation();
 			NearestDistance = CurrentDistance;
 		}
@@ -172,6 +176,22 @@ void AMIR_Camera::SetStartingPos(AMIR_PlayerChar*& PlayerRef)
 
 	// Update location with calculated values, effectively bringing the camera to the player.
 	SetActorLocation(FVector(NearestLocation.X, NearestLocation.Y, GetActorLocation().Z));
+
+	if (NearestCMP)
+	{
+		PlayerRef->CurrentCMP = NearestCMP;
+		if (UGameInstance* GI = GetGameInstance())
+		{
+			if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+			{
+				const FName RoomID = NearestCMP->GetCleanRoomID();
+				if (!RoomID.IsNone())
+				{
+					SaveSubsystem->MarkRoomVisited(RoomID);
+				}
+			}
+		}
+	}
 }
 
 void AMIR_Camera::CheckPlayerPos()

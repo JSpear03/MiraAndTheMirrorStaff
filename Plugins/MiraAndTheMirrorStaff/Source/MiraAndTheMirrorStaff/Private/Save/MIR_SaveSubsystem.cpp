@@ -177,6 +177,38 @@ bool UMIR_SaveSubsystem::IsBossDefeated(FName BossID)
 	return GetSave()->DefeatedBosses.Contains(BossID);
 }
 
+void UMIR_SaveSubsystem::MarkRoomVisited(FName RoomName)
+{
+	if (!RoomName.IsNone())
+	{
+		UMIR_SaveGame* Save = GetSave();
+		if (!Save->VisitedRooms.Contains(RoomName))
+		{
+			Save->VisitedRooms.Add(RoomName);
+			OnRoomVisited.Broadcast(RoomName);
+		}
+	}
+}
+
+bool UMIR_SaveSubsystem::IsRoomVisited(FName RoomName) const
+{
+	if (RoomName.IsNone())
+	{
+		return false;
+	}
+	return const_cast<UMIR_SaveSubsystem*>(this)->GetSave()->VisitedRooms.Contains(RoomName);
+}
+
+const TArray<FName>& UMIR_SaveSubsystem::GetVisitedRooms() const
+{
+	return const_cast<UMIR_SaveSubsystem*>(this)->GetSave()->VisitedRooms;
+}
+
+void UMIR_SaveSubsystem::ClearVisitedRooms()
+{
+	GetSave()->VisitedRooms.Empty();
+}
+
 /*********************************************************************************************
 * DATA MANAGEMENT
 *********************************************************************************************/

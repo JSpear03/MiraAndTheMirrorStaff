@@ -86,4 +86,8 @@ public:
 	// List of unique boss IDs that have been defeated so they don't respawn.
 	UPROPERTY(SaveGame, BlueprintReadOnly, Category = "Save|Bosses")
 		TArray<FName> DefeatedBosses;
+
+	// List of room identifiers the player has visited (for Map Fog-of-War).
+	UPROPERTY(SaveGame, BlueprintReadOnly, Category = "Save|Map")
+		TArray<FName> VisitedRooms;
 };

@@ -42,6 +42,9 @@ public:
 	// Sets default values for this actor's properties
 	AMIR_CameraMovePoints();
 
+	// Returns the camera move trigger box.
+	UBoxComponent* GetCameraMoveTrigger() const { return CameraMoveTrigger; }
+
 // LEAVE UNCOMMENTED; WILL CRASH EDITOR IF EXECUTED IN A CHILD BLUEPRINT.
 //#if WITH_EDITOR
 //	/**
@@ -239,4 +242,10 @@ public:
 	 * the function's interior logic (NOT via a return statement).
 	 */
 	void CalculatePlayerBoundaryDistance(AMIR_PlayerChar* PlayerCharRef, FVector& ToPanBoundary);
+
+	/**
+	 * Returns the clean room identifier corresponding to the level this CMP resides in.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Camera|Room")
+		FName GetCleanRoomID() const;
 };

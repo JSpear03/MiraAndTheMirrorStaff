@@ -113,8 +113,20 @@ void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
 
 void UMIR_ManaComponent::ManaCooldown() 
 {
-	// Cooldown should not execute if `ManaPower` is not zero.
+	// Cooldown should not execute if ManaPower is not zero.
 	if (ManaPower > 0)
+	{
+		return;
+	}
+
+	// Guard against uninitialized or zero total mana (prevents division by zero)
+	if (TotalManaPower <= 0)
+	{
+		return;
+	}
+
+	// Do not restart cooldown if it is already actively ticking
+	if (IsCooldownActive())
 	{
 		return;
 	}
@@ -124,37 +136,33 @@ void UMIR_ManaComponent::ManaCooldown()
 
 	// The recovery rate of the Mana Gauge, which enables the gauge to recover at variable
 	// rates so that the total recovery time is always exactly eight seconds.
-	const float RecoveryRate = 8.0f / TotalManaPower;
+	const float RecoveryRate = 8.0f / static_cast<float>(TotalManaPower);
 
-	// The TimerManager instance for the current world.
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	if (UWorld* World = GetWorld())
+	{
+		FTimerManager& TimerManager = World->GetTimerManager();
 
-	// When called on every timer repetition, a set amount of mana is recovered.
-	const FTimerDelegate& CooldownDelegate = FTimerDelegate::CreateLambda([this, ManaAmount]
+		// When called on every timer repetition, a set amount of mana is recovered.
+		const FTimerDelegate CooldownDelegate = FTimerDelegate::CreateWeakLambda(this, [this, ManaAmount]()
 		{
-			if (ManaPower != TotalManaPower)
+			if (ManaPower < TotalManaPower)
 			{
-				// Not equal, so recover.
 				ManaRecovery(ManaAmount);
 
-				if (ManaPower == TotalManaPower)
+				if (ManaPower >= TotalManaPower)
 				{
-					// Are equal post-recovery, so clear timer.
 					ClearCooldownTimer();
-					return;
 				}
 			}
 			else 
 			{
-				// Are equal, so clear timer.
 				ClearCooldownTimer();
-				return;
 			}
-		}
-	);
+		});
 
-	// Repeats the delegate per the value stored in `RecoveryRate`.
-	TimerManager.SetTimer(CooldownHandle, CooldownDelegate, RecoveryRate, true);
+		// Repeats the delegate per the value stored in RecoveryRate.
+		TimerManager.SetTimer(CooldownHandle, CooldownDelegate, RecoveryRate, true);
+	}
 }
 
 void UMIR_ManaComponent::ClearCooldownTimer()

@@ -11,6 +11,7 @@ class USaveGame;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMIR_OnSaveLoaded, UMIR_SaveGame*, Save);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMIR_OnSaveWritten, bool, bSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMIR_OnRoomVisited, FName, RoomName);
 
 /**
  * The save manager (another "manager, not GameMode"). Owns the loaded UMIR_SaveGame,
@@ -40,6 +41,10 @@ public:
 	// When the system has written to the save file.
 	UPROPERTY(BlueprintAssignable, Category = "Save")
 	FMIR_OnSaveWritten OnSaveWritten;
+
+	// When a new room has been marked as visited.
+	UPROPERTY(BlueprintAssignable, Category = "Save|Map")
+	FMIR_OnRoomVisited OnRoomVisited;
 
 	/**
 	 * The current in-memory save (created if it doesn't exist yet).
@@ -224,6 +229,35 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Save|Bosses")
 	bool IsBossDefeated(FName BossID);
+
+	/**
+	 * Marks a room as visited in the current save.
+	 *
+	 * @param RoomName Unique identifier or name for the room.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Save|Map")
+	void MarkRoomVisited(FName RoomName);
+
+	/**
+	 * Checks if a room has already been visited in the current save.
+	 *
+	 * @param RoomName Unique identifier or name for the room.
+	 * @return True if already visited.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Save|Map")
+	bool IsRoomVisited(FName RoomName) const;
+
+	/**
+	 * Gets the list of all visited rooms.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Save|Map")
+	const TArray<FName>& GetVisitedRooms() const;
+
+	/**
+	 * Clears the visited rooms list in memory.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Save|Map")
+	void ClearVisitedRooms();
 
 private:
 	// Creates a new save file, and then returns it.

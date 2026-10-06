@@ -155,6 +155,9 @@ protected:
 	// Fallback timer for spawning projectile if anim notify is missed/unwired in AnimBP.
 	FTimerHandle MagicSpawnFallbackTimerHandle;
 
+	// Timer handle for resetting jump animation flag.
+	FTimerHandle JumpAnimationTimerHandle;
+
 	// Guards against double spawning if multiple notifies fire in the same attack animation.
 	bool bHasSpawnedMagicThisAttack = false;
 
