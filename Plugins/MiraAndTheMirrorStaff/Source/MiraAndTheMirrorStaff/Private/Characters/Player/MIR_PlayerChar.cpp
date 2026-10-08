@@ -174,9 +174,29 @@ void AMIR_PlayerChar::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 
 		// The `IncomingMagic`'s Element Name.
 		EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
+		if (AttackerElementName == EElements::None)
+		{
+			AttackerElementName = IncomingMagic->ElementComponent->GetCurrentElement();
+		}
+		if (AttackerElementName == EElements::None)
+		{
+			const FString MagicClassName = IncomingMagic->GetClass()->GetName();
+			if (MagicClassName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Fire"), ESearchCase::IgnoreCase))
+			{
+				AttackerElementName = EElements::Flame;
+			}
+			else if (MagicClassName.Contains(TEXT("Ice"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
+			{
+				AttackerElementName = EElements::Ice;
+			}
+			else if (MagicClassName.Contains(TEXT("Thunder"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
+			{
+				AttackerElementName = EElements::Thunder;
+			}
+		}
 
 		// The receiver's Element Name.
-		EElements ReceiverElementName = ElementComponent->GetElementName();
+		EElements ReceiverElementName = ElementComponent ? ElementComponent->GetElementName() : EElements::None;
 
 		// The `IncomingMagic`'s Damage.
 		int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
@@ -194,6 +214,12 @@ void AMIR_PlayerChar::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 		// Destroy the projectile upon impact
 		IncomingMagic->Destroy();
 	}
+}
+
+void AMIR_PlayerChar::SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType)
+{
+	Super::SetStoredMagic(MagicType);
+	CopyElement();
 }
 
 void AMIR_PlayerChar::ApplyHazardDamage(int32 Damage)

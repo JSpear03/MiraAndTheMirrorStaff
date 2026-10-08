@@ -50,7 +50,12 @@ public:
 	// Returns the `AttackTypeName` member variable.
 	UFUNCTION(BlueprintCallable, Category = "Element Details", meta = (KeyWords = "Get Name",
 			  ReturnDisplayName = "Name", ToolTip = "Returns the `ElementName` member variable."))
-		EElements GetElementName() const { return ElementStruct.ElementName; }
+		EElements GetElementName() const { return (ElementStruct.ElementName != EElements::None) ? ElementStruct.ElementName : CurrentElement; }
+
+	// Returns the `CurrentElement` member variable.
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Element Details", meta = (KeyWords = "Get Current Element",
+			  ReturnDisplayName = "CurrentElement", ToolTip = "Returns the `CurrentElement` member variable."))
+		EElements GetCurrentElement() const { return CurrentElement; }
 
 	// Returns the `MainColor` member variable.
 	UFUNCTION(BlueprintCallable, Category = "Element Details|Appearance", meta = (KeyWords = "Get Main Color",

@@ -50,7 +50,7 @@ public:
 
 	// Stored Magic setter.
 	UFUNCTION(BlueprintCallable, Category = "Magic|Main Attack")
-		void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType);
+		virtual void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType);
 
 	// Stored Magic getter.
 	UFUNCTION(BlueprintCallable, Category = "Magic|Main Attack")

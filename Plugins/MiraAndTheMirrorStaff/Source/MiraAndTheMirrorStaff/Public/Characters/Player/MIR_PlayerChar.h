@@ -229,6 +229,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Elements")
 		void CopyElement();
 
+	virtual void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType) override;
+
 	// Delegate object to move camera to a move point nearest to the respawn point.
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Respawn")
 		FOnRespawn OnRespawn;
