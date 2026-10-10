@@ -39,9 +39,9 @@ void AMIR_SpiritStoleItem::OnSpiritStoleOverlap(UPrimitiveComponent* OverlappedC
 
 	PlayerCharacter->GrantKeyItem(EMIR_KeyItem::SpiritStole);
 
-	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
 	{
-		if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+		if (UMIR_SaveSubsystem* SaveSubsystem = GameInstance->GetSubsystem<UMIR_SaveSubsystem>())
 		{
 			SaveSubsystem->MarkPickupCollected(GetEffectivePickupID());
 			SaveSubsystem->SetHasSpiritStole(true);

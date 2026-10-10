@@ -229,6 +229,14 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Elements")
 		void CopyElement();
 
+	// Displays the widget which tells the player they can jump now.
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+		void DisplaySkyboundStatus();
+
+	// Displays the widget which tells the palyer they can dash now.
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+		void DisplaySpiritStoleStatus();
+
 	virtual void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType) override;
 
 	// Delegate object to move camera to a move point nearest to the respawn point.

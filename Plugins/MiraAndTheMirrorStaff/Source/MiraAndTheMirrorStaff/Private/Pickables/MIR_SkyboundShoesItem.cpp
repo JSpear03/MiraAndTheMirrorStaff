@@ -39,9 +39,9 @@ void AMIR_SkyboundShoesItem::OnSkyboundShoesOverlap(UPrimitiveComponent* Overlap
 
 	PlayerCharacter->GrantKeyItem(EMIR_KeyItem::SkyboundShoes);
 
-	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
 	{
-		if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
+		if (UMIR_SaveSubsystem* SaveSubsystem = GameInstance->GetSubsystem<UMIR_SaveSubsystem>())
 		{
 			SaveSubsystem->MarkPickupCollected(GetEffectivePickupID());
 			SaveSubsystem->SetHasSkyboundShoes(true);

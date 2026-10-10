@@ -269,9 +269,10 @@ void AMIR_PlayerChar::SetCanGetHit(bool bGetHit)
 void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 {
 	UMIR_SaveSubsystem* SaveSubsystem = nullptr;
-	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+
+	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
 	{
-		SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>();
+		SaveSubsystem = GameInstance->GetSubsystem<UMIR_SaveSubsystem>();
 	}
 
 	switch (KeyItem)
@@ -284,33 +285,37 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 		{
 			ElementComponent->SetElementDetails(EElements::None);
 		}
+
 		CopyElement();
+
 		if (SaveSubsystem)
 		{
 			SaveSubsystem->SetHasMirrorStaff(true);
 		}
 		break;
-
 	case EMIR_KeyItem::SkyboundShoes:
 		bHasSkyboundShoes = true;
+
+		DisplaySkyboundStatus();
+
 		if (SaveSubsystem)
 		{
 			SaveSubsystem->SetHasSkyboundShoes(true);
 		}
 		break;
-
 	case EMIR_KeyItem::SpiritStole:
 		bHasSpiritStole = true;
+
+		DisplaySpiritStoleStatus();
+
 		if (SaveSubsystem)
 		{
 			SaveSubsystem->SetHasSpiritStole(true);
 		}
 		break;
-
 	case EMIR_KeyItem::KeyGemstone:  // TODO: Deprecate; the Bools are a better solution.
 		KeyGemstoneCount++;
 		break;
-
 	case EMIR_KeyItem::KeyGemstoneRed:
 		bIsGemRed = true;
 		if (SaveSubsystem)
@@ -318,7 +323,6 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 			SaveSubsystem->SetHasRedKeystone(true);
 		}
 		break;
-
 	case EMIR_KeyItem::KeyGemstoneBlue:
 		bIsGemBlue = true;
 		if (SaveSubsystem)
@@ -326,7 +330,6 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 			SaveSubsystem->SetHasBlueKeystone(true);
 		}
 		break;
-
 	case EMIR_KeyItem::KeyGemstoneGreen:
 		bIsGemGreen = true;
 		if (SaveSubsystem)
@@ -334,7 +337,6 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 			SaveSubsystem->SetHasGreenKeystone(true);
 		}
 		break;
-
 	case EMIR_KeyItem::KeyGemstoneYellow:
 		bIsGemYellow = true;
 		if (SaveSubsystem)
@@ -342,7 +344,6 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 			SaveSubsystem->SetHasYellowKeystone(true);
 		}
 		break;
-
 	default:
 		break;
 	}
