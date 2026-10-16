@@ -29,7 +29,10 @@ protected:
 	* @param OtherActor will be represented by the player.
 	*/
 	UFUNCTION()
-	void OnSpiritStoleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-		const FHitResult& SweepResult);
+		void OnSpiritStoleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+			const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+		void DisplaySpiritStole();
 };

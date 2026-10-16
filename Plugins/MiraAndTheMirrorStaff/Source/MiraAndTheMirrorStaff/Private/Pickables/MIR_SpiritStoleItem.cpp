@@ -37,6 +37,8 @@ void AMIR_SpiritStoleItem::OnSpiritStoleOverlap(UPrimitiveComponent* OverlappedC
 		return;
 	}
 
+	DisplaySpiritStole();
+
 	PlayerCharacter->GrantKeyItem(EMIR_KeyItem::SpiritStole);
 
 	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)

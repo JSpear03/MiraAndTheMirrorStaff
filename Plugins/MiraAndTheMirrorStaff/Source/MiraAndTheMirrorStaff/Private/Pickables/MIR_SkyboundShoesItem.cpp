@@ -37,6 +37,8 @@ void AMIR_SkyboundShoesItem::OnSkyboundShoesOverlap(UPrimitiveComponent* Overlap
 		return;
 	}
 
+	DisplaySkyBoundShoes();
+
 	PlayerCharacter->GrantKeyItem(EMIR_KeyItem::SkyboundShoes);
 
 	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)

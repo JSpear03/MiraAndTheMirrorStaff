@@ -296,8 +296,6 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 	case EMIR_KeyItem::SkyboundShoes:
 		bHasSkyboundShoes = true;
 
-		DisplaySkyboundStatus();
-
 		if (SaveSubsystem)
 		{
 			SaveSubsystem->SetHasSkyboundShoes(true);
@@ -306,15 +304,10 @@ void AMIR_PlayerChar::GrantKeyItem(EMIR_KeyItem KeyItem)
 	case EMIR_KeyItem::SpiritStole:
 		bHasSpiritStole = true;
 
-		DisplaySpiritStoleStatus();
-
 		if (SaveSubsystem)
 		{
 			SaveSubsystem->SetHasSpiritStole(true);
 		}
-		break;
-	case EMIR_KeyItem::KeyGemstone:  // TODO: Deprecate; the Bools are a better solution.
-		KeyGemstoneCount++;
 		break;
 	case EMIR_KeyItem::KeyGemstoneRed:
 		bIsGemRed = true;

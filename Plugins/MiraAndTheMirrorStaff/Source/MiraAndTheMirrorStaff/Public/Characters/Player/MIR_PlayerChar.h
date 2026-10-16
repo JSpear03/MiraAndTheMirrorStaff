@@ -89,12 +89,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
 		bool bHasSpiritStole = false;
 
-	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
-	// TODO: Deprecate; the Bools are a better solution.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items",
-			  meta = (ClampMin = 0, ClampMax = 4, UIMin = 0, UIMax = 4))
-		int32 KeyGemstoneCount = 0;
-
 	// Checks if gem is colored red.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
 		bool bIsGemRed = false;
@@ -228,14 +222,6 @@ public:
 	// Sets new element based on the element name. 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Elements")
 		void CopyElement();
-
-	// Displays the widget which tells the player they can jump now.
-	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-		void DisplaySkyboundStatus();
-
-	// Displays the widget which tells the palyer they can dash now.
-	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-		void DisplaySpiritStoleStatus();
 
 	virtual void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType) override;
 
