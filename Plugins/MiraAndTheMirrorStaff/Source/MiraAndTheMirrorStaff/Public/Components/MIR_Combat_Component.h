@@ -11,6 +11,8 @@ class UAnimMontage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMeleeAttackTriggeredSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMagicAttackTriggeredSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSpawnMagicFromNotifySignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackFinishedSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MIRAANDTHEMIRRORSTAFF_API UMIR_Combat_Component : public UActorComponent
@@ -26,6 +28,13 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "AI|Combat")
 	bool bAttackFinished = true;
 
+	// Tracks whether magic has already spawned for the current attack
+	UPROPERTY(VisibleAnywhere, Category = "AI|Combat")
+	bool bHasSpawnedMagicThisAttack = false;
+
+	// Fallback timer handle if animation notify is missed or unwired
+	FTimerHandle FallbackSpawnTimerHandle;
+
 public:
 
 	UMIR_Combat_Component();
@@ -36,6 +45,14 @@ public:
 
 	// Failsafe state reader for the BT Task Tick loop
 	bool IsAttackFinished() const { return bAttackFinished; }
+
+	// If true, starts a fallback timer when an attack begins so magic spawns even if the Anim Notify is missed/unwired
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Combat")
+	bool bUseFallbackSpawnTimer = false;
+
+	// Delay in seconds before triggering fallback magic spawn if anim notify was not fired
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Combat", meta = (EditCondition = "bUseFallbackSpawnTimer", ClampMin = "0.05", UIMin = "0.05"))
+	float FallbackMagicSpawnDelay = 0.5f;
 
 	/* --- DESIGNER GRAPH BLUEPRINT EVENTS ---
 	* 
@@ -53,6 +70,18 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "AI|Combat")
 	FOnMagicAttackTriggeredSignature OnMagicAttackTriggered;
 
+	// Broadcasts when an animation notify triggers the magic/projectile spawn at the exact swing/slash frame
+	UPROPERTY(BlueprintAssignable, Category = "AI|Combat")
+	FOnSpawnMagicFromNotifySignature OnSpawnMagicFromNotify;
+
+	// Broadcasts when the attack is completed so Blueprints can reset animation flags (e.g. CanAttack = false)
+	UPROPERTY(BlueprintAssignable, Category = "AI|Combat")
+	FOnAttackFinishedSignature OnAttackFinished;
+
+	// Called from an Anim Notify (or Anim Blueprint) to trigger magic spawn at the exact frame of the attack
+	UFUNCTION(BlueprintCallable, Category = "AI|Combat")
+	void TriggerMagicSpawnFromNotify();
+
 	// The designer calls this node inside their Blueprint (or AnimBP) when their attack sequence is fully done
 	UFUNCTION(BlueprintCallable, Category = "AI|Combat")
 	void FinishCurrentAttack();
@@ -66,9 +95,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "AI|Combat")
 	bool IsAttackAnimationFinished() const { return bAttackFinished; }
 
+	// Returns true if magic was already spawned for the current attack
+	UFUNCTION(BlueprintPure, Category = "AI|Combat")
+	bool HasSpawnedMagicThisAttack() const { return bHasSpawnedMagicThisAttack; }
+
 	// Call this from C++ or Blueprints when the enemy dies/pools
 	UFUNCTION(BlueprintCallable, Category = "AI|Combat")
-	void SetDeactivated(bool bNewDeactivated) { bIsDeactivated = bNewDeactivated; }
+	void SetDeactivated(bool bNewDeactivated);
 
 	// Resets all AI tracking flags back to their default alive states
 	UFUNCTION(BlueprintCallable, Category = "AI|Combat")

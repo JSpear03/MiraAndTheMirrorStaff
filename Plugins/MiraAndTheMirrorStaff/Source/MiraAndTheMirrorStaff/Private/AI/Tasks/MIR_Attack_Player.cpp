@@ -102,17 +102,29 @@ EBTNodeResult::Type UMIR_Attack_Player::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
+	// Resolve target actor (from blackboard or player character)
+	AActor* TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent() ? 
+		OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()) : nullptr);
+
+	if (!TargetActor)
+	{
+		TargetActor = UGameplayStatics::GetPlayerCharacter(ControlledPawn->GetWorld(), 0);
+	}
+
+	// Always orient the enemy to face the player when an attack begins
+	if (TargetActor && ControlledPawn)
+	{
+		FVector Direction = TargetActor->GetActorLocation() - ControlledPawn->GetActorLocation();
+		Direction.Z = 0.0f;
+		if (!Direction.IsNearlyZero())
+		{
+			ControlledPawn->SetActorRotation(Direction.Rotation());
+		}
+	}
+
 	// Line-of-sight verification before attacking (prevents firing through walls)
 	if (bRequireLineOfSight && SelectedAttackMode == ECombatAttackMode::Magic)
 	{
-		AActor* TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent() ? 
-			OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()) : nullptr);
-
-		if (!TargetActor)
-		{
-			TargetActor = UGameplayStatics::GetPlayerCharacter(ControlledPawn->GetWorld(), 0);
-		}
-
 		if (TargetActor)
 		{
 			FHitResult HitResult;

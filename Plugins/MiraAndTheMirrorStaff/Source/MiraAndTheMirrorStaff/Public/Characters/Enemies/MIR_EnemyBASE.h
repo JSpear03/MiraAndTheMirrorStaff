@@ -86,6 +86,22 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetNewMaterial();
 
+	// Called by animation notifies to spawn magic at the exact attack frame.
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+		virtual void TriggerMagicSpawnFromNotify();
+
+	// Called by animation notifies to finish attack and return AI to idle/movement.
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+		virtual void TriggerFinishAttackFromNotify();
+
+	// Blueprint event to implement specific enemy magic spawn logic from animation notifies
+	UFUNCTION(BlueprintImplementableEvent, Category = "Combat")
+		void OnAnimNotifySpawnMagic();
+
+	// Blueprint event called when the attack completes (use to reset CanAttack = false)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Combat")
+		void OnCombatAttackFinished();
+
 private:
 	// Checks if enemy's health reaches 0.
 	void CheckHealth();

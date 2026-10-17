@@ -256,3 +256,23 @@ void AMIR_EnemyBASE::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+void AMIR_EnemyBASE::TriggerMagicSpawnFromNotify()
+{
+	OnAnimNotifySpawnMagic();
+
+	if (CombatComponent)
+	{
+		CombatComponent->TriggerMagicSpawnFromNotify();
+	}
+}
+
+void AMIR_EnemyBASE::TriggerFinishAttackFromNotify()
+{
+	OnCombatAttackFinished();
+
+	if (CombatComponent)
+	{
+		CombatComponent->FinishCurrentAttack();
+	}
+}
