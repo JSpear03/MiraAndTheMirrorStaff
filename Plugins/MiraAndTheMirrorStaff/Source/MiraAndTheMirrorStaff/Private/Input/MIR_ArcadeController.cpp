@@ -130,10 +130,7 @@ AMIR_PlayerChar* AMIR_ArcadeController::GetPlayerCharacter() const
 void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 {
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
-	if (!PlayerCharacter)
-	{
-		return;
-	}
+	if (!PlayerCharacter) { return; }
 
 	UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement();
 	const bool bIsAirborne = MoveComp && MoveComp->IsFalling();
@@ -147,7 +144,8 @@ void AMIR_ArcadeController::MoveCharacter(const FInputActionValue& ActionValue)
 			return;
 		}
 
-		// If player is holding an attack button and the attack is ready to repeat, keep Mira rooted between repeat swings
+		// If player is holding an attack button and the attack is ready to repeat,
+		// keep Mira rooted between repeat swings.
 		if ((bIsMainAttackHeld && CanPerformAttack(EMagicAttacks::MainAttack)) ||
 			(bIsRangedCopyHeld && CanPerformAttack(EMagicAttacks::RangedCopy)) ||
 			(bIsSubAttackHeld && CanPerformAttack(EMagicAttacks::SubAttack)))

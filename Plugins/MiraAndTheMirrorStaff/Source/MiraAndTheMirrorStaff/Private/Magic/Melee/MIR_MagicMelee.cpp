@@ -20,9 +20,6 @@ AMIR_MagicMelee::AMIR_MagicMelee()
     // Set Billboard rotation.
     BillboardComponent->SetRelativeRotation(FRotator3d(InitialRotationX, 0.0, 0.0));
 
-    // Set Billboard rotation.
-    BillboardComponent->SetRelativeRotation(FRotator3d(InitialRotationX, 0.0, 0.0));
-
     // Set the init radius to something small for the melee spell as a placeholder
     // For actual implementation, it might be best to use a capsule attached to
     // the end of Mira's staff/dagger and have the CollisionComponent follow
