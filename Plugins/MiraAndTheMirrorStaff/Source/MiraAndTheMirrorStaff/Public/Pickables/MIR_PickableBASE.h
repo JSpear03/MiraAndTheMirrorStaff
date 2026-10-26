@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -10,6 +12,9 @@
 #include "Characters/Player/MIR_PlayerChar.h"
 #include "MIR_PickableBASE.generated.h"
 
+/**
+ * An Actor that grants an effect or item to the player upon overlap.
+ */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_PickableBASE : public AActor
 {

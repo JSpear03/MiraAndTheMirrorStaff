@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -9,7 +11,8 @@
 class UMIR_AttackTypeComponent;
 
 /**
- * 
+ * A magic type where a magical sphere travels forward until it
+ * hits something.
  */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicRanged : public AMIR_MagicBASE

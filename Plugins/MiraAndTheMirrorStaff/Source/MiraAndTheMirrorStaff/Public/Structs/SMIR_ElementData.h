@@ -1,11 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Enums/EMIR_Elements.h"
 #include "SMIR_ElementData.generated.h"
-
 
 /**
  * Generic struct used to define variables needed for its child structs.

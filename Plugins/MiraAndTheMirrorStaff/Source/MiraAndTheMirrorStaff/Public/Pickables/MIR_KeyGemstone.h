@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -7,7 +9,7 @@
 #include "MIR_KeyGemstone.generated.h"
 
 /**
- * 
+ * A gemstone that serves as a key for the final-boss door.
  */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_KeyGemstone : public AMIR_PickableBASE

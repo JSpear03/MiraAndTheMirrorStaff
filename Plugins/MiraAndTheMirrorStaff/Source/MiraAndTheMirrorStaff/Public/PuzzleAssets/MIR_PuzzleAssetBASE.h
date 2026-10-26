@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -11,7 +13,10 @@
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(OnAssetActivated, AMIR_PuzzleAssetBASE, SelfRef);
 
-
+/**
+ * A Puzzle Asset (PA) is an Actor that has an activated and deactivated state,
+ * with respective behaviors for each.
+ */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetBASE : public AActor
 {
@@ -44,7 +49,8 @@ protected:
 		EPuzzleState CurrentState = InitialState;
 
 public:
-	// Whether magic projectiles can pass through this puzzle asset instead of being destroyed on contact.
+	// Whether magic projectiles can pass through this puzzle asset instead of
+	// being destroyed on contact.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic")
 		bool bAllowMagicPassThrough = false;
 
@@ -73,7 +79,7 @@ public:
 	/**
 	* Gets the `InitialState` member variable.
 	* 
-	* @returns EPuzzleState
+	* @returns The PA's initial state.
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "State",
 			  meta = (KeyWords = "Get Initial"))
@@ -82,7 +88,7 @@ public:
 	/**
 	* Gets the `CurrentState` member variable.
 	* 
-	* @returns EPuzzleState
+	* @returns The PA's current state.
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "State",
 			  meta = (KeyWords = "Get Current"))

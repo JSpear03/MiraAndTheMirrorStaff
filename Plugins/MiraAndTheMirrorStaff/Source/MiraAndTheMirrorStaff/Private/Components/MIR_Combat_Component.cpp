@@ -1,3 +1,7 @@
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
+
 #include "Components/MIR_Combat_Component.h"
 #include "Engine/World.h"
 #include "TimerManager.h"

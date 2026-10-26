@@ -1,3 +1,7 @@
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
+
 #include "Characters/Enemies/MIR_EnemyBASE.h"
 #include "Characters/Player/MIR_PlayerChar.h"
 #include "Magic/MIR_MagicBASE.h"

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -10,6 +12,9 @@
 #include "NiagaraSystem.h"
 #include "MIR_MagicBASE.generated.h"
 
+/**
+ * An Actor used for both combat and puzzles.
+ */
 UCLASS(BlueprintType)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicBASE : public AActor
 {

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -8,6 +10,10 @@
 #include "Components/BoxComponent.h"
 #include "MIR_HealingPlant.generated.h"
 
+/**
+ * An unmovable plant with wondrous healing properties.
+ * The game will end in success if the player copies it.
+ */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_HealingPlant : public AActor
 {

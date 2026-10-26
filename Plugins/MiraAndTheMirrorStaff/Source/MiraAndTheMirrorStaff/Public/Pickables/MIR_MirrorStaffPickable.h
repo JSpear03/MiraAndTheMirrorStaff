@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -7,7 +9,7 @@
 #include "MIR_MirrorStaffPickable.generated.h"
 
 /**
- * 
+ * A pickup that unlocks the Mirror Staff for the player character upon overlap.
  */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_MirrorStaffPickable : public AMIR_PickableBASE

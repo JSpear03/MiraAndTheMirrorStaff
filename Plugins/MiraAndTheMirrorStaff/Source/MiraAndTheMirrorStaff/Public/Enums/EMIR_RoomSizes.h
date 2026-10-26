@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "EMIR_RoomSizes.generated.h"
-
 
 /**
  * An Enumeration of all room sizes (XY-space) used in the game.

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -7,6 +9,9 @@
 #include "Pickables/MIR_PickableBASE.h"
 #include "MIR_HealthUp.generated.h"
 
+/**
+ * A pickup that increases a player's health by two points upon overlap.
+ */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_HealthUp : public AMIR_PickableBASE
 {

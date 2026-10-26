@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -9,6 +11,9 @@
 #include "Characters/Player/MIR_PlayerChar.h"
 #include "MIR_SavePlatform.generated.h"
 
+/**
+ * A platform that opens the Save Screen upon overlap with a player.
+ */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_SavePlatform : public AActor
 {

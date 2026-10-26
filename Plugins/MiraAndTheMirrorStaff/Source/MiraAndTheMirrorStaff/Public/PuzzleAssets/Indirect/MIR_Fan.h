@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -8,7 +10,7 @@
 #include "MIR_Fan.generated.h"
 
 /**
- * 
+ * A type of IPA that pushes Characters away from it when activated.
  */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_Fan : public AMIR_PuzzleAssetsIndirectBASE

@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 
 
 #include "Pickables/MIR_HealthUp.h"
@@ -10,7 +11,6 @@ AMIR_HealthUp::AMIR_HealthUp()
  	// Set this actor to call Tick() every frame.  
 	// You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
 
 }
 

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -7,6 +9,10 @@
 #include "PuzzleAssets/Direct/MIR_PuzzleAssetDirectBASE.h"
 #include "MIR_OnOffButton.generated.h"
 
+/**
+ * A type of DPA that activates and deactivates things when the player steps
+ * on and off it, respectively.
+ */
 UCLASS()
 class MIRAANDTHEMIRRORSTAFF_API AMIR_OnOffButton : public AMIR_PuzzleAssetDirectBASE
 {

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -8,7 +10,9 @@
 #include "Magic/MIR_MagicBASE.h"
 #include "MIR_CopiableComponent.generated.h"
 
-
+/**
+ * A Component that allows a player character to copy magic from enemies.
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MIRAANDTHEMIRRORSTAFF_API UMIR_CopiableComponent : public UActorComponent, public IIMIR_Copiable
 {
@@ -28,5 +32,6 @@ public:
 		FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Sets new copied magic for player. 
-	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer, TSubclassOf<class AMIR_MagicBASE> MagicToCopy) override;
+	virtual void CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
+		TSubclassOf<class AMIR_MagicBASE> MagicToCopy) override;
 };
