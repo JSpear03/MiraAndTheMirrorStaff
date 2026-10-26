@@ -105,14 +105,11 @@ void AMIR_EnemyManager::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 
 void AMIR_EnemyManager::VerifyEnemyInArray(AMIR_EnemyBASE* EnemyRef)
 {
-	// The current EnemyBASE object reference.
-	AMIR_EnemyBASE* CurrentEnemy = Cast<AMIR_EnemyBASE>(EnemyRef);
-
 	// Exit if invalid.
-	if (!CurrentEnemy) { return; }
+	if (!EnemyRef) { return; }
 
 	// Continue only if `EnemyArray` contains the current enemy instance.
-	if (!EnemyArray.Contains(CurrentEnemy)) { return; }
+	if (!EnemyArray.Contains(EnemyRef)) { return; }
 
 	// Is contained, so increment death counter.
 	EnemyDeathCount++;

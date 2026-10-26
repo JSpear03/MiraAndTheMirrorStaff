@@ -59,46 +59,46 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/**
-	* Activates the puzzle asset.
-	* Meant to be overridden by its children and called with Super.
-	*/
+	 * Activates the puzzle asset.
+	 * Meant to be overridden by its children and called with Super.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State",
 			  meta = (KeyWords = "Activate Asset"))
 		void ActivatePuzzleAsset();
 		virtual void ActivatePuzzleAsset_Implementation();
 
 	/**
-	* Deactivates the puzzle asset.
-	* Meant to be overridden by its children and called with Super.
-	*/
+	 * Deactivates the puzzle asset.
+	 * Meant to be overridden by its children and called with Super.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State",
 			  meta = (KeyWords = "Deactivate Asset"))
 		void DeactivatePuzzleAsset();
 		virtual void DeactivatePuzzleAsset_Implementation();
 
 	/**
-	* Gets the `InitialState` member variable.
-	* 
-	* @returns The PA's initial state.
-	*/
+	 * Gets the `InitialState` member variable.
+	 * 
+	 * @returns The PA's initial state.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "State",
 			  meta = (KeyWords = "Get Initial"))
 		const EPuzzleState GetInitialState() const { return InitialState; };
 
 	/**
-	* Gets the `CurrentState` member variable.
-	* 
-	* @returns The PA's current state.
-	*/
+	 * Gets the `CurrentState` member variable.
+	 * 
+	 * @returns The PA's current state.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "State",
 			  meta = (KeyWords = "Get Current"))
 		EPuzzleState GetCurrentState() const { return CurrentState; };
 
 	/**
-	* Sets the `CurrentState` member variable.
-	* 
-	* @param NewState The new state of this puzzle asset.
-	*/
+	 * Sets the `CurrentState` member variable.
+	 * 
+	 * @param NewState The new state of this puzzle asset.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "State", meta = (KeyWords = "Set Current"))
 		void SetCurrentState(EPuzzleState NewState) { CurrentState = NewState; };
 

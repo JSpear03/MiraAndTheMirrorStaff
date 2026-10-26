@@ -28,7 +28,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_EnemyManager : public AActor
 	GENERATED_BODY()
 
 public:
-	// An array of all enemy instanced managed by this actor.
+	// An array of all enemy instances managed by this actor.
 	UPROPERTY(EditAnywhere, Category = "LinkedAssets|Enemies")
 		TArray<AMIR_EnemyBASE*> EnemyArray;
 
@@ -46,14 +46,24 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Trigger")
 		UBoxComponent* TriggerBox;
 
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_EnemyManager();
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
-	// When a component begins to overlap with this actor.
+	/**
+	 * Called when an actor, etc. overlaps with this actor.
+	 *
+	 * @param OverlappedComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap (ideally a player character).
+	 * @param OtherComponent The specific primitive that began the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComponent` that began
+	 * the overlap.
+	 * @param bFromSweep Whether the overlap was the result of a sweep.
+	 * @param SweepResult Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
@@ -68,7 +78,7 @@ private:
 	bool bDoOnce = true;
 
 public:	
-	// Called every frame
+	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
 	// ========== LINKED ASSETS | ENEMIES ==========
@@ -93,13 +103,13 @@ public:
 	// ========== LINKED ASSETS | INDIRECT ==========
 
 	/**
-	* Runs a for-each loop on all IPAs, activating them consecutively.
-	*/
+	 * Activates all IPAs consecutively.
+	 */
 	void ActivateAllIndirects();
 
 	/**
-	* Runs a for-each loop on all IPAs, deactivating them consecutively.
-	*/
+	 * Deactivates all IPAs consecutively.
+	 */
 	void DeactivateAllIndirects();
 
 	// Stops current level music and plays boss music. 

@@ -34,9 +34,10 @@ void AMIR_EnemyBASE::BeginPlay()
 		{
 			if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
 			{
+				// Whether the boss is defeated.
 				const bool bDefeated = SaveSubsystem->IsBossDefeated(EffectiveID);
 				UE_LOG(LogTemp, Log, TEXT("AMIR_EnemyBASE::BeginPlay - Boss [%s] defeated: %d"),
-					*EffectiveID.ToString(), bDefeated ? 1 : 0);
+					   *EffectiveID.ToString(), bDefeated ? 1 : 0);
 
 				if (bDefeated)
 				{
@@ -58,20 +59,14 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	const FHitResult& SweepResult)
 {
 	// The currently possessed player character.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
-															 GetPlayerCharacter(GetWorld(), 0));
+	AMIR_PlayerChar* PlayerCharacter =
+		Cast<AMIR_PlayerChar>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
-	{
-		return;
-	}
+	if (!OtherActor || !PlayerCharacter) { return; }
 
 	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>();
 
-	if (!bIsChildOfMagic)  // Is NOT valid?
-	{
-		return;
-	}
+	if (!bIsChildOfMagic) { return; }
 
 	// Prevent friendly fire and self-damage:
 	// Ignore magic if it was cast by this enemy, owned by this enemy, or cast by another enemy.
@@ -86,18 +81,12 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	}
 
 	AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
-	if (!IncomingMagic)
-	{
-		return;
-	}
+	if (!IncomingMagic) { return; }
 
 	// Prevent the same magic instance from affecting this enemy more than once
 	// (e.g. dual-capsule overlaps, AoE expansion, melee swing re-entry).
 	// A single spell can still hit multiple different enemies.
-	if (!IncomingMagic->TryRegisterHit(this))
-	{
-		return;
-	}
+	if (!IncomingMagic->TryRegisterHit(this)) { return; }
 
 	if (IncomingMagic->AttackTypeComponent && IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
 	{
@@ -111,22 +100,27 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		// The `IncomingMagic`'s Element Name.
 		EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
+
 		if (AttackerElementName == EElements::None)
 		{
 			AttackerElementName = IncomingMagic->ElementComponent->GetCurrentElement();
 		}
+
 		if (AttackerElementName == EElements::None)
 		{
 			const FString MagicClassName = IncomingMagic->GetClass()->GetName();
-			if (MagicClassName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Fire"), ESearchCase::IgnoreCase))
+			if (MagicClassName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) ||
+				MagicClassName.Contains(TEXT("Fire"),  ESearchCase::IgnoreCase))
 			{
 				AttackerElementName = EElements::Flame;
 			}
-			else if (MagicClassName.Contains(TEXT("Ice"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
+			else if (MagicClassName.Contains(TEXT("Ice"),   ESearchCase::IgnoreCase) ||
+					 MagicClassName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
 			{
 				AttackerElementName = EElements::Ice;
 			}
-			else if (MagicClassName.Contains(TEXT("Thunder"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
+			else if (MagicClassName.Contains(TEXT("Thunder"),   ESearchCase::IgnoreCase) ||
+					 MagicClassName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
 			{
 				AttackerElementName = EElements::Thunder;
 			}
@@ -146,10 +140,7 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 void AMIR_EnemyBASE::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
 	TSubclassOf<class AMIR_MagicBASE> MagicToCopy)
 {
-	if (!CurrentPlayer || !CopiableComponent)
-	{
-		return;
-	}
+	if (!CurrentPlayer || !CopiableComponent) { return; }
 
 	IIMIR_Copiable::Execute_CopyMagic(CopiableComponent, CurrentPlayer, MagicToCopy);
 }

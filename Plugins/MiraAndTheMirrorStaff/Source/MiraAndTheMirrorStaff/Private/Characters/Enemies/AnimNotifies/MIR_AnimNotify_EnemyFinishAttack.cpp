@@ -14,20 +14,16 @@ UMIR_AnimNotify_EnemyFinishAttack::UMIR_AnimNotify_EnemyFinishAttack()
 #endif
 }
 
-void UMIR_AnimNotify_EnemyFinishAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UMIR_AnimNotify_EnemyFinishAttack::Notify(USkeletalMeshComponent* MeshComp,
+	UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
-	if (!MeshComp)
-	{
-		return;
-	}
+	if (!MeshComp) { return; }
 
+	// The owning actor of `MeshComp`.
 	AActor* OwnerActor = MeshComp->GetOwner();
-	if (!OwnerActor)
-	{
-		return;
-	}
+	if (!OwnerActor) { return; }
 
 	if (AMIR_EnemyBASE* Enemy = Cast<AMIR_EnemyBASE>(OwnerActor))
 	{

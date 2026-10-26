@@ -32,18 +32,16 @@ void AMIR_FinalBossDoor::OnFinalDoorOverlap(UPrimitiveComponent* OverlappedCompo
 	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, 
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
+	if (!OtherActor) { return; }
 
-	if (!OtherActor || !bIsChildOfPlayer)
-	{
-		return;
-	}
+	// Points to the player character that overlapped with the door.
+	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
+
+	if (!PlayerChar) { return; }
 
 	// Open door only if all unique Key Gemstones are collected.
-	if (PlayerCharacter->bIsGemRed && PlayerCharacter->bIsGemBlue && PlayerCharacter->bIsGemGreen &&
-		PlayerCharacter->bIsGemYellow)
+	if (PlayerChar->bIsGemRed   && PlayerChar->bIsGemBlue &&
+		PlayerChar->bIsGemGreen && PlayerChar->bIsGemYellow)
 	{
 		OpenDoor();
 	}
