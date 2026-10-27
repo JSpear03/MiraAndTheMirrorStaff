@@ -81,6 +81,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* MapAction;
 
+	// The range of the line trace for interaction.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "02_Interaction",
 		meta = (AllowPrivateAccess = "true"))
 		float InteractRange = 90.0f;
