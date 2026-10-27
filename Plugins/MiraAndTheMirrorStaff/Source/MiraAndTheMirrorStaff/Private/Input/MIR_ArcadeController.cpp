@@ -182,7 +182,8 @@ void AMIR_ArcadeController::StartPlayerJumping()
 		if (UWorld* World = GetWorld())
 		{
 			World->GetTimerManager().ClearTimer(JumpAnimationTimerHandle);
-			World->GetTimerManager().SetTimer(JumpAnimationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this]()
+			World->GetTimerManager().SetTimer(JumpAnimationTimerHandle,
+				FTimerDelegate::CreateWeakLambda(this, [this]()
 			{
 				bCanAnimateJump = false;
 			}), 0.5f, false);
@@ -286,7 +287,7 @@ void AMIR_ArcadeController::OnSubAttackCompleted()
 
 void AMIR_ArcadeController::CheckAutoRepeatAttack()
 {
-	// Cannot repeat if already in an active attack animation
+	// Cannot repeat if already in an active attack animation.
 	if (CurrentAttackState != EAttackTypes::None)
 	{
 		return;
@@ -302,7 +303,7 @@ void AMIR_ArcadeController::CheckAutoRepeatAttack()
 	{
 		HandleRangedCopyInput();
 	}
-	// Priority 3: Sub Attack
+	// Priority 3: Sub-Attack
 	else if (bIsSubAttackHeld && CanPerformAttack(EMagicAttacks::SubAttack))
 	{
 		HandleSubAttackInput();
@@ -311,7 +312,7 @@ void AMIR_ArcadeController::CheckAutoRepeatAttack()
 
 void AMIR_ArcadeController::HandleMainAttackInput()
 {
-	// Reject attack input if attacks cannot be performed or character cannot move
+	// Reject attack input if attacks cannot be performed or character cannot move.
 	if (!bCanMove || !CanPerformAttack(EMagicAttacks::MainAttack))
 	{
 		return;
@@ -319,7 +320,7 @@ void AMIR_ArcadeController::HandleMainAttackInput()
 
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
 
-	// Root Mira on the ground during attack animations; jumps and mid-air momentum are not affected
+	// Root Mira on the ground during attack animations; jumps and mid-air momentum are unaffected.
 	if (PlayerCharacter)
 	{
 		if (UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement())
@@ -359,7 +360,7 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
 
-	// Root Mira on the ground during attack animations; jumps and mid-air momentum are not affected
+	// Root Mira on the ground during attack animations; jumps and mid-air momentum are unaffected.
 	if (PlayerCharacter)
 	{
 		if (UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement())
@@ -372,7 +373,7 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 		}
 	}
 
-	// Lock both main and sub attacks during the attack animation to prevent spell overlap
+	// Lock both Main and Sub-Attacks during the attack animation to prevent spell overlap.
 	bCanUseMainAttack = false;
 	bCanUseSubAttack = false;
 	if (UWorld* World = GetWorld())
@@ -381,7 +382,7 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 		World->GetTimerManager().ClearTimer(MainAttackUnlockTimerHandle);
 		World->GetTimerManager().ClearTimer(SubAttackUnlockTimerHandle);
 		World->GetTimerManager().ClearTimer(AttackSafetyUnlockTimerHandle);
-		// Safety unlock fallback in case animation or notify is interrupted
+		// Safety unlock fallback in case animation or notify is interrupted.
 		World->GetTimerManager().SetTimer(AttackSafetyUnlockTimerHandle, this,
 			&AMIR_ArcadeController::OnAttackAnimationFinished, 2.0f, false);
 	}
@@ -391,7 +392,7 @@ void AMIR_ArcadeController::HandleRangedCopyInput()
 
 void AMIR_ArcadeController::HandleSubAttackInput()
 {
-	// Sub-Attack cannot interrupt an ongoing attack or move lock
+	// Sub-Attack cannot interrupt an ongoing attack or move lock.
 	if (!bCanMove || !CanPerformAttack(EMagicAttacks::SubAttack))
 	{
 		return;
@@ -399,7 +400,7 @@ void AMIR_ArcadeController::HandleSubAttackInput()
 
 	AMIR_PlayerChar* PlayerCharacter = GetPlayerCharacter();
 
-	// Root Mira on the ground during attack animations; jumps and mid-air momentum are not affected
+	// Root Mira on the ground during attack animations; jumps and mid-air momentum are unaffected.
 	if (PlayerCharacter)
 	{
 		if (UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement())
@@ -916,14 +917,17 @@ AMIR_MagicBASE* AMIR_ArcadeController::SpawnMagic_Implementation(EMagicAttacks A
 
 	EAttackTypes AttackType = GetAttackTypeForMagic(MagicClass);
 	UArrowComponent* SpawnArrow = GetCorrectSpawnArrow(AttackType);
-	FTransform SpawnTransform = SpawnArrow ? SpawnArrow->GetComponentTransform() : PlayerCharacter->GetActorTransform();
+	FTransform SpawnTransform = SpawnArrow ?
+								SpawnArrow->GetComponentTransform() :
+								PlayerCharacter->GetActorTransform();
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = PlayerCharacter;
 	SpawnParams.Instigator = PlayerCharacter;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AMIR_MagicBASE* SpawnedMagic = World->SpawnActor<AMIR_MagicBASE>(MagicClass, SpawnTransform, SpawnParams);
+	AMIR_MagicBASE* SpawnedMagic =
+		World->SpawnActor<AMIR_MagicBASE>(MagicClass, SpawnTransform, SpawnParams);
 	if (!SpawnedMagic)
 	{
 		return nullptr;
@@ -936,7 +940,8 @@ AMIR_MagicBASE* AMIR_ArcadeController::SpawnMagic_Implementation(EMagicAttacks A
 	// Ranged and AoE remain in world space so they are never glued to the player.
 	if (AttackType == EAttackTypes::Melee && SpawnArrow)
 	{
-		SpawnedMagic->AttachToComponent(SpawnArrow, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		SpawnedMagic->AttachToComponent(SpawnArrow,
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 
 	// Optional sound effects
@@ -1013,7 +1018,8 @@ void AMIR_ArcadeController::AttackLeftFromNotify()
 	OnAttackLeftFromNotify();
 }
 
-void AMIR_ArcadeController::StartAttackAnimationTimer(EAttackTypes AttackType, bool bIsSubAttack)
+void AMIR_ArcadeController::StartAttackAnimationTimer(EAttackTypes AttackType,
+	bool bIsSubAttack)
 
 {
 	UWorld* World = GetWorld();
@@ -1025,10 +1031,13 @@ void AMIR_ArcadeController::StartAttackAnimationTimer(EAttackTypes AttackType, b
 	float AnimDuration = 0.6f;
 	if (AMIR_PlayerChar* PlayerChar = GetPlayerCharacter())
 	{
-		UAnimSequenceBase* Anim = bIsSubAttack ? PlayerChar->GetSubAttackAnimation() : PlayerChar->GetAttackAnimation(AttackType);
+		UAnimSequenceBase* Anim = bIsSubAttack ?
+								  PlayerChar->GetSubAttackAnimation() :
+								  PlayerChar->GetAttackAnimation(AttackType);
 		if (Anim)
 		{
-			// Check if the animation has an AttackLeft notify to exit at the exact notify timestamp
+			// Check if the animation has an AttackLeft notify to exit at
+			// the exact notify timestamp
 			bool bFoundNotify = false;
 			for (const FAnimNotifyEvent& NotifyEvent : Anim->Notifies)
 			{
@@ -1070,7 +1079,8 @@ void AMIR_ArcadeController::OnAttackAnimationFinished()
 	bCanUseSubAttack = true;
 	SetCanMove(true);
 
-	// If any attack button is held and can actually be performed, chain into the next attack on the next tick.
+	// If any attack button is held and can actually be performed, chain into the next
+	// attack on the next tick.
 	// We wait 1 tick so the AnimBP state machine can process the transition out of
 	// the current attack state before re-entering, which avoids the T-pose pop.
 	// During this 1-tick gap, MoveCharacter's held-input guard keeps Mira rooted.
@@ -1080,7 +1090,8 @@ void AMIR_ArcadeController::OnAttackAnimationFinished()
 	{
 		if (UWorld* World = GetWorld())
 		{
-			World->GetTimerManager().SetTimerForNextTick(this, &AMIR_ArcadeController::CheckAutoRepeatAttack);
+			World->GetTimerManager().SetTimerForNextTick(this,
+				&AMIR_ArcadeController::CheckAutoRepeatAttack);
 		}
 		else
 		{
@@ -1103,7 +1114,9 @@ void AMIR_ArcadeController::StartSpawnFallbackTimer()
 	if (AMIR_PlayerChar* PlayerChar = GetPlayerCharacter())
 	{
 		bool bIsSubAttack = (CurrentMagicSlot == EMagicAttacks::SubAttack);
-		UAnimSequenceBase* Anim = bIsSubAttack ? PlayerChar->GetSubAttackAnimation() : PlayerChar->GetAttackAnimation(CurrentAttackState);
+		UAnimSequenceBase* Anim = bIsSubAttack ?
+								  PlayerChar->GetSubAttackAnimation() :
+								  PlayerChar->GetAttackAnimation(CurrentAttackState);
 		if (Anim)
 		{
 			for (const FAnimNotifyEvent& NotifyEvent : Anim->Notifies)

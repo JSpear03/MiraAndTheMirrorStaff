@@ -24,8 +24,10 @@ class USoundBase;
 UENUM(BlueprintType)
 enum class EMagicAttacks : uint8
 {
-	None        UMETA(DisplayName = "None", ToolTip = "A default value that is not meant to be used in-game."),
-	MainAttack  UMETA(DisplayName = "MainAttack", ToolTip = "Specifies either the currently copied magic or the MeleeCopy."),
+	None        UMETA(DisplayName = "None",
+					  ToolTip = "A default value that is not meant to be used in-game."),
+	MainAttack  UMETA(DisplayName = "MainAttack",
+					  ToolTip = "Specifies either the currently copied magic or the MeleeCopy."),
 	SubAttack   UMETA(DisplayName = "SubAttack", ToolTip = "Specifies the Dagger."),
 	RangedCopy  UMETA(DisplayName = "RangedCopy", ToolTip = "Specifies the RangedCopy."),
 };
@@ -39,44 +41,55 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 {
 	GENERATED_BODY()
 
-	// Gameplay Actions needs to be accessed to the editor, so inputs can bind to the functions. 
+	// GAMEPLAY ACTIONS
+	// These need to be accessed to the editor so that inputs can bind to the functions. 
 	
+	// An action where the player can move forward, backward, left, and right.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* Move;
 
+	// An action where the player summons copied magic or magic used for copying.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* MainAttack;
 
+	// An action where the player summons long-range magic used for copying.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* RangedCopy;
 
+	// An action where the player uses their Dagger.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* SubAttack;
 
+	// An action where the player discards their copied magic (if applicable).
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* Discard;
 
+	// An action where the player interacts with certain objects via line trace.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* Interact;
 
+	// An action where the player jumps upward.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* Jump;
 
+	// An action where the player moves faster while this input is held.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* Dash;
 
+	// An action where the player can pause the game and open the Pause Screen.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions", 
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* PauseAction;
 
+	// An action where the player can pause the game and open the Map Screen.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "01_Gameplay Actions",
 		meta = (AllowPrivateAccess = "true"))
 		UInputAction* MapAction;
@@ -114,6 +127,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
 		bool bCanUseMainAttack = true;
 
+	// Represents whether the Sub-Attack can be used.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "03_Main Attack")
 		bool bCanUseSubAttack = true;
 
@@ -164,7 +178,7 @@ protected:
 	// Guards against double spawning if multiple notifies fire in the same attack animation.
 	bool bHasSpawnedMagicThisAttack = false;
 
-	// Sound effects for combat actions.
+	// COMBAT SFX
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Audio")
 		USoundBase* MeleeAttackSound = nullptr;
@@ -181,10 +195,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Audio")
 		USoundBase* MirrorStaffAttackSound = nullptr;
 
-	// Internal helper to re-enable main attack and clear unlock timers.
+	// Internal helper to re-enable Main Attack and clear unlock timers.
 	void ExecuteAllowMainAttack();
 
-	// Starts a timer based on the assigned attack animation length to reset attack state.
+	/**
+	 * Starts a timer based on the assigned attack animation length to reset attack state.
+	 * 
+	 * @param AttackType Specifies the attack animation to fetch when evaluating the
+	 * animation sequence.
+	 * @param bIsSubAttack Whether the attack animation to fetch is associated with the
+	 * Sub-Attack. If true, its animation is prioritized over whatever is specified by
+	 * `AttackType`.
+	 */
 	void StartAttackAnimationTimer(EAttackTypes AttackType, bool bIsSubAttack = false);
 
 	// Called when the attack animation finishes.
@@ -213,22 +235,55 @@ protected:
 	 */
 	void MoveCharacter(const FInputActionValue& ActionValue);
 
-	// Tracks whether attack input actions are currently held down for hold-to-repeat
+	// ATTACK-INPUT TRACKERS
+	// These track whether attack-related input actions are current hold down for rapid-fire.
+
+	// Whether the Main Attack IA is currently hold down for rapid-fire.
 	bool bIsMainAttackHeld = false;
+
+	// Whether the Ranged Copy IA is currently hold down for rapid-fire.
 	bool bIsRangedCopyHeld = false;
+
+	// Whether the Sub-Attack IA is currently hold down for rapid-fire.
 	bool bIsSubAttackHeld = false;
 
-	// Input handlers that enforce gating, mana cooldown, and lockout delay.
+	// INPUT HANDLERS
+	// These enforce gating, mana cooldown, and lockout delay.
+
+	/**
+	 * Input handler that enforces gating, mana cooldown, and lockout delay for Main Attack.
+	 */
 	void HandleMainAttackInput();
+
+	/**
+	 * Input handler that enforces gating, mana cooldown, and lockout delay for Ranged Copy.
+	 */
 	void HandleRangedCopyInput();
+
+	/**
+	 * Input handler that enforces gating, mana cooldown, and lockout delay for Sub-Attack.
+	 */
 	void HandleSubAttackInput();
 
-	// Started / Completed input delegates to support hold-to-repeat attack
+	// STARTED / COMPLETED INPUT DELEGATES
+	// These support rapid-fire (hold-to-repeat) attacks.
+
+	/* Started input delegate for Main Attack rapid-fire. */
 	void OnMainAttackStarted();
+
+	/* Completed input delegate for Main Attack rapid-fire. */
 	void OnMainAttackCompleted();
+
+	/* Started input delegate for Ranged Copy rapid-fire. */
 	void OnRangedCopyStarted();
+
+	/* Completed input delegate for Ranged Copy rapid-fire. */
 	void OnRangedCopyCompleted();
+
+	/* Started input delegate for Sub-Attack rapid-fire. */
 	void OnSubAttackStarted();
+
+	/* Completed input delegate for Sub-Attack rapid-fire. */
 	void OnSubAttackCompleted();
 
 	// Checks if any attack input is held and triggers repeat attack when animation completes
@@ -237,19 +292,25 @@ protected:
 	// Unlocks sub-attack after the brief window following a main attack.
 	void UnlockSubAttack();
 
-	// Native Attack Actions. Override in Blueprint if needed, or rely on C++ implementation.
+	// NATIVE ATTACK ACTIONS.
+	// Override in Blueprint if needed, or rely on C++ implementation.
+
+	/* Performs the Main Attack, which summons a copied attack, etc. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat|Input")
 		void UseMainAttack();
 	virtual void UseMainAttack_Implementation();
 
+	/* Performs the Ranged Copy, which can copy enemies from a distance. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat|Input")
 		void UseMirrorStaff();
 	virtual void UseMirrorStaff_Implementation();
 
+	/* Performs the Sub-Attack, which uses the Dagger. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat|Input")
 		void UseSubAttack();
 	virtual void UseSubAttack_Implementation();
 
+	/* Discards the copied magic if applicable. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat|Input")
 		void DiscardCopiedMagic();
 	virtual void DiscardCopiedMagic_Implementation();
@@ -263,7 +324,7 @@ protected:
 	/**
 	 * Checks if player has obtained the Skybound Shoes, the item that allows jumping.
 	 * 
-	 * @returns bool
+	 * @returns Whether said item is obtained.
 	 */
 	bool IsPlayerJumping() const;
 
@@ -276,7 +337,7 @@ protected:
 	/**
 	 * Checks if player has obtained the Spirit Stole, the item that allows dashing.
 	 *
-	 * @returns bool
+	 * @returns Whether said item is obtained.
 	 */
 	bool IsPlayerDashing() const;
 
@@ -299,34 +360,68 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Player")
 		AMIR_PlayerChar* GetPlayerCharacter() const;
 
-	// Resolves the magic class for a given slot (Dagger, RangedCopy, or Stored/MeleeCopy).
+	/**
+	 * Resolves the magic class for a given slot (Dagger, RangedCopy, or Stored/MeleeCopy).
+	 * 
+	 * @param AttackSlot The magic attack to resolve.
+	 * 
+	 * @returns The corresponding class of the magic attack to resolve.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Magic")
 		TSubclassOf<AMIR_MagicBASE> GetAppropriateMagic(EMagicAttacks AttackSlot) const;
 
-	// Returns the EAttackTypes category (Melee, Ranged, AoE) for a given magic class.
+	/**
+	 * Returns the EAttackTypes category (Melee, Ranged, AoE) for a given magic class.
+	 * 
+	 * @param MagicClass The class to evaluate for its corresponding return type.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Magic")
 		EAttackTypes GetAttackTypeForMagic(TSubclassOf<AMIR_MagicBASE> MagicClass) const;
 
-	// Returns the mana cost for a given magic class.
+	/**
+	 * Returns the mana cost for a given magic class.
+	 * 
+	 * @param MagicClass The class to evaluate for its corresponding mana cost.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Magic")
 		int32 GetManaCostForMagic(TSubclassOf<AMIR_MagicBASE> MagicClass) const;
 
-	// Validates whether the magic associated with AttackSlot can be cast (valid class, sufficient mana, not on cooldown).
+	/**
+	 * Validates whether the specified magic can be cast based on the following
+	 * conditions: valid class; sufficient mana; not on cooldown.
+	 * 
+	 * @param AttackSlot The magic to validate as castable.
+	 */
 	bool CanCastMagic(EMagicAttacks AttackSlot) const;
 
-	// Checks if the specified attack can currently be performed (cooldown, state, mana, etc.).
+	/**
+	 * Validates whether the specified attack can currently be performed (cooldown, state,
+	 * mana, etc.).
+	 * 
+	 * @param AttackSlot The magic to validate as performable.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|State")
 		bool CanPerformAttack(EMagicAttacks AttackSlot) const;
 
-	// Returns the current attack type name for AB_MIR_MiraAnimations state machine transitions.
+	// Returns the current attack type name for AB_MIR_MiraAnimations state-machine transitions.
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|State")
 		EAttackTypes GetAttackTypeName() const;
 
-	// Gets the appropriate spawn arrow component on the player character for the attack type.
+	/**
+	 * Gets the appropriate spawn ArrowComponent on the player character for the Attack Type.
+	 * 
+	 * @param AttackType Specifies the corresponding ArrowComponent.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Magic")
 		UArrowComponent* GetCorrectSpawnArrow(EAttackTypes AttackType) const;
 
-	// Spawns the magic associated with the given slot, handling mana deduction and placement.
+	/**
+	 * Spawns the magic associated with the given slot, handling mana deduction and placement.
+	 * 
+	 * @param AttackSlot The magic to spawn.
+	 * 
+	 * @returns A pointer to the spawned object.
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat|Magic")
 		AMIR_MagicBASE* SpawnMagic(EMagicAttacks AttackSlot);
 	virtual AMIR_MagicBASE* SpawnMagic_Implementation(EMagicAttacks AttackSlot);
@@ -335,9 +430,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat|Notify")
 		void SpawnRangedProjectileFromNotify();
 
+	// Called from Anim Notify in attack animations to spawn AoE magic at the proper frame.
 	UFUNCTION(BlueprintCallable, Category = "Combat|Notify")
 		void SpawnAOEFromNotify();
 
+	// Called from Anim Notify in attack animations to spawn magic at the proper frame.
 	UFUNCTION(BlueprintCallable, Category = "Combat|Notify")
 		void TriggerSpawnFromNotify();
 
@@ -345,11 +442,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat|Notify")
 		void OnAttackLeftFromNotify();
 
+	// Called from Anim Notify in attack animations to clear attack-state-reset timer, etc.
 	UFUNCTION(BlueprintCallable, Category = "Combat|Notify")
 		void AttackLeftFromNotify();
 
 
-	// Pushes the attack type to the player's AnimInstance (CurrentAttackType) to drive state machine transitions.
+	/**
+	 * Pushes the Attack Type to the player's AnimInstance (CurrentAttackType) to drive
+	 * state machine transitions.
+	 * 
+	 * @param NewAttackType The Attack Type to push to the AnimInstance.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Combat|State")
 		void UpdateAnimInstanceAttackType(EAttackTypes NewAttackType);
 
@@ -361,10 +464,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "05_Walk")
 		void SetCanMove(bool bInCanMove);
 
-	// Sets `SummonedMagicRef` to a reference to a summoned magic.
+	/**
+	 * Sets `SummonedMagicRef` to a reference to a summoned magic.
+	 * 
+	 * @param MagicType A pointer to summoned magic, which `SummonedMagicRef` will be
+	 * assigned with.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Combat|Magic")
 		void SetSummonedMagicRef(AMIR_MagicBASE* const& MagicType);
 
+	// Returns a pointer to the currently summoned magic.
 	UFUNCTION(BlueprintCallable, Category = "Combat|Magic")
 		AMIR_MagicBASE* GetSummonedMagicRef() const;
 
