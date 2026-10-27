@@ -1282,5 +1282,5 @@ void AMIR_ArcadeController::SetSummonedMagicRef(AMIR_MagicBASE* const& MagicType
 
 AMIR_MagicBASE* AMIR_ArcadeController::GetSummonedMagicRef() const
 {
-	return IsValid(SummonedMagicRef) ? SummonedMagicRef : nullptr;
+	return SummonedMagicRef.IsValid() ? SummonedMagicRef.Get() : nullptr;
 }

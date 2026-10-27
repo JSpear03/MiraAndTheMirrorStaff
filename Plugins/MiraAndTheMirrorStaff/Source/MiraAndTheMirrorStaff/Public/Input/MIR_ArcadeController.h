@@ -88,7 +88,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_ArcadeController : public AArcadeController
 	// A reference to the currently summoned magic.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat|Magic",
 		meta = (AllowPrivateAccess = "true"))
-		TObjectPtr<AMIR_MagicBASE> SummonedMagicRef = nullptr;
+		TWeakObjectPtr<AMIR_MagicBASE> SummonedMagicRef = nullptr;
 
 public:
 	// Allows Player's Animation Blueprint to play jump animation. 

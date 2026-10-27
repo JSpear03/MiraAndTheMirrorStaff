@@ -93,23 +93,20 @@ void AMIR_MagicBASE::Tick(float DeltaTime)
 
 void AMIR_MagicBASE::HandleDespawn(const float TimerDuration)
 {
-    // Prepare variables for timer.
+    UWorld* World = GetWorld();
+    if (!World) { return; }
 
-    FTimerManager& FTimer = GetWorld()->GetTimerManager();  // Timer manager for the despawn timer.
-
-    // Lambda for handling despawn upon elapsion of timer.
-    const FTimerDelegate& FDespawnTimerDelegate = FTimerDelegate::CreateLambda([this, &FTimer]
+    World->GetTimerManager().SetTimer(
+        FDespawnHandle,
+        FTimerDelegate::CreateWeakLambda(this, [this]()
         {
             UE_LOG(LogTemp, Warning, TEXT("Lifespan elapsed; destroy magic."));
-
-            FTimer.ClearTimer(FDespawnHandle);  // Clears timer.
             ReenableMainAttack();
-            this->Destroy();                    // Destroys actor.
-        }
+            Destroy();
+        }),
+        TimerDuration,
+        false
     );
-
-    // Initiate timer.
-    FTimer.SetTimer(FDespawnHandle, FDespawnTimerDelegate, TimerDuration, false);
 }
 
 void AMIR_MagicBASE::ClearDespawnTimer()
