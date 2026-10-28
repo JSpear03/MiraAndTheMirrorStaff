@@ -48,19 +48,13 @@ void AMIR_LoreTapestry::OnInteractableBeginOverlap(UPrimitiveComponent* Overlapp
 	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, 
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	// The currently possessed player character.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
-		GetPlayerCharacter(GetWorld(), 0));
+	if (!OtherActor) { return; }
 
-	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
-	{
-		return;
-	}
+	// Points to the player character that overlapped with the collision area.
+	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
 
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
-
-	// Only the player should enter the collision box.
-	if (bIsChildOfPlayer)
+	// Display widget only if the player triggered the overlap.
+	if (PlayerChar)
 	{
 		OpenInteractUI();
 	}
@@ -69,19 +63,13 @@ void AMIR_LoreTapestry::OnInteractableBeginOverlap(UPrimitiveComponent* Overlapp
 void AMIR_LoreTapestry::OnInteractableEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	// The currently possessed player character.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
-		GetPlayerCharacter(GetWorld(), 0));
+	if (!OtherActor) { return; }
 
-	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
-	{
-		return;
-	}
+	// Points to the player character that overlapped with the collision area.
+	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
 
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
-
-	// Only the player should exit the collision box.
-	if (bIsChildOfPlayer)
+	// Display widget only if the player triggered the overlap.
+	if (PlayerChar)
 	{
 		CloseInteractUI();
 	}

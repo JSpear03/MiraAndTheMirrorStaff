@@ -31,14 +31,10 @@ void AMIR_HealthUp::OnHealthOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
-	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
+	// The player that overlapped with this item.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
 
-	if (!OtherActor || !bIsChildOfPlayer)
-	{
-		return;
-	}
+	if (!OtherActor || !PlayerCharacter) { return; }
 
 	PlayerCharacter->HealthComponent->IncreaseTotalHealth(HealthBonus);
 

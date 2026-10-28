@@ -20,7 +20,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PickableBASE : public AActor
 {
 	GENERATED_BODY()	
 public:	
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_PickableBASE();
 
 protected:
@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "CollisionComponent")
 		USphereComponent* CollisionComponent;
 
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
 public:	
@@ -44,7 +44,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Save")
 		FName GetEffectivePickupID() const;
 
-	// Called every frame
+	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
 };

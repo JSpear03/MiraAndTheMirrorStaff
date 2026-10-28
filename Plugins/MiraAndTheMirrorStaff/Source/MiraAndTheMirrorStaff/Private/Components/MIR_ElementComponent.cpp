@@ -31,15 +31,18 @@ void UMIR_ElementComponent::BeginPlay()
 	else if (AActor* MyOwner = GetOwner())
 	{
 		const FString OwnerName = MyOwner->GetClass()->GetName();
-		if (OwnerName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) || OwnerName.Contains(TEXT("Fire"), ESearchCase::IgnoreCase))
+		if (OwnerName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) ||
+			OwnerName.Contains(TEXT("Fire"),  ESearchCase::IgnoreCase))
 		{
 			SetElementDetails(EElements::Flame);
 		}
-		else if (OwnerName.Contains(TEXT("Ice"), ESearchCase::IgnoreCase) || OwnerName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
+		else if (OwnerName.Contains(TEXT("Ice"),   ESearchCase::IgnoreCase) ||
+				 OwnerName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
 		{
 			SetElementDetails(EElements::Ice);
 		}
-		else if (OwnerName.Contains(TEXT("Thunder"), ESearchCase::IgnoreCase) || OwnerName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
+		else if (OwnerName.Contains(TEXT("Thunder"),   ESearchCase::IgnoreCase) ||
+				 OwnerName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
 		{
 			SetElementDetails(EElements::Thunder);
 		}

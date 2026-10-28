@@ -61,12 +61,9 @@ enum class EElementProperties : uint8
 /**
  *
  */
- //class MIRAANDTHEMIRRORSTAFF_API EMIR_AttackTypes
+ //class MIRAANDTHEMIRRORSTAFF_API EMIR_Elements
  //{
  //public:
- //	EMIR_AttackTypes();
- //	~EMIR_AttackTypes();
-
- //public:
- //	EAttackTypes CurrentAttackType = EAttackTypes::Melee;
+ //	EMIR_Elements();
+ //	~EMIR_Elements();
  //};

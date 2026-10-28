@@ -19,9 +19,11 @@ void AMIR_OnOffButton::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AMIR_OnOffButton::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AMIR_OnOffButton::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
 {
+	// The player that overlapped with this actor.
 	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
 
 	if (!OtherActor || !PlayerCharacter)
@@ -31,15 +33,16 @@ void AMIR_OnOffButton::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp
 
 	bIsNothingFired = true;
 
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Found player"));
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::White, TEXT("Button: Found player."));
 
 	ActivatePuzzleAsset();
 	OnDirectActivated.Broadcast(this);
 }
 
-void AMIR_OnOffButton::OnCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
+void AMIR_OnOffButton::OnCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
+	// The player that overlapped with this actor.
 	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
 
 	if (!OtherActor || !PlayerCharacter)

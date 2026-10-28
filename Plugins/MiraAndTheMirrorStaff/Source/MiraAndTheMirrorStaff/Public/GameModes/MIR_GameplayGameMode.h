@@ -9,7 +9,7 @@
 #include "MIR_GameplayGameMode.generated.h"
 
 /**
- * CURRENTLY UNUSED.
+ * CURRENTLY UNUSED DUE TO ABANDONMENT OF TRAVEL TRANSITION WIDGET.
  * The game mode used for this game.
  */
 UCLASS(Blueprintable)

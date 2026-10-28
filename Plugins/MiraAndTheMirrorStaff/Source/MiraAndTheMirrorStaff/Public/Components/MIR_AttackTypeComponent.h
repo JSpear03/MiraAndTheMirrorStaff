@@ -22,7 +22,7 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_AttackTypeComponent : public UActorComponen
 
 public:
 
-	// Sets default values for this component's properties
+	// Sets default values for this component's properties.
 	UMIR_AttackTypeComponent();
 
 	// Default Structs (deprecated, but keep in case we make them static)
@@ -35,7 +35,7 @@ public:
 	//const FRangedCopyStruct RangedCopyStruct;	 // Default struct for Ranged Copy (special type).
 
 protected:
-	// Called when the game starts
+	// Called when the game starts.
 	virtual void BeginPlay() override;
 
 	// The current Attack Type. Set this value to dictate the working struct.
@@ -54,19 +54,24 @@ protected:
 			  meta = (KeyWords = "Struct"))
 		FDefaultTypeStruct AttackTypeStruct;
 
+	/**
+	 * Called immediately after deserialization from disk or a save for
+	 * state setup or cleanup.
+	 */
 	virtual void PostLoad() override;
 
 	// Ensures AttackTypeStruct is populated even on CDOs or before BeginPlay().
 	void EnsureDetailsInitialized() const
 	{
-		if (AttackTypeStruct.AttackTypeName == EAttackTypes::None && (CurrentAttackType != EAttackTypes::None || CurrentAttackSubtype != EAttackSubtypes::None))
+		if (AttackTypeStruct.AttackTypeName == EAttackTypes::None &&
+			(CurrentAttackType != EAttackTypes::None || CurrentAttackSubtype != EAttackSubtypes::None))
 		{
 			const_cast<UMIR_AttackTypeComponent*>(this)->SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
 		}
 	}
 
 public:	
-	// Called every frame
+	// Called every frame.
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
 		FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -118,8 +123,6 @@ public:
 	 * 
 	 * @param ENewAttackType A specifier to determine the new struct for the `AttackTypeStruct`.
 	 * @param ESubtype A specifier to determine the exact struct desired (for Dagger and Copy).
-	 * 
-	 * @returns N/A
 	 */
 	void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None,
 							  EAttackSubtypes ESubtype = EAttackSubtypes::None);
@@ -128,8 +131,6 @@ public:
 	 * Sets the `CurrentAttackType` member variable.
 	 * 
 	 * @param ENewAttackType The value to be assigned to `CurrentAttackType`.
-	 * 
-	 * @returns N/A
 	 */
 	void SetCurrentAttackType(EAttackTypes ENewAttackType = EAttackTypes::None);
 };

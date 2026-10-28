@@ -28,10 +28,7 @@ void AMIR_PuzzleAssetManager::BeginPlay()
 	/* The current DPA in the `DirectAssetArray`. */
 	for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 	{
-		if (!CurrentDirect)
-		{
-			continue;
-		}
+		if (!CurrentDirect) { continue; }
 
 		CurrentDirect->OnDirectActivated.AddDynamic(this, &AMIR_PuzzleAssetManager::VerifyDirectInArray);
 		CurrentDirect->OnDirectDeactivated.AddDynamic(this, &AMIR_PuzzleAssetManager::VerifyDirectInArray);
@@ -49,10 +46,7 @@ void AMIR_PuzzleAssetManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	/* The current DPA in the `DirectAssetArray`. */
 	for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 	{
-		if (!CurrentDirect)
-		{
-			continue;
-		}
+		if (!CurrentDirect) { continue; }
 
 		CurrentDirect->OnDirectActivated.RemoveDynamic(this,&AMIR_PuzzleAssetManager::VerifyDirectInArray);
 		CurrentDirect->OnDirectDeactivated.RemoveDynamic(this, &AMIR_PuzzleAssetManager::VerifyDirectInArray);
@@ -75,10 +69,7 @@ void AMIR_PuzzleAssetManager::VerifyDirectInArray(AMIR_PuzzleAssetDirectBASE* Di
 	// The current DirectBASE object reference.
 	AMIR_PuzzleAssetDirectBASE* CurrentDirect = Cast<AMIR_PuzzleAssetDirectBASE>(DirectAssetRef);
 
-	if (!CurrentDirect)
-	{
-		return;
-	}
+	if (!CurrentDirect) { return; }
 
 	// Check whether `CurrentDirect` is contained in the `DirectArray`.
 	if (DirectAssetArray.Contains(CurrentDirect))
@@ -105,12 +96,10 @@ bool AMIR_PuzzleAssetManager::FindAllDirectsInState(EPuzzleState InState)
 	/* The current DPA in the `DirectAssetArray`. */
 	for (AMIR_PuzzleAssetDirectBASE* CurrentDirect : DirectAssetArray)
 	{
-		if (!IsValid(CurrentDirect))
-		{
-			continue;
-		}
+		if (!IsValid(CurrentDirect)) { continue; }
 
 		ValidDirectCount++;
+
 		// Check whether the current DPA is in the specified state.
 		if (CurrentDirect->GetCurrentState() == InState)
 		{
@@ -227,10 +216,7 @@ bool AMIR_PuzzleAssetManager::CheckMinimalInactivity()
 void AMIR_PuzzleAssetManager::ExecuteAutoTimer()
 {
 	// Do not execute if Auto Timer is disabled.
-	if (!bUseAutoTimer)
-	{
-		return;
-	}
+	if (!bUseAutoTimer) { return; }
 
 	// Manages the Auto Timer from the world's `TimerManager`.
 	FTimerManager& AutoTimerManager = GetWorld()->GetTimerManager();
@@ -307,12 +293,10 @@ void AMIR_PuzzleAssetManager::DetermineForwardActivation()
 	// The current IPA in the `IndirectAssetArray`.
 	for (AMIR_PuzzleAssetsIndirectBASE* CurrentIndirect : IndirectAssetArray)
 	{
-		if (!IsValid(CurrentIndirect))
-		{
-			continue;
-		}
+		if (!IsValid(CurrentIndirect)) { continue; }
 
 		ValidCount++;
+
 		// Check state.
 		if (CurrentIndirect->GetInitialState() == EPuzzleState::Activate)
 		{
@@ -324,10 +308,7 @@ void AMIR_PuzzleAssetManager::DetermineForwardActivation()
 		}
 	}
 
-	if (ValidCount == 0)
-	{
-		return;
-	}
+	if (ValidCount == 0) { return; }
 
 	// Ensure that all IPAs are in the same state before continuing;
 	// the PAM may have unexpected results otherwise.

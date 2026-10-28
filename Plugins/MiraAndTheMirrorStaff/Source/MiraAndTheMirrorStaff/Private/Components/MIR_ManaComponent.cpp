@@ -115,19 +115,9 @@ void UMIR_ManaComponent::IncreaseTotalManaPower(int32 BonusManaPower)
 void UMIR_ManaComponent::ManaCooldown() 
 {
 	// Cooldown should not execute if ManaPower is not zero.
-	if (ManaPower > 0)
-	{
-		return;
-	}
-
-	// Guard against uninitialized or zero total mana (prevents division by zero)
-	if (TotalManaPower <= 0)
-	{
-		return;
-	}
-
-	// Do not restart cooldown if it is already actively ticking
-	if (IsCooldownActive())
+	// Also, guard against division by zero and restarting the cooldown while it's
+	// still active.
+	if (ManaPower > 0 || TotalManaPower <= 0 || IsCooldownActive())
 	{
 		return;
 	}

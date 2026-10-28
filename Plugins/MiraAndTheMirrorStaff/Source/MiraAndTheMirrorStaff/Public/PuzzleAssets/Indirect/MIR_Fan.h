@@ -28,5 +28,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fan")
 		float FanLength = 980;
 
+	// Sets default values for this actor's properties.
 	AMIR_Fan();
 };

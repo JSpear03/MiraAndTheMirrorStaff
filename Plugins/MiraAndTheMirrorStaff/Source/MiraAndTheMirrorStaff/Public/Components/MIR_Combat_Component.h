@@ -8,7 +8,7 @@
 #include "Components/ActorComponent.h"
 #include "MIR_Combat_Component.generated.h"
 
-// Forward declaring Anim Montage so it exists before it exists
+// Forward declaring Anim Montage so it exists before it exists.
 class UAnimMontage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMeleeAttackTriggeredSignature);
@@ -25,7 +25,8 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_Combat_Component : public UActorComponent
 	GENERATED_BODY()
 
 private:
-
+	// Whether the component is deactivated.
+	// Should be true when an enemies dies or is pooled.
 	UPROPERTY(VisibleAnywhere, Category = "AI|Combat")
 	bool bIsDeactivated = false;
 

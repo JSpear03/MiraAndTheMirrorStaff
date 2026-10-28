@@ -21,13 +21,13 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicAOE : public AMIR_MagicBASE
 	GENERATED_BODY()
 	
 public:
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_MagicAOE();
 
 	// The Timeline Component for the expansion animation.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|Timeline",
 		meta = (ToolTip = "The Timeline Component for the expansion animation."))
-	TObjectPtr<UTimelineComponent> ExpansionTimeline;
+		TObjectPtr<UTimelineComponent> ExpansionTimeline;
 
 protected:
 	/**
@@ -40,13 +40,11 @@ protected:
 	 * order (because the radius is clamped to the half-height).
 	 * 
 	 * @param Alpha The alpha to use when performing the lerp.
-	 * 
-	 * @returns N/A
 	 */
 	void MagicExpansion(const float& Alpha);
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
 	// The amount of time until the summoned magic despawns.

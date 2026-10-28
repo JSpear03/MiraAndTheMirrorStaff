@@ -30,7 +30,7 @@ private:
     FTimerHandle FDespawnHandle;
 
 public:
-    // Sets default values for this actor's properties
+    // Sets default values for this actor's properties.
     AMIR_MagicBASE();
 
 private:
@@ -38,7 +38,7 @@ private:
     void SetupCollisions();
 
 protected:
-    // Called when the game starts or when spawned
+    // Called when the game starts or when spawned.
     virtual void BeginPlay() override;
 
     // Called when the component ends.
@@ -54,8 +54,6 @@ protected:
      * to be destroyed upon elapsion of the timer.
      * 
      * @param TimerDuration The amount of time until the actor is destroyed.
-     * 
-     * @returns N/A
      */
     UFUNCTION(BlueprintCallable, Category = "Magic|Despawn")
         void HandleDespawn(const float TimerDuration = 10.0f);
@@ -63,9 +61,7 @@ protected:
     /*
      * @brief Instantly handles the despawn of this actor; no timer used.
      * 
-     * Upon call, this function re-enables the main attack and destroys the actor.
-     * 
-     * @returns N/A
+     * Re-enables the Main Attack and destroys the actor.
      */
     void InstantHandleDespawn();
 
@@ -73,7 +69,7 @@ protected:
     void ReenableMainAttack();
 
 public:
-    // Called every frame
+    // Called every frame.
     virtual void Tick(float DeltaTime) override;
 
 	// Creates the Attack Type Component for the spell.
@@ -94,7 +90,7 @@ public:
 
     // A Billboard Component that acts as a pivot for Melee attacks.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic|Collision")
-    class UBillboardComponent* BillboardComponent;
+        class UBillboardComponent* BillboardComponent;
 
     // A Scene Component that acts as the root component.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magic|Collision")
@@ -113,7 +109,7 @@ public:
      *
      * @param ATarget The actor to register a hit against.
      *
-     * @returns True if this is the first hit on ATarget; false otherwise.
+     * @returns Whether this is the first hit on the target actor.
      */
     UFUNCTION(BlueprintCallable, Category = "Magic|Combat")
         bool TryRegisterHit(AActor* ATarget);
@@ -121,11 +117,11 @@ public:
 private:
     // Tracks which actors this magic instance has already damaged so that
     // a single spell cannot multi-hit the same enemy (e.g. from dual-capsule
-    // overlaps, AoE expansion, or melee swing re-entry).
+    // overlaps, AoE expansion, or melee-swing re-entry).
     UPROPERTY()
         TSet<TObjectPtr<AActor>> TDamagedActors;
 
-    // Guard to ensure ReenableMainAttack only runs once per magic actor
+    // Guard to ensure `ReenableMainAttack()` only runs once per magic actor.
     bool bHasReenabledAttack = false;
 
 };

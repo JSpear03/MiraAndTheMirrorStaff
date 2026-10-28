@@ -23,7 +23,16 @@ public:
 	AMIR_HazardSpikes();
 
 protected:
-	// Called when an actor bumps into the spikes' blocking collision.
+	/**
+	 * Called when an actor overlaps with this actor.
+	 *
+	 * @param HitComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap.
+	 * @param OtherComp The specific primitive that began the overlap.
+	 * @param NormalImpulse The total impulse applied along the collision normal
+	 * during the physics-simulation step.
+	 * @param Hit Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
 		void OnSpikesHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

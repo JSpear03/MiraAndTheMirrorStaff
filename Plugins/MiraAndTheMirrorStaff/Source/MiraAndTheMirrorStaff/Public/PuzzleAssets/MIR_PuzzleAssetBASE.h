@@ -23,11 +23,11 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetBASE : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_PuzzleAssetBASE();
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
 	// The puzzle asset's collision component.

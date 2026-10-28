@@ -37,14 +37,24 @@ protected:
 		class UMIR_ElementComponent* ElementComponent;
 
 	/**
-	* When something overlaps with the DirectBASE actor.
-	*
-	* @param OtherActor The actor that overlapped with this actor's `CollisionComponent`.
-	*/
+	 * When something overlaps with the DirectBASE actor.
+	 *
+	 * @param OtherActor The actor that overlapped with this actor's `CollisionComponent`.
+	 */
 	UFUNCTION(BlueprintCallable)
 		void HandleOverlap(AActor* OtherActor);
 
-	// When the `CapsuleCollision` begins overlapping with something.
+	/**
+	 * When the `CapsuleCollision` begins overlapping with something.
+	 *
+	 * @param OverlappedComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap (ideally a player character).
+	 * @param OtherComp The specific primitive that began the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComp` that began
+	 * the overlap.
+	 * @param bFromSweep Whether the overlap was the result of a sweep.
+	 * @param SweepResult Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
 		virtual void OnCapsuleBeginOverlap(
 			UPrimitiveComponent* OverlappedComponent,
@@ -64,11 +74,11 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "State")
 		FOnDirectDeactivated OnDirectDeactivated;
 
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_PuzzleAssetDirectBASE();
 
 public:	
-	// Called every frame
+	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
 };

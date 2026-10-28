@@ -19,7 +19,7 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_ElementComponent : public UActorComponent
 
 public:	
 
-	// Sets default values for this component's properties
+	// Sets default values for this component's properties.
 	UMIR_ElementComponent();
 
 	// Default Structs (deprecated, but keep in case we make them static)
@@ -30,7 +30,7 @@ public:
 	//const FThunderStruct ThunderStruct;				   // Default struct for Thunder.
 
 protected:
-	// Called when the game starts
+	// Called when the game starts.
 	virtual void BeginPlay() override;
 
 	// The current Element of this magic. Set this value to dictate the working struct.
@@ -45,7 +45,7 @@ protected:
 		FDefaultElementStruct ElementStruct;
 
 public:	
-	// Called every frame
+	// Called every frame.
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
 		FActorComponentTickFunction* ThisTickFunction) override;
 

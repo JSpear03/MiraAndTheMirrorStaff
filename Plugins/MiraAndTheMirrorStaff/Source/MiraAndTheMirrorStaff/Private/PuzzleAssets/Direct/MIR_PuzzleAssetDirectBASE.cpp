@@ -38,11 +38,7 @@ void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 {
 	// ========== VALIDATE OTHERACTOR =============================================================
 
-	if (!OtherActor)
-	{
-		return;
-	}
-	else
+	if (OtherActor)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver,
 			FString::Printf(TEXT("DirectBASE collision with %s."), *OtherActor->GetName()));
@@ -52,10 +48,7 @@ void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 
 	AMIR_MagicBASE* OverlappingMagic = Cast<AMIR_MagicBASE>(OtherActor);
 
-	if (!OverlappingMagic)
-	{
-		return;
-	}
+	if (!OverlappingMagic) { return; }
 
 	// Determine whether to activate or deactivate the DPA.
 	switch (CurrentState)

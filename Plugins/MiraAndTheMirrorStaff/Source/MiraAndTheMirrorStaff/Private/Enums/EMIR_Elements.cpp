@@ -4,10 +4,10 @@
 
 #include "Enums/EMIR_Elements.h"
 
-//EMIR_AttackTypes::EMIR_AttackTypes()
+//EMIR_AttackTypes::EMIR_Elements()
 //{
 //}
 //
-//EMIR_AttackTypes::~EMIR_AttackTypes()
+//EMIR_AttackTypes::~EMIR_Elements()
 //{
 //}

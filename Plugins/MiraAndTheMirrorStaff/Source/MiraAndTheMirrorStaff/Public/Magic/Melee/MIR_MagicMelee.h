@@ -21,7 +21,7 @@ class MIRAANDTHEMIRRORSTAFF_API AMIR_MagicMelee : public AMIR_MagicBASE
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_MagicMelee();
 
 	// The Timeline Component for the swing animation.
@@ -30,7 +30,7 @@ public:
 	TObjectPtr<UTimelineComponent> SwingTimeline;
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
 	// The amount of time until the summoned magic despawns.
@@ -82,8 +82,6 @@ protected:
 	 * Afterward, this value is passed to the Billboard Component's relative rotation.
 	 *
 	 * @param Alpha The alpha to use when performing the lerp.
-	 *
-	 * @returns N/A
 	 */
 	void SwingMagic(const float& Alpha);
 

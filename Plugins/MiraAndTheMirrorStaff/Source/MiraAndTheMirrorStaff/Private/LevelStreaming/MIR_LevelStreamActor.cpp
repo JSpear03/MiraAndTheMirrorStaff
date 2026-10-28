@@ -83,7 +83,7 @@ void AMIR_LevelStreamActor::OverlapEnds(UPrimitiveComponent* OverlappedComponent
 * VALIDATION OF OVERLAPPING ACTOR
 *********************************************************************************************/
 
-const bool AMIR_LevelStreamActor::ValidateOtherActorAsPlayer(const AActor* OtherActor)
+const bool AMIR_LevelStreamActor::ValidateOtherActorAsPlayer(const AActor* OtherActor) const
 {
 	// If `OtherActor` is equal to the first player character in the world,
 	// return true; otherwise, false.

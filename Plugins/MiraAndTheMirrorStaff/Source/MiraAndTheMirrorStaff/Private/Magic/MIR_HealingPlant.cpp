@@ -30,14 +30,17 @@ void AMIR_HealingPlant::BeginPlay()
 	
 	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, 
 		&AMIR_HealingPlant::OnHealingPlantOverlap);
-	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AMIR_HealingPlant::OnBoxCollisionBeginOverlap);
-	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &AMIR_HealingPlant::OnBoxCollisionEndOverlap);
+	BoxCollision->OnComponentBeginOverlap.AddDynamic(this,
+		&AMIR_HealingPlant::OnBoxCollisionBeginOverlap);
+	BoxCollision->OnComponentEndOverlap.AddDynamic(this,
+		&AMIR_HealingPlant::OnBoxCollisionEndOverlap);
 }
 
 void AMIR_HealingPlant::OnHealingPlantOverlap(UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
-	const FHitResult& SweepResult)
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
 {
+	// The magic that overlapped with the plant.
 	AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
 
 	// Checks if incoming magic is valid.
@@ -47,31 +50,26 @@ void AMIR_HealingPlant::OnHealingPlantOverlap(UPrimitiveComponent* OverlappedCom
 		return;
 	}
 
-	if (IncomingMagic->AttackTypeComponent && IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
+	if (IncomingMagic->AttackTypeComponent &&
+		IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Do Copy"));
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Plant: Do Copy."));
 
 		OpenEpilogue();
 	}
 }
 
 void AMIR_HealingPlant::OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
-	const FHitResult& SweepResult)
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
 {
-	// The currently possessed player character.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
-		GetPlayerCharacter(GetWorld(), 0));
+	if (!OtherActor) { return; }
 
-	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
-	{
-		return;
-	}
+	// Points to the player character that overlapped with the door.
+	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
 
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
-
-	// Only shows healing message when player interacts.
-	if (bIsChildOfPlayer)
+	// Only show healing message when player interacts.
+	if (PlayerChar)
 	{
 		OpenPlantCopyUI();
 	}
@@ -80,19 +78,13 @@ void AMIR_HealingPlant::OnBoxCollisionBeginOverlap(UPrimitiveComponent* Overlapp
 void AMIR_HealingPlant::OnBoxCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	// The currently possessed player character.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
-		GetPlayerCharacter(GetWorld(), 0));
+	if (!OtherActor) { return; }
 
-	if (!OtherActor || !PlayerCharacter)  // Are NEITHER valid?
-	{
-		return;
-	}
+	// Points to the player character that overlapped with the door.
+	AMIR_PlayerChar* PlayerChar = Cast<AMIR_PlayerChar>(OtherActor);
 
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
-	
-	// Stops showing copy message when player moves out of the box. 
-	if (bIsChildOfPlayer)
+	// Only show healing message when player interacts.
+	if (PlayerChar)
 	{
 		ClosePlantCopyUI();
 	}

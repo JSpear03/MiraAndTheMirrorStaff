@@ -19,15 +19,21 @@ class UIMIR_Copiable : public UInterface
 };
 
 /**
- *  Interface for the Copiable Component to check if player can copy magic. 
+ * Interface for the Copiable Component to check if player can copy magic. 
  */
 class MIRAANDTHEMIRRORSTAFF_API IIMIR_Copiable
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+	// Add interface functions to this class.
+	// This is the class that will be inherited to implement this interface.
 public:
-	// When called, the function stores copied magic for the player.
+	/**
+	 * Stores copied magic for the player.
+	 * 
+	 * @param CurrentPlayer The player to store the copied magic into.
+	 * @param MagicToCopy The magic to store in the player.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Copy Magic")
 		void CopyMagic(AMIR_PlayerChar* CurrentPlayer, TSubclassOf<AMIR_MagicBASE> MagicToCopy);
 };

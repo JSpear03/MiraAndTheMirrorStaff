@@ -26,13 +26,28 @@ protected:
 	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
-	// Extends the base hazard behavior with Ice-element attack detection.
+	/**
+	 * Called when an actor overlaps with this actor.
+	 * Extends the base hazard behavior with Ice-element attack detection.
+	 *
+	 * @param OverlappedComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap.
+	 * @param OtherComp The specific primitive that began the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComponent` that began
+	 * the overlap.
+	 * @param bFromSweep Whether the overlap was the result of a sweep.
+	 * @param SweepResult Detailed collision info if a sweep did occur.
+	 */
 	virtual void OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult) override;
 
-	// Blueprint hook fired when an Ice-element attack touches the water.
-	// The future grid-freeze system will consume this to freeze the touched squares.
+	/**
+	 * Blueprint hook fired when an Ice-element attack touches the water.
+	 * A future grid-freeze system would consume this to freeze the touched squares.
+	 * 
+	 * @param HitLocation The location of said Ice-element attack.
+	 */
 	UFUNCTION(BlueprintImplementableEvent, Category = "Hazard|Freeze")
 		void OnFreezeHit(FVector HitLocation);
 };

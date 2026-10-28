@@ -241,10 +241,7 @@ void UMIR_SaveSubsystem::SaveAsync()
 	UMIR_SaveGame* Save = GetSave();
 
 	// Exit if `Save` is invalid or an async save is already in progress(?).
-	if (!Save || bSaveInFlight)
-	{
-		return;
-	}
+	if (!Save || bSaveInFlight) { return; }
 
 	bSaveInFlight = true;
 

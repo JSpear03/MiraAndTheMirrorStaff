@@ -33,7 +33,7 @@ public:
 	AMIR_HazardBASE();
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
 	// Whether the player is teleported to their last respawn point on contact.
@@ -42,17 +42,36 @@ protected:
 	// Whether enemies that enter the hazard are deleted.
 	bool bDeletesEnemies = true;
 
-	// Called when an actor enters the hazard's collision box.
+	/**
+	 * Called when an actor overlaps with this actor.
+	 *
+	 * @param OverlappedComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap.
+	 * @param OtherComp The specific primitive that began the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComponent` that began
+	 * the overlap.
+	 * @param bFromSweep Whether the overlap was the result of a sweep.
+	 * @param SweepResult Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
-		virtual void OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-			const FHitResult& SweepResult);
+		virtual void OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 
-	// Damages/respawns the player or deletes an enemy, based on this hazard's flags.
+	/**
+	 * Damages/respawns the player or deletes an enemy based on this hazard's flags.
+	 * 
+	 * @param OtherActor The actor to evaluate (e.g., a player or enemy).
+	 */
 	void HandleActorContact(AActor* OtherActor);
 
-	// Blueprint hook for contact feedback at the point of impact
-	// (splash decals for Water/Lava, star particles for the Bottomless Pit, etc.).
+	/**
+	 * Blueprint hook for contact feedback at the point of impact (splash decals
+	 * for Water/Lava, star particles for the Bottomless Pit, etc.).
+	 * 
+	 * @param The location of the actor that overlapped this actor. Needed for
+	 * decal placement.
+	 */
 	UFUNCTION(BlueprintImplementableEvent, Category = "Hazard")
 		void OnPlayerContact(FVector ImpactPoint);
 };

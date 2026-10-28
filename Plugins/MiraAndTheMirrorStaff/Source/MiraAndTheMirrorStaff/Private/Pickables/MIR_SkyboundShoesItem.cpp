@@ -16,35 +16,28 @@ void AMIR_SkyboundShoesItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsActorBeingDestroyed())
-	{
-		return;
-	}
+	if (IsActorBeingDestroyed()) { return; }
 
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, 
 		&AMIR_SkyboundShoesItem::OnSkyboundShoesOverlap);
 }
 
 void AMIR_SkyboundShoesItem::OnSkyboundShoesOverlap(UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
-	const FHitResult& SweepResult)
+	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
 {
-	ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(CurrentCharacter);
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
+	// The player that overlapped with this item.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
 
-	if (!OtherActor || !bIsChildOfPlayer || !PlayerCharacter)
-	{
-		return;
-	}
+	if (!OtherActor || !PlayerCharacter) { return; }
 
 	DisplaySkyBoundShoes();
 
 	PlayerCharacter->GrantKeyItem(EMIR_KeyItem::SkyboundShoes);
 
-	if (UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
 	{
-		if (UMIR_SaveSubsystem* SaveSubsystem = GameInstance->GetSubsystem<UMIR_SaveSubsystem>())
+		if (UMIR_SaveSubsystem* SaveSubsystem = GI->GetSubsystem<UMIR_SaveSubsystem>())
 		{
 			SaveSubsystem->MarkPickupCollected(GetEffectivePickupID());
 			SaveSubsystem->SetHasSkyboundShoes(true);

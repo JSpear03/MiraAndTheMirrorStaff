@@ -111,10 +111,7 @@ void AMIR_MagicBASE::HandleDespawn(const float TimerDuration)
 
 void AMIR_MagicBASE::ClearDespawnTimer()
 {
-    if (!GetWorld())  // Validate
-    {
-        return;
-    }
+    if (!GetWorld()) { return; }
 
     // The FTimer instance for the current world.
     FTimerManager& FTimerManager = GetWorld()->GetTimerManager();
@@ -138,10 +135,7 @@ void AMIR_MagicBASE::ReenableMainAttack()
     bool bHasFoundEnemyInstigator = false, bHasFoundEnemyOwner = false;
 
     // Guard: only execute once per magic instance
-    if (bHasReenabledAttack)
-    {
-        return;
-    }
+    if (bHasReenabledAttack) { return; }
 
     bHasReenabledAttack = true;
     bHasFoundEnemyInstigator = GetInstigator() && GetInstigator()->IsA<AMIR_EnemyBASE>();
@@ -149,22 +143,14 @@ void AMIR_MagicBASE::ReenableMainAttack()
 
     // Only ignore if this magic was explicitly cast by an enemy.
     // Player-cast magic typically has null instigator/owner when spawned from Blueprint.
-    if (bHasFoundEnemyInstigator || bHasFoundEnemyOwner)
-    {
-        return;
-    }
+    if (bHasFoundEnemyInstigator || bHasFoundEnemyOwner) { return; }
 
     // The current Player Controller at index 0.
     AMIR_ArcadeController* PlayerCont = 
         Cast<AMIR_ArcadeController>(UGameplayStatics::GetPlayerController(this, 0));
 
     // Validate Player Controller.
-    if (!PlayerCont)
-    {
-        // Invalid, so exit.
-        return;
-    }
-    else
+    if (PlayerCont)
     {
         PlayerCont->AllowMainAttack();  // Allows main attack again.
         GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Emerald, TEXT("Main Attack ALLOWED!"));

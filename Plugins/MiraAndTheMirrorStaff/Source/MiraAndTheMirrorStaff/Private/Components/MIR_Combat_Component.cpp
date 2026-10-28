@@ -13,7 +13,7 @@ UMIR_Combat_Component::UMIR_Combat_Component()
 
 void UMIR_Combat_Component::ExecuteMeleeAttack()
 {
-	bAttackFinished = false; // Lock the task loop
+	bAttackFinished = false; // Lock the task loop.
 	bHasSpawnedMagicThisAttack = false;
 
 	if (bUseFallbackSpawnTimer)
@@ -35,7 +35,7 @@ void UMIR_Combat_Component::ExecuteMeleeAttack()
 
 void UMIR_Combat_Component::ExecuteMagicAttack()
 {
-	bAttackFinished = false; // Lock the task loop
+	bAttackFinished = false; // Lock the task loop.
 	bHasSpawnedMagicThisAttack = false;
 
 	if (bUseFallbackSpawnTimer)
@@ -57,12 +57,9 @@ void UMIR_Combat_Component::ExecuteMagicAttack()
 
 void UMIR_Combat_Component::TriggerMagicSpawnFromNotify()
 {
-	if (bIsDeactivated)
-	{
-		return;
-	}
+	if (bIsDeactivated) { return; }
 
-	// Clear safety fallback timer since the anim notify fired
+	// Clear safety-fallback timer since the anim notify has fired.
 	if (UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().ClearTimer(FallbackSpawnTimerHandle);
@@ -79,7 +76,7 @@ void UMIR_Combat_Component::FinishCurrentAttack()
 		World->GetTimerManager().ClearTimer(FallbackSpawnTimerHandle);
 	}
 
-	bAttackFinished = true; // Unlock the task loop
+	bAttackFinished = true; // Unlock the task loop.
 	OnAttackFinished.Broadcast();
 }
 
@@ -102,7 +99,7 @@ void UMIR_Combat_Component::ReactivateCombatState()
 		World->GetTimerManager().ClearTimer(FallbackSpawnTimerHandle);
 	}
 
-	bIsDeactivated = false; // Enemy is back to life
-	bAttackFinished = true; // Clean default slate for attacks
+	bIsDeactivated = false; // Enemy is back to life.
+	bAttackFinished = true; // Clean, default slate for attacks.
 	bHasSpawnedMagicThisAttack = false;
 }

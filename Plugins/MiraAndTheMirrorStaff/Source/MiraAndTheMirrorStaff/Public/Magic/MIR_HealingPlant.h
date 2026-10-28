@@ -44,25 +44,35 @@ protected:
 	* @param OtherActor is represented by the magic attack.
 	*/
 	UFUNCTION()
-		void OnHealingPlantOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-			const FHitResult& SweepResult);
+		void OnHealingPlantOverlap(UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 
-	/*
-	* When something overlaps with the box collision.
-	*
-	* @param OtherActor is represented by the player.
-	*/
+	/**
+	 * When something overlaps with the box collision.
+	 *
+	 * @param OverlappedComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap (ideally a player character).
+	 * @param OtherComponent The specific primitive that began the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComponent` that began
+	 * the overlap.
+	 * @param bFromSweep Whether the overlap was the result of a sweep.
+	 * @param SweepResult Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
-		void OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-			const FHitResult& SweepResult);
+		void OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 
-	/*
-	* When something stops colliding with the box collision.
-	*
-	* @param OtherActor is represented by the player.
-	*/
+	/**
+	 * When something stops colliding with the box collision.
+	 *
+	 * @param OverlappedComponent The component that ended the overlap.
+	 * @param OtherActor The actor that ended the overlap (ideally a player character).
+	 * @param OtherComponent The specific primitive that ended the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComponent` that ended
+	 * the overlap.
+	 */
 	UFUNCTION()
 		void OnBoxCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent,
 			AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);

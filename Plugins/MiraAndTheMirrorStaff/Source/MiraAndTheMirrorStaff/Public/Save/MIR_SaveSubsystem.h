@@ -116,7 +116,7 @@ public:
 	 * @param NewSpawnArea The major area to be opened (e.g., Verdant Grotto).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Spawn")
-	void SetSpawnArea(TSoftObjectPtr<UWorld> NewSpawnArea);
+		void SetSpawnArea(TSoftObjectPtr<UWorld> NewSpawnArea);
 
 	/**
 	 * Sets the player's spawn point in the current save game.
@@ -124,7 +124,7 @@ public:
 	 * @param NewSpawnPoint Specifies a PlayerStart to spawn at.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Spawn")
-	void SetSpawnPoint(FName NewSpawnPoint = TEXT("None"));
+		void SetSpawnPoint(FName NewSpawnPoint = TEXT("None"));
 
 	/**
 	 * Sets the player's total health in the current save game.
@@ -132,7 +132,7 @@ public:
 	 * @param NewTotalHealth Corresponds to the player's `TotalHealth` variable.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Stats")
-	void SetTotalHealth(int32 NewTotalHealth = 8);
+		void SetTotalHealth(int32 NewTotalHealth = 8);
 
 	/**
 	 * Sets the player's total mana in the current save game.
@@ -140,7 +140,7 @@ public:
 	 * @param NewTotalMana Corresponds to the player's `TotalManaPower` variable.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Stats")
-	void SetTotalMana(int32 NewTotalMana = 8);
+		void SetTotalMana(int32 NewTotalMana = 8);
 
 	/**
 	 * Sets the player's possession of the Mirror Staff in the current save game.
@@ -148,7 +148,7 @@ public:
 	 * @param bPossessionStatus Whether the Mirror Staff is obtained.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Equipment")
-	void SetHasMirrorStaff(bool bPossessionStatus = false);
+		void SetHasMirrorStaff(bool bPossessionStatus = false);
 
 	/**
 	 * Sets the player's possession of the Skybound Shoes in the current save game.
@@ -156,7 +156,7 @@ public:
 	 * @param bPossessionStatus Whether the Skybound Shoes is obtained.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Equipment")
-	void SetHasSkyboundShoes(bool bPossessionStatus = false);
+		void SetHasSkyboundShoes(bool bPossessionStatus = false);
 
 	/**
 	 * Sets the player's possession of the Spirit Stole in the current save game.
@@ -164,7 +164,7 @@ public:
 	 * @param bPossessionStatus Whether the Spirit Stole is obtained.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Equipment")
-	void SetHasSpiritStole(bool bPossessionStatus = false);
+		void SetHasSpiritStole(bool bPossessionStatus = false);
 
 	/**
 	 * Sets the player's possession of the red Key Gemstone in the current save game.
@@ -172,7 +172,7 @@ public:
 	 * @param bPossessionStatus Whether the red Key Gemstone is obtained.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Gemstones")
-	void SetHasRedKeystone(bool bPossessionStatus = false);
+		void SetHasRedKeystone(bool bPossessionStatus = false);
 
 	/**
 	 * Sets the player's possession of the blue Key Gemstone in the current save game.
@@ -180,7 +180,7 @@ public:
 	 * @param bPossessionStatus Whether the blue Key Gemstone is obtained.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Gemstones")
-	void SetHasBlueKeystone(bool bbossessionStatus = false);
+		void SetHasBlueKeystone(bool bbossessionStatus = false);
 
 	/**
 	 * Sets the player's possession of the green Key Gemstone in the current save game.
@@ -188,7 +188,7 @@ public:
 	 * @param bPossessionStatus Whether the green Key Gemstone is obtained.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Gemstones")
-	void SetHasGreenKeystone(bool bPossessionStatus = false);
+		void SetHasGreenKeystone(bool bPossessionStatus = false);
 
 	/**
 	 * Sets the player's possession of the yellow Key Gemstone in the current save game.
@@ -196,7 +196,7 @@ public:
 	 * @param bPossessionStatus Whether the yellow Key Gemstone is obtained.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Player Items|Gemstones")
-	void SetHasYellowKeystone(bool bPossessionStatus = false);
+		void SetHasYellowKeystone(bool bPossessionStatus = false);
 
 	/**
 	 * Marks a pickup ID as collected in the current save.
@@ -204,16 +204,17 @@ public:
 	 * @param PickupID Unique identifier for the pickup.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Pickups")
-	void MarkPickupCollected(FName PickupID);
+		void MarkPickupCollected(FName PickupID);
 
 	/**
 	 * Checks if a pickup ID has already been collected.
 	 *
 	 * @param PickupID Unique identifier for the pickup.
-	 * @return True if already collected.
+	 * 
+	 * @returns Whether the pickup is already collected (True = yes; False = no).
 	 */
 	UFUNCTION(BlueprintPure, Category = "Save|Pickups")
-	bool IsPickupCollected(FName PickupID);
+		bool IsPickupCollected(FName PickupID);
 
 	/**
 	 * Marks a boss ID as defeated in the current save.
@@ -221,16 +222,17 @@ public:
 	 * @param BossID Unique identifier for the boss.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Bosses")
-	void MarkBossDefeated(FName BossID);
+		void MarkBossDefeated(FName BossID);
 
 	/**
 	 * Checks if a boss ID has already been defeated.
 	 *
 	 * @param BossID Unique identifier for the boss.
-	 * @return True if already defeated.
+	 * 
+	 * @return Whether the boss is already defeated (True = yes; False = no).
 	 */
 	UFUNCTION(BlueprintPure, Category = "Save|Bosses")
-	bool IsBossDefeated(FName BossID);
+		bool IsBossDefeated(FName BossID);
 
 	/**
 	 * Marks a room as visited in the current save.
@@ -238,7 +240,7 @@ public:
 	 * @param RoomName Unique identifier or name for the room.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Map")
-	void MarkRoomVisited(FName RoomName);
+		void MarkRoomVisited(FName RoomName);
 
 	/**
 	 * Checks if a room has already been visited in the current save.
@@ -247,19 +249,19 @@ public:
 	 * @return True if already visited.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Save|Map")
-	bool IsRoomVisited(FName RoomName) const;
+		bool IsRoomVisited(FName RoomName) const;
 
 	/**
 	 * Gets the list of all visited rooms.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Save|Map")
-	const TArray<FName>& GetVisitedRooms() const;
+		const TArray<FName>& GetVisitedRooms() const;
 
 	/**
 	 * Clears the visited rooms list in memory.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Save|Map")
-	void ClearVisitedRooms();
+		void ClearVisitedRooms();
 
 private:
 	// Creates a new save file, and then returns it.
@@ -286,7 +288,7 @@ private:
 
 	// The current save file.
 	UPROPERTY(Transient)
-	TObjectPtr<UMIR_SaveGame> CurrentSave;
+		TObjectPtr<UMIR_SaveGame> CurrentSave;
 
 	// Represents whether an async load is in progress.
 	bool bSaveInFlight = false;
