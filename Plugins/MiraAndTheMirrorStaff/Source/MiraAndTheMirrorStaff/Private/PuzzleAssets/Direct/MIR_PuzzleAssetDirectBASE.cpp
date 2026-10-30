@@ -15,7 +15,7 @@ AMIR_PuzzleAssetDirectBASE::AMIR_PuzzleAssetDirectBASE()
 	// Set up Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
 
-	// Direct puzzle assets (torches, orbs, etc.) allow magic attacks to pass through by default
+	// Direct puzzle assets (torches, orbs, etc.) allow magic attacks to pass through by default.
 	bAllowMagicPassThrough = true;
 }
 
@@ -36,16 +36,9 @@ void AMIR_PuzzleAssetDirectBASE::Tick(float DeltaTime)
 
 void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 {
-	// ========== VALIDATE OTHERACTOR =============================================================
+	if (!OtherActor) { return; }
 
-	if (OtherActor)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver,
-			FString::Printf(TEXT("DirectBASE collision with %s."), *OtherActor->GetName()));
-	}
-
-	// ========== HANDLE ACTIVATION/DEACTIVATION ==================================================
-
+	// The magic that overlapped this actor.
 	AMIR_MagicBASE* OverlappingMagic = Cast<AMIR_MagicBASE>(OtherActor);
 
 	if (!OverlappingMagic) { return; }
@@ -57,8 +50,7 @@ void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 		// Check deactivation condition.
 		if (OverlappingMagic->ElementComponent->GetElementName() == ElementComponent->GetElementWeakness())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Turquoise,
-				FString::Printf(TEXT("DirectBASE deactivation.")));
+			UE_LOG(LogTemp, Log, TEXT("PuzzleAssetDirectBASE: Deactivated"));
 			DeactivatePuzzleAsset();
 			OnDirectDeactivated.Broadcast(this);
 		}
@@ -68,8 +60,7 @@ void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 		// Check activation condition.
 		if (OverlappingMagic->ElementComponent->GetElementName() == ElementComponent->GetElementName())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Magenta,
-				FString::Printf(TEXT("DirectBASE activation.")));
+			UE_LOG(LogTemp, Log, TEXT("PuzzleAssetDirectBASE: Activated"));
 			ActivatePuzzleAsset();
 			OnDirectActivated.Broadcast(this);
 		}

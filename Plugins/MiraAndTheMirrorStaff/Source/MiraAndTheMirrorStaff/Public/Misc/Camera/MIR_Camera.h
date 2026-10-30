@@ -21,7 +21,7 @@ class AMIR_PlayerChar;
  * will pass relevant room-transition data to this actor, allowing it to pan to the
  * CMP. This effectively allows the camera to transition from room to room.
  */
-UCLASS()
+UCLASS(Abstract)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_Camera : public AActor
 {
 	GENERATED_BODY()
