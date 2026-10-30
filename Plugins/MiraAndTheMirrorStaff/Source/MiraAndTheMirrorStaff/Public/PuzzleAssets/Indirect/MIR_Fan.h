@@ -12,11 +12,10 @@
 /**
  * A type of IPA that pushes Characters away from it when activated.
  */
-UCLASS()
+UCLASS(Abstract)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_Fan : public AMIR_PuzzleAssetsIndirectBASE
 {
 	GENERATED_BODY()
-
 
 public:
 	// Needed a skeleton mesh to replace the static mesh, so it can play fan animation.
@@ -26,7 +25,7 @@ public:
 	// The length of the fan's windbox.
 	// Also dictates the length of its dedicated Niagara System.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fan")
-		float FanLength = 980;
+		float FanLength = 980.0f;
 
 	// Sets default values for this actor's properties.
 	AMIR_Fan();

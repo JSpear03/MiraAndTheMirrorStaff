@@ -25,7 +25,7 @@
  * update the sizing of the overlap trigger and the positions of the
  * boundaries in relative space.
  */
-UCLASS()
+UCLASS(Abstract)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_CameraMovePoints : public AActor
 {
 	GENERATED_BODY()
@@ -129,18 +129,24 @@ protected:
 
 	// ===== OVERLAP =====
 
-	/**
-	 * Called when an actor overlaps with `CameraMoveTrigger`.
-	 * 
-	 * @param OtherActor That actor that initiated the overlap.
-	 */
+	 /**
+	  * Called when an actor overlaps with `CameraMoveTrigger`.
+	  *
+	  * @param OverlappedComponent The component that began the overlap.
+	  * @param OtherActor The actor that began the overlap (ideally a player character).
+	  * @param OtherComp The specific primitive that began the overlap.
+	  * @param OtherBodyIndex The index of the body within `OtherComp` that began
+	  * the overlap.
+	  * @param bFromSweep Whether the overlap was the result of a sweep.
+	  * @param SweepResult Detailed collision info if a sweep did occur.
+	  */
 	UFUNCTION()
 	void OverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
 
 	// Constructs the `BoundaryArray` with all eight boundaries.
-	void ConstructBoundaryArray();
+	inline void ConstructBoundaryArray();
 
 	/**
 	 * Constructs the `BoundaryLocationsArray` with the world locations of
@@ -198,7 +204,7 @@ private:
 	 * 
 	 * @returns A scale-adjusted box extent (intended for `CameraMoveTrigger`).
 	 */
-	float CalculateBoxExtentOnAxis(const float BaseRoomExtent, const float RoomSize);
+	inline float CalculateBoxExtentOnAxis(const float BaseRoomExtent, const float RoomSize);
 
 	/**
 	 * Handles room setup based on the ERoomDeterminer Enum:

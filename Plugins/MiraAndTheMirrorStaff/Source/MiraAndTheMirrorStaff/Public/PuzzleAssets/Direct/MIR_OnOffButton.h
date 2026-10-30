@@ -13,7 +13,7 @@
  * A type of DPA that activates and deactivates things when the player steps
  * on and off it, respectively.
  */
-UCLASS()
+UCLASS(Abstract)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_OnOffButton : public AMIR_PuzzleAssetDirectBASE
 {
 	GENERATED_BODY()

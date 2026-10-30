@@ -17,7 +17,7 @@
  * A Puzzle Asset (PA) is an Actor that has an activated and deactivated state,
  * with respective behaviors for each.
  */
-UCLASS()
+UCLASS(Abstract)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetBASE : public AActor
 {
 	GENERATED_BODY()

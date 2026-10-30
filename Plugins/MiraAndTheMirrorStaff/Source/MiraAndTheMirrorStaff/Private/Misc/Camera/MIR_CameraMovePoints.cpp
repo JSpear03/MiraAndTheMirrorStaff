@@ -43,17 +43,14 @@ AMIR_CameraMovePoints::AMIR_CameraMovePoints()
 
 	// Parent subobjects appropriately.
 	CameraMoveTrigger->SetupAttachment(RootComponent);
-	Max_X->SetupAttachment(CameraMoveTrigger);
-	Min_X->SetupAttachment(CameraMoveTrigger);
-	Max_Y->SetupAttachment(CameraMoveTrigger);
-	Min_Y->SetupAttachment(CameraMoveTrigger);
-	Northeast->SetupAttachment(CameraMoveTrigger);
-	Southeast->SetupAttachment(CameraMoveTrigger);
-	Northwest->SetupAttachment(CameraMoveTrigger);
-	Southwest->SetupAttachment(CameraMoveTrigger);
+	for (TObjectPtr<UBillboardComponent> Boundary : BoundaryArray)
+	{
+		if (!Boundary) { continue; }
+		Boundary->SetupAttachment(CameraMoveTrigger);
+	}
 
 	// Set mobility to stationary (allows in-editor changes).
-	CameraMoveTrigger->SetMobility(EComponentMobility::Stationary);
+	CameraMoveTrigger->SetMobility(EComponentMobility::Static);
 
 	// Set up default 1x1 room.
 	RoomConstructor();
@@ -89,6 +86,7 @@ void AMIR_CameraMovePoints::BeginPlay()
 
 	ConstructBoundaryLocationsArray();
 
+	// MAP SYSTEM:
 	// If player is already inside this CMP on spawn/stream, register it
 	if (CameraMoveTrigger)
 	{
@@ -161,21 +159,16 @@ void AMIR_CameraMovePoints::OverlapBegins(UPrimitiveComponent* OverlappedCompone
  * CONSTRUCTION
  ***********************************************************************************/
 
-void AMIR_CameraMovePoints::ConstructBoundaryArray()
+inline void AMIR_CameraMovePoints::ConstructBoundaryArray()
 {
-	BoundaryArray.Add(Max_X);
-	BoundaryArray.Add(Min_X);
-	BoundaryArray.Add(Max_Y);
-	BoundaryArray.Add(Min_Y);
-	BoundaryArray.Add(Northeast);
-	BoundaryArray.Add(Southeast);
-	BoundaryArray.Add(Northwest);
-	BoundaryArray.Add(Southwest);
+	BoundaryArray.Reserve(8);
+	BoundaryArray.Append({ Max_X, Min_X, Max_Y, Min_Y, Northeast, Southeast, Northwest, Southwest });
+	BoundaryArray.Shrink();
 }
 
 void AMIR_CameraMovePoints::ConstructBoundaryLocationsArray()
 {
-	for (UBillboardComponent* CurrentBoundary : BoundaryArray)
+	for (const UBillboardComponent* CurrentBoundary : BoundaryArray)
 	{
 		if (!CurrentBoundary) { continue; }
 
@@ -272,7 +265,7 @@ void AMIR_CameraMovePoints::MakeRoomStruct(int32 RoomSizeXY)
 	MakeRoomStruct(RoomSizeXY, RoomSizeXY);
 }
 
-float AMIR_CameraMovePoints::CalculateBoxExtentOnAxis(const float BaseRoomExtent,
+inline float AMIR_CameraMovePoints::CalculateBoxExtentOnAxis(const float BaseRoomExtent,
 	const float RoomSize)
 {
 	return (BaseRoomExtent * RoomSize) + (100.0f * (RoomSize - 1));
@@ -286,7 +279,7 @@ void AMIR_CameraMovePoints::PrepareAppearance(const bool bUseBoundary, const FVe
 
 	// Update the relative locations of each boundary accordingly.
 	/* The current index of the for loop. */
-	for (int32 Index = 0; Index < BoundaryArray.Num(); Index++)
+	for (size_t Index = 0; Index < BoundaryArray.Num(); Index++)
 	{
 		if (!BoundaryArray[Index] || !BoundaryArray.IsValidIndex(Index)) { continue; }
 
@@ -340,8 +333,8 @@ void AMIR_CameraMovePoints::CalculatePlayerBoundaryDistance(AMIR_PlayerChar* Pla
 	for (const FVector& CurrentBoundaryLoc : BoundaryLocationsArray)
 	{
 		// The distance between the player and `CurrentBoundaryLoc`.
-		float CurrentDistance = FVector::Dist(PlayerCharRef->GetActorLocation(),
-											  CurrentBoundaryLoc);
+		const float CurrentDistance = FVector::Dist(PlayerCharRef->GetActorLocation(),
+													CurrentBoundaryLoc);
 
 		// Update record only if the current distance is less than the previous one
 		// (because this means it's closer to the player).
@@ -355,6 +348,10 @@ void AMIR_CameraMovePoints::CalculatePlayerBoundaryDistance(AMIR_PlayerChar* Pla
 	// The boundary to pan to must be the closest one.
 	ToPanBoundary = ClosestBoundary;
 }
+
+/************************************************************************************
+ * MAP SYSTEM
+ ***********************************************************************************/
 
 FName AMIR_CameraMovePoints::GetCleanRoomID() const
 {
@@ -376,14 +373,16 @@ FName AMIR_CameraMovePoints::GetCleanRoomID() const
 	int32 PieIndex = LevelPackageName.Find(TEXT("UEDPIE_"));
 	if (PieIndex != INDEX_NONE)
 	{
-		int32 SlashAfter = LevelPackageName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex);
+		int32 SlashAfter = LevelPackageName.Find(TEXT("/"),
+						   ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex);
 		if (SlashAfter != INDEX_NONE)
 		{
 			LevelPackageName.RemoveAt(PieIndex, SlashAfter - PieIndex + 1);
 		}
 		else
 		{
-			int32 NextUnderscore = LevelPackageName.Find(TEXT("_"), ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex + 7);
+			int32 NextUnderscore = LevelPackageName.Find(TEXT("_"),
+								   ESearchCase::IgnoreCase, ESearchDir::FromStart, PieIndex + 7);
 			int32 CharsToRemove = (NextUnderscore != INDEX_NONE) ? (NextUnderscore - PieIndex + 1) : 9;
 			LevelPackageName.RemoveAt(PieIndex, CharsToRemove);
 		}
