@@ -23,7 +23,10 @@ void AMIR_HazardBASE::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AMIR_HazardBASE::OnHazardBeginOverlap);
+	// Unique bind: this used to be bound in the constructor, so hazard Blueprints and
+	// placed hazards saved back then still carry the binding in their serialized data.
+	// A plain AddDynamic would bind it twice (ensure + double damage per overlap).
+	CollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &AMIR_HazardBASE::OnHazardBeginOverlap);
 }
 
 void AMIR_HazardBASE::OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
