@@ -50,6 +50,109 @@ FString UMIR_AlignWithPlayer::GetStaticDescription() const
  * Result: the enemy slides to align on the axis where the gap is greatest,
  * giving it a clear line of sight for its ranged projectile.
  */
+bool UMIR_AlignWithPlayer::HasLineOfSight(UWorld* World, const FVector& FromLocation, const AActor* TargetActor, const AActor* IgnoredPawn) const
+{
+	if (!World || !TargetActor)
+	{
+		return false;
+	}
+
+	FHitResult HitResult;
+	FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(AlignLineOfSight), true);
+	TraceParams.AddIgnoredActor(IgnoredPawn);
+	TraceParams.AddIgnoredActor(TargetActor);
+
+	FVector StartPos = FromLocation;
+	FVector EndPos = TargetActor->GetActorLocation();
+
+	// Line trace against the specified collision channel (walls, obstacles)
+	bool bHit = World->LineTraceSingleByChannel(
+		HitResult,
+		StartPos,
+		EndPos,
+		LineOfSightChannel,
+		TraceParams
+	);
+
+	return !bHit; // Clear line of sight if no obstacle was hit
+}
+
+bool UMIR_AlignWithPlayer::CalculateAlignmentTarget(APawn* ControlledPawn, AActor* PlayerActor, FVector& OutTarget, float& OutOffAxisDistance, float& OutCardinalYaw) const
+{
+	if (!ControlledPawn || !PlayerActor)
+	{
+		return false;
+	}
+
+	FVector EnemyLocation = ControlledPawn->GetActorLocation();
+	FVector PlayerLocation = PlayerActor->GetActorLocation();
+	UWorld* World = ControlledPawn->GetWorld();
+
+	float DeltaX = FMath::Abs(EnemyLocation.X - PlayerLocation.X);
+	float DeltaY = FMath::Abs(EnemyLocation.Y - PlayerLocation.Y);
+
+	// Candidate A: Firing lane along X-axis (slide along Y to match Player.Y)
+	FVector TargetX = FVector(EnemyLocation.X, PlayerLocation.Y, EnemyLocation.Z);
+	float DistanceX = DeltaY;
+	float YawX = (PlayerLocation.X >= EnemyLocation.X) ? 0.0f : 180.0f;
+
+	// Candidate B: Firing lane along Y-axis (slide along X to match Player.X)
+	FVector TargetY = FVector(PlayerLocation.X, EnemyLocation.Y, EnemyLocation.Z);
+	float DistanceY = DeltaX;
+	float YawY = (PlayerLocation.Y >= EnemyLocation.Y) ? 90.0f : -90.0f;
+
+	struct FAlignmentCandidate
+	{
+		FVector Target;
+		float OffAxisDist;
+		float Yaw;
+	};
+
+	FAlignmentCandidate Primary;
+	FAlignmentCandidate Secondary;
+
+	// Primary axis is the more distant axis per GDD
+	if (DeltaX >= DeltaY)
+	{
+		Primary = { TargetX, DistanceX, YawX };
+		Secondary = { TargetY, DistanceY, YawY };
+	}
+	else
+	{
+		Primary = { TargetY, DistanceY, YawY };
+		Secondary = { TargetX, DistanceX, YawX };
+	}
+
+	if (!bRequireLineOfSight)
+	{
+		OutTarget = Primary.Target;
+		OutOffAxisDistance = Primary.OffAxisDist;
+		OutCardinalYaw = Primary.Yaw;
+		return true;
+	}
+
+	// 1. Check if Primary candidate provides line of sight to player
+	if (HasLineOfSight(World, Primary.Target, PlayerActor, ControlledPawn))
+	{
+		OutTarget = Primary.Target;
+		OutOffAxisDistance = Primary.OffAxisDist;
+		OutCardinalYaw = Primary.Yaw;
+		return true;
+	}
+
+	// 2. Fall back to Secondary candidate if it has line of sight
+	if (HasLineOfSight(World, Secondary.Target, PlayerActor, ControlledPawn))
+	{
+		OutTarget = Secondary.Target;
+		OutOffAxisDistance = Secondary.OffAxisDist;
+		OutCardinalYaw = Secondary.Yaw;
+		return true;
+	}
+
+	// Neither candidate alignment position has line of sight to the player
+	return false;
+}
+
 EBTNodeResult::Type UMIR_AlignWithPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	FBTAlignWithPlayerMemory* MyMemory = CastInstanceNodeMemory<FBTAlignWithPlayerMemory>(NodeMemory);
@@ -90,37 +193,25 @@ EBTNodeResult::Type UMIR_AlignWithPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 		return EBTNodeResult::Failed;
 	}
 
-	FVector EnemyLocation = ControlledPawn->GetActorLocation();
-	FVector PlayerLocation = PlayerActor->GetActorLocation();
-
-	float DeltaX = FMath::Abs(EnemyLocation.X - PlayerLocation.X);
-	float DeltaY = FMath::Abs(EnemyLocation.Y - PlayerLocation.Y);
-
 	FVector AlignmentTarget;
 	float OffAxisDistance = 0.0f;
 	float CardinalYaw = 0.0f;
 
-	if (DeltaX >= DeltaY)
+	// Only consider alignment targets that offer a clear line of sight
+	if (!CalculateAlignmentTarget(ControlledPawn, PlayerActor, AlignmentTarget, OffAxisDistance, CardinalYaw))
 	{
-		// Firing lane is along the X-axis (more distant on X)
-		// Enemy must slide along Y to match Player.Y
-		AlignmentTarget = FVector(EnemyLocation.X, PlayerLocation.Y, EnemyLocation.Z);
-		OffAxisDistance = DeltaY;
-		CardinalYaw = (PlayerLocation.X >= EnemyLocation.X) ? 0.0f : 180.0f;
-	}
-	else
-	{
-		// Firing lane is along the Y-axis (more distant on Y)
-		// Enemy must slide along X to match Player.X
-		AlignmentTarget = FVector(PlayerLocation.X, EnemyLocation.Y, EnemyLocation.Z);
-		OffAxisDistance = DeltaX;
-		CardinalYaw = (PlayerLocation.Y >= EnemyLocation.Y) ? 90.0f : -90.0f;
+		return EBTNodeResult::Failed;
 	}
 
 	// 3. Check if already precisely aligned within tolerance
 	if (OffAxisDistance <= AlignmentTolerance)
 	{
-		// Already aligned — snap to pure cardinal axis facing the player
+		// Verify line of sight from actual current location before succeeding
+		if (bRequireLineOfSight && !HasLineOfSight(ControlledPawn->GetWorld(), ControlledPawn->GetActorLocation(), PlayerActor, ControlledPawn))
+		{
+			return EBTNodeResult::Failed;
+		}
+
 		ControlledPawn->SetActorRotation(FRotator(0.0f, CardinalYaw, 0.0f));
 		return EBTNodeResult::Succeeded;
 	}
@@ -165,35 +256,30 @@ void UMIR_AlignWithPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 		return;
 	}
 
-	FVector EnemyLocation = ControlledPawn->GetActorLocation();
-	FVector PlayerLocation = PlayerActor->GetActorLocation();
-
-	float DeltaX = FMath::Abs(EnemyLocation.X - PlayerLocation.X);
-	float DeltaY = FMath::Abs(EnemyLocation.Y - PlayerLocation.Y);
-
 	FVector AlignmentTarget;
 	float OffAxisDistance = 0.0f;
 	float CardinalYaw = 0.0f;
 
-	if (DeltaX >= DeltaY)
+	// Dynamically re-evaluate valid line-of-sight alignment targets
+	if (!CalculateAlignmentTarget(ControlledPawn, PlayerActor, AlignmentTarget, OffAxisDistance, CardinalYaw))
 	{
-		// Firing lane along X -> align on Y
-		AlignmentTarget = FVector(EnemyLocation.X, PlayerLocation.Y, EnemyLocation.Z);
-		OffAxisDistance = DeltaY;
-		CardinalYaw = (PlayerLocation.X >= EnemyLocation.X) ? 0.0f : 180.0f;
-	}
-	else
-	{
-		// Firing lane along Y -> align on X
-		AlignmentTarget = FVector(PlayerLocation.X, EnemyLocation.Y, EnemyLocation.Z);
-		OffAxisDistance = DeltaX;
-		CardinalYaw = (PlayerLocation.Y >= EnemyLocation.Y) ? 90.0f : -90.0f;
+		AIController->StopMovement();
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
 	}
 
 	// 2. Check if we have achieved precise alignment
 	if (OffAxisDistance <= AlignmentTolerance)
 	{
 		AIController->StopMovement();
+
+		// Verify line of sight from actual current location before succeeding
+		if (bRequireLineOfSight && !HasLineOfSight(ControlledPawn->GetWorld(), ControlledPawn->GetActorLocation(), PlayerActor, ControlledPawn))
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+			return;
+		}
+
 		ControlledPawn->SetActorRotation(FRotator(0.0f, CardinalYaw, 0.0f));
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
@@ -211,7 +297,7 @@ void UMIR_AlignWithPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 		{
 			AIController->StopMovement();
 			ControlledPawn->SetActorRotation(FRotator(0.0f, CardinalYaw, 0.0f));
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 			return;
 		}
 	}

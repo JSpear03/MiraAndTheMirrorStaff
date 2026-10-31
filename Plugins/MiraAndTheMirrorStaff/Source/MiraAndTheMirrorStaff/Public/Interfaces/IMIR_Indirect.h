@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -15,13 +17,15 @@ class UIMIR_Indirect : public UInterface
 };
 
 /**
- * 
+ * UNUSED?
+ * Interface for Indirect Puzzle Assets (IPAs).
  */
 class MIRAANDTHEMIRRORSTAFF_API IIMIR_Indirect
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+	// Add interface functions to this class.
+	// This is the class that will be inherited to implement this interface.
 public:
 	// Sets to activate. 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Activate")

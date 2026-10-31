@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 // THIS IS A PLACEHOLDER CLASS; DO NOT USE IT FOR *ANYTHING* IN THIS PROJECT.
 
 #pragma once

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -53,107 +55,103 @@ public:
 	// - False : All DPAs must be deactivated to deactivate the IPAs.
 	bool bIsForwardActivation = true;
 
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_PuzzleAssetManager();
 
 protected:
 
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
 	// Called when the game ends or when destroyed.
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
-	// Called every frame
+	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
 	// ========== LINKED ASSETS | DIRECT ==========
 
 	/**
-	* Verifies whether the `DirectAssetRef` parameter, passed by a delegate, is contained
-	* in the `DirectAssetArray`.
-	* 
-	* If so, then the PAM attempts to mutate the IPAs by calling one of the following functions,
-	* depending on the value of `bIsForwardActivation`:
-	* 
-	* - True: `TryIndirectActivation()`
-	* 
-	* - False: `TryIndirectDeactivation()`
-	* 
-	* @param DirectAssetRef A reference to an instanced DPA, which broadcasted the delegate.
-	*/
+	 * Verifies whether the `DirectAssetRef` parameter, passed by a delegate, is contained
+	 * in the `DirectAssetArray`.
+	 * 
+	 * If so, then the PAM attempts to mutate the IPAs by calling one of the following functions,
+	 * depending on the value of `bIsForwardActivation`:
+	 * 
+	 * - True: `TryIndirectActivation()`
+	 * 
+	 * - False: `TryIndirectDeactivation()`
+	 * 
+	 * @param DirectAssetRef A reference to an instanced DPA, which broadcasted the delegate.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "LinkedAssets|Direct")
 		void VerifyDirectInArray(AMIR_PuzzleAssetDirectBASE* DirectAssetRef);
 
 	/**
-	* Determines whether all DPAs in the `DirectAssetArray` are in a specified state via their
-	* `CurrentState` variable.
-	*
-	* @param InState The state to check for.
-	*
-	* @returns bool Represents whether all DPAs are in the specified state (True = yes; False = no).
-	*/
+	 * Determines whether all DPAs in the `DirectAssetArray` are in a specified state via their
+	 * `CurrentState` variable.
+	 *
+	 * @param InState The state to check for.
+	 *
+	 * @returns Whether all DPAs are in the specified state (True = yes; False = no).
+	 */
 	UFUNCTION(BlueprintCallable, Category = "LinkedAssets|Direct")
 		bool FindAllDirectsInState(EPuzzleState InState);
 
 	// ========== LINKED ASSETS | INDIRECT ==========
 
 	/**
-	* If all DPAs are active, it tries to activate the IPAs.
-	* Otherwise, it tries to either deactivate the IPAs or set up the Auto Timer,
-	* depending on whether the IPAs are already activated or deactivated.
-	*/
+	 * If all DPAs are active, it tries to activate the IPAs.
+	 * Otherwise, it tries to either deactivate the IPAs or set up the Auto Timer,
+	 * depending on whether the IPAs are already activated or deactivated.
+	 */
 	void TryIndirectActivation();
 
 	/**
-	* If all DPAs are deactive, it tries to deactivate the IPAs.
-	* Otherwise, it tries to either activate the IPAs or set up the Auto Timer,
-	* depending on whether the IPAs are already activated or deactivated.
-	*/
+	 * If all DPAs are deactive, it tries to deactivate the IPAs.
+	 * Otherwise, it tries to either activate the IPAs or set up the Auto Timer,
+	 * depending on whether the IPAs are already activated or deactivated.
+	 */
 	void TryIndirectDeactivation();
 	
 	/**
-	* Runs a for-each loop on all IPAs, activating them consecutively.
-	*/
+	 * Runs a for-each loop on all IPAs, activating them consecutively.
+	 */
 	void ActivateAllIndirects();
 
 	/**
-	* Runs a for-each loop on all IPAs, deactivating them consecutively.
-	*/
+	 * Runs a for-each loop on all IPAs, deactivating them consecutively.
+	 */
 	void DeactivateAllIndirects();
 
 	/**
-	* Returns whether at least one IPA is in the active state.
-	* Currently intended as a helper function for `TryIndirectDeactivation()`.
-	* 
-	* @returns bool
-	*/
+	 * Returns whether at least one IPA is in the active state.
+	 * Currently intended as a helper function for `TryIndirectDeactivation()`.
+	 */
 	bool CheckMinimalActivity();
 
 	/**
-	* Returns whether at least one IPA is in the inactive state.
-	* Currently intended as a helper function for `TryIndirectActivation()`.
-	*
-	* @returns bool
-	*/
+	 * Returns whether at least one IPA is in the inactive state.
+	 * Currently intended as a helper function for `TryIndirectActivation()`.
+	 */
 	bool CheckMinimalInactivity();
 
 	// ========== TIMER ==========
 
 	/**
-	* If `bUseAutoTimer` is True, the Auto Timer is set using the following:
-	* - An event signature depending on the value of `IsForwardActivation?`
-	*   - True: `HandleAutoDeactivation()`
-	*   - False: `HandleAutoActivation()`
-	* - A time dictated by `AutoTimerHandle`.
-	* Afterward, sets the `AutoTimerHandle` accordingly.
-	*/
+	 * If `bUseAutoTimer` is True, the Auto Timer is set using the following:
+	 * - An event signature depending on the value of `IsForwardActivation?`
+	 *   - True: `HandleAutoDeactivation()`
+	 *   - False: `HandleAutoActivation()`
+	 * - A time dictated by `AutoTimerHandle`.
+	 * Afterward, sets the `AutoTimerHandle` accordingly.
+	 */
 	void ExecuteAutoTimer();
 
 	/**
-	* Clears and invalidates the `AutoTimerHandle` if it is valid.
-	*/
+	 * Clears and invalidates the `AutoTimerHandle` if it is valid.
+	 */
 	void ClearAutoTimer();
 
 	/**
@@ -175,9 +173,9 @@ public:
 	// ========== MODE ==========
 
 	/**
-	* Sets `bIsForwardActivation` depending on the `InitialState` of the `IndirectAsset`.
-	* Accordingly, this will dictate how the PAM manages the DPA(s) and IPA(s).
-	* Meant to be called exclusively on `BeginPlay()`.
-	*/
+	 * Sets `bIsForwardActivation` depending on the `InitialState` of the `IndirectAsset`.
+	 * Accordingly, this will dictate how the PAM manages the DPA(s) and IPA(s).
+	 * Meant to be called exclusively on `BeginPlay()`.
+	 */
 	void DetermineForwardActivation();
 };

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -16,17 +18,22 @@ class UIMIR_Interactable : public UInterface
 };
 
 /**
- *  Interface for environmental assets that respond to the player's Interact input,
- *  such as Treasure Chests and Lore Tapestries.
+ * Interface for environmental assets that respond to the player's Interact input,
+ * such as Treasure Chests and Lore Tapestries.
  */
 class MIRAANDTHEMIRRORSTAFF_API IIMIR_Interactable
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+	// Add interface functions to this class.
+	// This is the class that will be inherited to implement this interface.
 public:
-	// Called when the player uses the Interact input on this asset.
-	// Each Interactable asset defines its own response (open chest, show lore, etc.).
+	/**
+	 * Called when the player uses the Interact input on this asset.
+	 * Each Interactable asset defines its own response (open chest, show lore, etc.).
+	 * 
+	 * @param CurrentPlayer The player character that used the Interact input.
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-	void OnInteract(AMIR_PlayerChar* CurrentPlayer);
+		void OnInteract(AMIR_PlayerChar* CurrentPlayer);
 };

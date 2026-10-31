@@ -1,12 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 
 
 #include "Enums/EMIR_Elements.h"
 
-//EMIR_AttackTypes::EMIR_AttackTypes()
+//EMIR_AttackTypes::EMIR_Elements()
 //{
 //}
 //
-//EMIR_AttackTypes::~EMIR_AttackTypes()
+//EMIR_AttackTypes::~EMIR_Elements()
 //{
 //}

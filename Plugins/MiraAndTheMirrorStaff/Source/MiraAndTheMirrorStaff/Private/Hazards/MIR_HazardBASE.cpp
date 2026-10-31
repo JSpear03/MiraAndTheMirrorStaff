@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 
 
 #include "Hazards/MIR_HazardBASE.h"
@@ -22,7 +23,10 @@ void AMIR_HazardBASE::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AMIR_HazardBASE::OnHazardBeginOverlap);
+	// Unique bind: this used to be bound in the constructor, so hazard Blueprints and
+	// placed hazards saved back then still carry the binding in their serialized data.
+	// A plain AddDynamic would bind it twice (ensure + double damage per overlap).
+	CollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &AMIR_HazardBASE::OnHazardBeginOverlap);
 }
 
 void AMIR_HazardBASE::OnHazardBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

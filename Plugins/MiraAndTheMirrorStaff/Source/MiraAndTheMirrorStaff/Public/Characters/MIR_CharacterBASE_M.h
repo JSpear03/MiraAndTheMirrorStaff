@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -43,7 +45,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Element")
 		UMIR_ElementComponent* ElementComponent; 
 
-	// TODO: Update with new Element and AttackType Component changes.
 	// Decreases health based on the calculated damage. 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void CalculateDamage(EElements AttackerElement, EElements RecieverElement,
@@ -51,7 +52,7 @@ public:
 
 	// Stored Magic setter.
 	UFUNCTION(BlueprintCallable, Category = "Magic|Main Attack")
-		void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType);
+		virtual void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType);
 
 	// Stored Magic getter.
 	UFUNCTION(BlueprintCallable, Category = "Magic|Main Attack")

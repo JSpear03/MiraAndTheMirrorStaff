@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 
 
 #include "Save/MIR_SavePlatform.h"
-#include "Characters/Player/MIR_PlayerChar.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -33,31 +33,13 @@ void AMIR_SavePlatform::OnSaveBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
-	// ========== VALIDATE PLAYER ===============================================================
+	// The currently possessed player character, which triggered the overlap.
+	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(OtherActor);
 
-	// The currently possessed player character, casted to MIR_PlayerChar.
-	AMIR_PlayerChar* PlayerCharacter = Cast<AMIR_PlayerChar>(UGameplayStatics::
-															 GetPlayerCharacter(GetWorld(), 0));
-
-	if (!OtherActor || !PlayerCharacter)  // Is NEITHER valid?
-	{
-		return;
-	}
-
-	// ========== VALIDATE CLASS HEIRARCHY ======================================================
-
-	// Represents whether the `OtherActor` is a child of `AMIR_PlayerChar`.
-	bool bIsChildOfPlayer = OtherActor->GetClass()->IsChildOf<AMIR_PlayerChar>();
-
-	if (!bIsChildOfPlayer)  // Is NOT valid?
-	{
-		return;
-	}
-
-	// ========== CALL UI =======================================================================
+	if (!OtherActor || !PlayerCharacter) { return; }
 	
-	// The Save-Room UI can be safely created; the above checks succeeded.
-	CallSaveRoomMenu();
+	// The Save-Room UI can be safely created; the validations above succeeded.
+	CallSaveRoomMenu(PlayerCharacter);
 }
 
 // Called every frame
@@ -66,4 +48,3 @@ void AMIR_SavePlatform::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -9,22 +11,15 @@
 #include "Components/ArrowComponent.h"
 #include "Components/MIR_ManaComponent.h"
 #include "Magic/MIR_MagicBASE.h"
+#include "Enums/EMIR_KeyItem.h"
+#include "Enums/EMIR_AttackTypes.h"
 #include "MIR_PlayerChar.generated.h"
 
 class AMIR_RespawnPoint;
+class UAnimSequenceBase;
+class AMIR_CameraMovePoints;
 
-UENUM(BlueprintType)
-enum class EMIR_KeyItem : uint8
-{
-	MirrorStaff,
-	SkyboundShoes,
-	SpiritStole,
-	KeyGemstone,
-	KeyGemstoneRed,
-	KeyGemstoneBlue,
-	KeyGemstoneGreen,
-	KeyGemstoneYellow,
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRespawn);
 
 /**
  * The character that the player will control in this game.
@@ -57,6 +52,29 @@ private:
 		TSubclassOf<class AMIR_MagicRanged> RangedCopyRef;
 
 public:
+	// Attack animation references configured per attack type.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> MeleeAttackAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> RangedAttackAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> AOEAttackAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Animations")
+		TObjectPtr<class UAnimSequenceBase> DaggerAttackAnim;
+
+	// Helper to get the animation configured for a given attack type
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Animations")
+		class UAnimSequenceBase* GetAttackAnimation(EAttackTypes AttackType) const;
+
+	// Helper to get the dagger / sub-attack animation
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Combat|Animations")
+		class UAnimSequenceBase* GetSubAttackAnimation() const;
+
+public:
+
 	// Key item flags. Set to true when obtained so any logic gates
 	// involving their inputs (Jump, Dash, etc.) can succeed.
 
@@ -72,11 +90,6 @@ public:
 	// Represents whether the player has the Spirit Stole (and, thus, the Dash ability).
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
 		bool bHasSpiritStole = false;
-
-	// Number of Key Gemstones collected. All four unlock the grand door in Inner Sanctum.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items",
-			  meta = (ClampMin = 0, ClampMax = 4, UIMin = 0, UIMax = 4))
-		int32 KeyGemstoneCount = 0;
 
 	// Checks if gem is colored red.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key Items")
@@ -131,6 +144,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrows")
 		UArrowComponent* AOEArrow;
 
+	// The CMP most recently overlapped with.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		TObjectPtr<AMIR_CameraMovePoints> CurrentCMP = nullptr;
+
 	// Sets default values for Player Character's properties.
 	AMIR_PlayerChar();
 
@@ -143,25 +160,62 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	// Called when player contacts an object. 
+	/**
+	 * Called when the player overlaps with another actor.
+	 *
+	 * @param SelfActor The player character itself.
+	 * @param OtherActor The actor that began the overlap.
+	 * @param NormalImpulse The total impulse applied along the collision normal
+	 * during the physics-simulation step.
+	 * @param Hit Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
 		void HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
 			const FHitResult& Hit);
 
-	// Called when player overlaps with incoming magic / projectiles.
+	/**
+	 * Called when the player overlaps with incoming magic.
+	 *
+	 * @param OverlappedComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap (ideally a player character).
+	 * @param OtherComponent The specific primitive that began the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComponent` that began
+	 * the overlap.
+	 * @param bFromSweep Whether the overlap was the result of a sweep.
+	 * @param SweepResult Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 			const FHitResult& SweepResult);
 
 private:
+	/**
+	 * Gets the element of a magic attack by parsing its name.
+	 * 
+	 * @param IncomingMagic The magic whose element is evaluated.
+	 * 
+	 * @returns The element evaluated from `IncomingMagic`.
+	 */
+	EElements GetAttackElement(AMIR_MagicBASE* IncomingMagic);
+
 	// Stars the timer for the hit event cooldown.
 	void StartCooldownTimer();
 
 	// Sets bCanGetHit to true or false.
 	void SetCanGetHit(bool bGetHit);
 
+	// Timer handle for invincibility frames cooldown.
+	FTimerHandle InvincibilityTimerHandle;
+
+	// Timer handle for active room tracking.
+	FTimerHandle RoomCheckTimerHandle;
+
 public:
+	// Automatically detects which CMP / room the player is in and records it as visited.
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	void UpdateCurrentRoom();
+
 	// Loads the Game-Over Screen if the player's health is 0.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Game Over")
 		void LoadingGameOver();
@@ -197,4 +251,10 @@ public:
 	// Sets new element based on the element name. 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Elements")
 		void CopyElement();
+
+	virtual void SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType) override;
+
+	// Delegate object to move camera to a move point nearest to the respawn point.
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Respawn")
+		FOnRespawn OnRespawn;
 };

@@ -1,11 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Enums/EMIR_AttackTypes.h"
 #include "SMIR_AttackTypeData.generated.h"
-
 
 /**
  * Generic struct used to define variables needed for its child structs.
@@ -16,7 +17,8 @@ struct FDefaultTypeStruct
 	GENERATED_BODY()
 
 	// The name of this Attack Type.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Attack Type."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name",
+			  ToolTip = "The name of this Attack Type."))
 		EAttackTypes AttackTypeName = EAttackTypes::None;
 
 	// The damage value associated with this Attack Type.
@@ -26,11 +28,13 @@ struct FDefaultTypeStruct
 
 	// The mana-consumption value associated with this Attack Type.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 8, UIMin = 0, UIMax = 8,
-			  DisplayName = "ManaConsumption", ToolTip = "The mana-consumption value associated with this Attack Type."))
+			  DisplayName = "ManaConsumption",
+			  ToolTip = "The mana-consumption value associated with this Attack Type."))
 		int32 ManaConsumption = 0;
 
 	// The property of this Attack Type.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property", ToolTip = "The property of this Attack Type."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property",
+			  ToolTip = "The property of this Attack Type."))
 		EAttackProperties AttackTypeProperty = EAttackProperties::None;
 };
 

@@ -1,11 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Enums/EMIR_Elements.h"
 #include "SMIR_ElementData.generated.h"
-
 
 /**
  * Generic struct used to define variables needed for its child structs.
@@ -16,18 +17,19 @@ struct FDefaultElementStruct
 	GENERATED_BODY()
 
 	// The name of this Element.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name", ToolTip = "The name of this Element."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Name",
+			  ToolTip = "The name of this Element."))
 		EElements ElementName = EElements::None;
 
-	// The Material, which specifies a main color, used by this Element.
+	// A Linear Color, which specifies a main color, used by this Element.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "MainColor",
-			  ToolTip = "The Material, which specifies a main color, used by this Element."))
-		UMaterial* MainColor = nullptr;
+			  ToolTip = "A Linear Color, which specifies a main color, used by this Element."))
+		FLinearColor MainColor = FLinearColor::White;
 
-	// The symbol of this Element, which would be used in the Gameplay UI.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Symbol",
-			  ToolTip = "The symbol of this Element, which would be used in the Gameplay UI."))
-		UTexture2D* ElementSymbol = nullptr;
+	// A Linear Color, which specifies a sub-color, used by this Element.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "SubColor",
+			  ToolTip = "A Linear Color, which specifies a sub-color, used by this Element."))
+		FLinearColor SubColor = FLinearColor::Black;
 
 	// The Element that *this* Element applies double damage (2×) against.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Strength",
@@ -45,7 +47,8 @@ struct FDefaultElementStruct
 		TArray<EElements> ElementNeutralities = { EElements::None };
 
 	// The property of this Element.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property", ToolTip = "The property of this Element."))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Property",
+			  ToolTip = "The property of this Element."))
 		EElementProperties ElementProperty = EElementProperties::None;
 };
 
@@ -61,8 +64,8 @@ struct FNothingStruct : public FDefaultElementStruct
 	FNothingStruct()
 	{
 		ElementName = EElements::Nothing;
-		MainColor = nullptr;
-		ElementSymbol = nullptr;
+		MainColor = FLinearColor(0.0f, 1.0f, 0.393f, 1.0f);
+		SubColor = FLinearColor(0.0f, 0.042f, 0.017f, 1.0f);
 		ElementStrength = EElements::Nothing;
 		ElementWeakness = EElements::Nothing;
 		ElementNeutralities = { EElements::Nothing };
@@ -82,8 +85,8 @@ struct FFlameStruct : public FDefaultElementStruct
 	FFlameStruct()
 	{
 		ElementName = EElements::Flame;
-		MainColor = nullptr;
-		ElementSymbol = nullptr;
+		MainColor = FLinearColor(1.0f, 0.147f, 0.002f, 1.0f);
+		SubColor = FLinearColor(1.0f, 0.546f, 0.125f, 1.0f);
 		ElementStrength = EElements::Ice;
 		ElementWeakness = EElements::Thunder;
 		ElementNeutralities = { EElements::Nothing, EElements::Flame };
@@ -103,8 +106,8 @@ struct FIceStruct : public FDefaultElementStruct
 	FIceStruct()
 	{
 		ElementName = EElements::Ice;
-		MainColor = nullptr;
-		ElementSymbol = nullptr;
+		MainColor = FLinearColor(0.491f, 0.839f, 0.905f, 1.0f);
+		SubColor = FLinearColor(0.095f, 0.503f, 0.939f, 1.0f);
 		ElementStrength = EElements::Thunder;
 		ElementWeakness = EElements::Flame;
 		ElementNeutralities = { EElements::Nothing, EElements::Ice };
@@ -124,8 +127,8 @@ struct FThunderStruct : public FDefaultElementStruct
 	FThunderStruct()
 	{
 		ElementName = EElements::Thunder;
-		MainColor = nullptr;
-		ElementSymbol = nullptr;
+		MainColor = FLinearColor(1.0f, 0.723f, 0.002f, 1.0f);
+		SubColor = FLinearColor(0.93f, 0.823f, 0.287f, 1.0f);
 		ElementStrength = EElements::Flame;
 		ElementWeakness = EElements::Ice;
 		ElementNeutralities = { EElements::Nothing, EElements::Thunder };

@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 
 
 #include "Components/MIR_AttackTypeComponent.h"
@@ -9,7 +10,13 @@ UMIR_AttackTypeComponent::UMIR_AttackTypeComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  
 	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
+}
 
+void UMIR_AttackTypeComponent::PostLoad()
+{
+	Super::PostLoad();
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
 }
 
 // Called when the game starts
@@ -22,15 +29,18 @@ void UMIR_AttackTypeComponent::BeginPlay()
 }
 
 // Called every frame
-void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType, EAttackSubtypes ESubtype)
 {
+	// Default struct for Attack Types.
+	// It's static because this struct is guaranteed to be constructed.
+	static FDefaultTypeStruct DefaultTypeStruct;
+
 	// Set up AttackTypeStruct.
 	switch (ESubtype)
 	{
@@ -39,11 +49,13 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 		{
 		case EAttackTypes::Melee:
 		{
+			FMeleeCopyStruct MeleeCopyStruct;   // Default struct for Melee Copy (special type).
 			AttackTypeStruct = MeleeCopyStruct;
 			break;
 		}
 		case EAttackTypes::Ranged:
 		{
+			FRangedCopyStruct RangedCopyStruct;  // Default struct for Ranged Copy (special type).
 			AttackTypeStruct = RangedCopyStruct;
 			break;
 		}
@@ -54,9 +66,12 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 		break;
 
 	case EAttackSubtypes::Dagger:  // Configure Component for Dagger
+	{
+		FDaggerStruct DaggerStruct;  // Default struct for Dagger (Melee subtype).
 		AttackTypeStruct = DaggerStruct;
 		break;
-
+	}
+		
 	default:
 		switch (ENewAttackType)
 		{
@@ -65,27 +80,32 @@ void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType,
 			break;
 
 		case EAttackTypes::Melee:  // Configure Component for Melee
+		{
+			FMeleeStruct MeleeStruct;	// Default struct for Melee.
 			AttackTypeStruct = MeleeStruct;
 			break;
-
+		}
 		case EAttackTypes::Ranged: // Configure Component for Ranged
+		{
+			FRangedStruct RangedStruct;	 // Default struct for Ranged.
 			AttackTypeStruct = RangedStruct;
 			break;
-
+		}
 		case EAttackTypes::AoE:    // Configure Component for AoE
+		{
+			FAoEStruct AoEStruct;	// Default struct for AoE.
 			AttackTypeStruct = AoEStruct;
 			break;
-
+		}
 		default:
 			break;  // Do nothing because FDefaultStruct is already defined.
 		}
 		break;
 	}
-	
-	return;
 }
 
 void UMIR_AttackTypeComponent::SetCurrentAttackType(EAttackTypes ENewAttackType)
 {
 	CurrentAttackType = ENewAttackType;
+	SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
 }

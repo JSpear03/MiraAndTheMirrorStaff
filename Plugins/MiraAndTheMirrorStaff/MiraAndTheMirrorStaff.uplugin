@@ -25,6 +25,10 @@
 		{
 			"Name": "ArcadeFramework",
 			"Enabled": true
+		},
+		{
+			"Name": "Niagara",
+			"Enabled": true
 		}
 	]
 }

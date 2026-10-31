@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 
 
 #include "PuzzleAssets/Direct/MIR_PuzzleAssetDirectBASE.h"
@@ -13,6 +14,9 @@ AMIR_PuzzleAssetDirectBASE::AMIR_PuzzleAssetDirectBASE()
 
 	// Set up Element Component.
 	ElementComponent = CreateDefaultSubobject<UMIR_ElementComponent>(TEXT("ElementComponent"));
+
+	// Direct puzzle assets (torches, orbs, etc.) allow magic attacks to pass through by default.
+	bAllowMagicPassThrough = true;
 }
 
 // Called when the game starts or when spawned
@@ -32,26 +36,12 @@ void AMIR_PuzzleAssetDirectBASE::Tick(float DeltaTime)
 
 void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 {
-	// ========== VALIDATE OTHERACTOR =============================================================
+	if (!OtherActor) { return; }
 
-	if (!OtherActor)
-	{
-		return;
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Silver,
-			FString::Printf(TEXT("DirectBASE collision with %s."), *OtherActor->GetName()));
-	}
-
-	// ========== HANDLE ACTIVATION/DEACTIVATION ==================================================
-
+	// The magic that overlapped this actor.
 	AMIR_MagicBASE* OverlappingMagic = Cast<AMIR_MagicBASE>(OtherActor);
 
-	if (!OverlappingMagic)
-	{
-		return;
-	}
+	if (!OverlappingMagic) { return; }
 
 	// Determine whether to activate or deactivate the DPA.
 	switch (CurrentState)
@@ -60,8 +50,7 @@ void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 		// Check deactivation condition.
 		if (OverlappingMagic->ElementComponent->GetElementName() == ElementComponent->GetElementWeakness())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Turquoise,
-				FString::Printf(TEXT("DirectBASE deactivation.")));
+			UE_LOG(LogTemp, Log, TEXT("PuzzleAssetDirectBASE: Deactivated"));
 			DeactivatePuzzleAsset();
 			OnDirectDeactivated.Broadcast(this);
 		}
@@ -71,8 +60,7 @@ void AMIR_PuzzleAssetDirectBASE::HandleOverlap(AActor* OtherActor)
 		// Check activation condition.
 		if (OverlappingMagic->ElementComponent->GetElementName() == ElementComponent->GetElementName())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Magenta,
-				FString::Printf(TEXT("DirectBASE activation.")));
+			UE_LOG(LogTemp, Log, TEXT("PuzzleAssetDirectBASE: Activated"));
 			ActivatePuzzleAsset();
 			OnDirectActivated.Broadcast(this);
 		}

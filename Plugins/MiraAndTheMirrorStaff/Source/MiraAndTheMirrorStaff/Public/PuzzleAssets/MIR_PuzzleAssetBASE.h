@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -11,18 +13,21 @@
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(OnAssetActivated, AMIR_PuzzleAssetBASE, SelfRef);
 
-
-UCLASS()
+/**
+ * A Puzzle Asset (PA) is an Actor that has an activated and deactivated state,
+ * with respective behaviors for each.
+ */
+UCLASS(Abstract)
 class MIRAANDTHEMIRRORSTAFF_API AMIR_PuzzleAssetBASE : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	AMIR_PuzzleAssetBASE();
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
 	// The puzzle asset's collision component.
@@ -43,51 +48,57 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State")
 		EPuzzleState CurrentState = InitialState;
 
+public:
+	// Whether magic projectiles can pass through this puzzle asset instead of
+	// being destroyed on contact.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic")
+		bool bAllowMagicPassThrough = false;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	/**
-	* Activates the puzzle asset.
-	* Meant to be overridden by its children and called with Super.
-	*/
+	 * Activates the puzzle asset.
+	 * Meant to be overridden by its children and called with Super.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State",
 			  meta = (KeyWords = "Activate Asset"))
 		void ActivatePuzzleAsset();
 		virtual void ActivatePuzzleAsset_Implementation();
 
 	/**
-	* Deactivates the puzzle asset.
-	* Meant to be overridden by its children and called with Super.
-	*/
+	 * Deactivates the puzzle asset.
+	 * Meant to be overridden by its children and called with Super.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State",
 			  meta = (KeyWords = "Deactivate Asset"))
 		void DeactivatePuzzleAsset();
 		virtual void DeactivatePuzzleAsset_Implementation();
 
 	/**
-	* Gets the `InitialState` member variable.
-	* 
-	* @returns EPuzzleState
-	*/
+	 * Gets the `InitialState` member variable.
+	 * 
+	 * @returns The PA's initial state.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "State",
 			  meta = (KeyWords = "Get Initial"))
 		const EPuzzleState GetInitialState() const { return InitialState; };
 
 	/**
-	* Gets the `CurrentState` member variable.
-	* 
-	* @returns EPuzzleState
-	*/
+	 * Gets the `CurrentState` member variable.
+	 * 
+	 * @returns The PA's current state.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "State",
 			  meta = (KeyWords = "Get Current"))
 		EPuzzleState GetCurrentState() const { return CurrentState; };
 
 	/**
-	* Sets the `CurrentState` member variable.
-	* 
-	* @param NewState The new state of this puzzle asset.
-	*/
+	 * Sets the `CurrentState` member variable.
+	 * 
+	 * @param NewState The new state of this puzzle asset.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "State", meta = (KeyWords = "Set Current"))
 		void SetCurrentState(EPuzzleState NewState) { CurrentState = NewState; };
 

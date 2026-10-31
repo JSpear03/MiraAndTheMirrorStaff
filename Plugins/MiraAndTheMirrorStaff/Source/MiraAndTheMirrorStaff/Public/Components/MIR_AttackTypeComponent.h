@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
+
 
 #pragma once
 
@@ -20,59 +22,98 @@ class MIRAANDTHEMIRRORSTAFF_API UMIR_AttackTypeComponent : public UActorComponen
 
 public:
 
-	// Sets default values for this component's properties
+	// Sets default values for this component's properties.
 	UMIR_AttackTypeComponent();
 
-	// Default Structs
-	const FDefaultTypeStruct DefaultTypeStruct;  // Default struct for Attack Types.
-	const FMeleeStruct MeleeStruct;				 // Default struct for Melee.
-	const FRangedStruct RangedStruct;			 // Default struct for Ranged.
-	const FAoEStruct AoEStruct;					 // Default struct for AoE.
-	const FDaggerStruct DaggerStruct;			 // Default struct for Dagger (Melee subtype).
-	const FMeleeCopyStruct MeleeCopyStruct;		 // Default struct for Melee Copy (special type).
-	const FRangedCopyStruct RangedCopyStruct;	 // Default struct for Ranged Copy (special type).
+	// Default Structs (deprecated, but keep in case we make them static)
+	//const FDefaultTypeStruct DefaultTypeStruct;  // Default struct for Attack Types.
+	//const FMeleeStruct MeleeStruct;				 // Default struct for Melee.
+	//const FRangedStruct RangedStruct;			 // Default struct for Ranged.
+	//const FAoEStruct AoEStruct;					 // Default struct for AoE.
+	//const FDaggerStruct DaggerStruct;			 // Default struct for Dagger (Melee subtype).
+	//const FMeleeCopyStruct MeleeCopyStruct;		 // Default struct for Melee Copy (special type).
+	//const FRangedCopyStruct RangedCopyStruct;	 // Default struct for Ranged Copy (special type).
 
 protected:
-	// Called when the game starts
+	// Called when the game starts.
 	virtual void BeginPlay() override;
 
 	// The current Attack Type. Set this value to dictate the working struct.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Current"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details",
+			  meta = (KeyWords = "Current"))
 		EAttackTypes CurrentAttackType = EAttackTypes::None;
 
 	// The current Attack Subtype (Copy, Dagger, etc.). Set this value to dictate the working struct.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Current Subtype"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Type Details",
+			  meta = (KeyWords = "Current Subtype"))
 		EAttackSubtypes CurrentAttackSubtype = EAttackSubtypes::None;
 
 	// Determines working data for the specified Attack Type (via enum called `CurrentAttackType`).
 	// Its contents will not update until BeginPlay() is called.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details", meta = (KeyWords = "Struct"))
-		FDefaultTypeStruct AttackTypeStruct = DefaultTypeStruct;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Type Details",
+			  meta = (KeyWords = "Struct"))
+		FDefaultTypeStruct AttackTypeStruct;
+
+	/**
+	 * Called immediately after deserialization from disk or a save for
+	 * state setup or cleanup.
+	 */
+	virtual void PostLoad() override;
+
+	// Ensures AttackTypeStruct is populated even on CDOs or before BeginPlay().
+	void EnsureDetailsInitialized() const
+	{
+		if (AttackTypeStruct.AttackTypeName == EAttackTypes::None &&
+			(CurrentAttackType != EAttackTypes::None || CurrentAttackSubtype != EAttackSubtypes::None))
+		{
+			const_cast<UMIR_AttackTypeComponent*>(this)->SetAttackTypeDetails(CurrentAttackType, CurrentAttackSubtype);
+		}
+	}
 
 public:	
-	// Called every frame
+	// Called every frame.
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
 		FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Returns the `AttackTypeName` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Name", ReturnDisplayName = "Name",
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
+			  meta = (KeyWords = "Get Name", ReturnDisplayName = "Name",
 			  ToolTip = "Returns the `AttackTypeName` member variable."))
-		EAttackTypes GetAttackTypeName() const { return AttackTypeStruct.AttackTypeName; }
+		EAttackTypes GetAttackTypeName() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.AttackTypeName;
+		}
 
 	// Returns the `Damage` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Damage", ReturnDisplayName = "Damage",
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
+			  meta = (KeyWords = "Get Damage", ReturnDisplayName = "Damage",
 			  ToolTip = "Returns the `Damage` member variable."))
-		int32 GetDamage() const { return AttackTypeStruct.Damage; }
+		int32 GetDamage() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.Damage;
+		}
 
 	// Returns the `ManaConsumption` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Mana", ReturnDisplayName = "ManaConsumption",
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
+			  meta = (KeyWords = "Get Mana", ReturnDisplayName = "ManaConsumption",
 			  ToolTip = "Returns the `ManaConsumption` member variable."))
-		int32 GetManaConsumption() const { return AttackTypeStruct.ManaConsumption; }
+		int32 GetManaConsumption() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.ManaConsumption;
+		}
 	
 	// Returns the `AttackTypeProperty` member variable.
-	UFUNCTION(BlueprintCallable, Category = "Attack Type Details", meta = (KeyWords = "Get Property", ReturnDisplayName = "Property",
+	UFUNCTION(BlueprintCallable, Category = "Attack Type Details",
+			  meta = (KeyWords = "Get Property", ReturnDisplayName = "Property",
 			  ToolTip = "Returns the `AttackTypeProperty` member variable."))
-		EAttackProperties GetAttackTypeProperty() const { return AttackTypeStruct.AttackTypeProperty; }
+		EAttackProperties GetAttackTypeProperty() const
+		{
+			EnsureDetailsInitialized();
+			return AttackTypeStruct.AttackTypeProperty;
+		}
 
 	/**
 	 * @brief Sets the `AttackTypeStruct` member variable based on an Enum.
@@ -82,8 +123,6 @@ public:
 	 * 
 	 * @param ENewAttackType A specifier to determine the new struct for the `AttackTypeStruct`.
 	 * @param ESubtype A specifier to determine the exact struct desired (for Dagger and Copy).
-	 * 
-	 * @returns N/A
 	 */
 	void SetAttackTypeDetails(EAttackTypes ENewAttackType = EAttackTypes::None,
 							  EAttackSubtypes ESubtype = EAttackSubtypes::None);
@@ -92,8 +131,6 @@ public:
 	 * Sets the `CurrentAttackType` member variable.
 	 * 
 	 * @param ENewAttackType The value to be assigned to `CurrentAttackType`.
-	 * 
-	 * @returns N/A
 	 */
 	void SetCurrentAttackType(EAttackTypes ENewAttackType = EAttackTypes::None);
 };

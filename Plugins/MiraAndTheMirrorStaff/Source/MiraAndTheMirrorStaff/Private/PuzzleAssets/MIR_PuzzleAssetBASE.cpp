@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jared Eben Spear, 2026. Licensed for use in "Alumni Arcade."
+// All rights reserved.
 
 
 #include "PuzzleAssets/MIR_PuzzleAssetBASE.h"
@@ -6,7 +7,8 @@
 // Sets default values
 AMIR_PuzzleAssetBASE::AMIR_PuzzleAssetBASE()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame.
+	// You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Create objects.
