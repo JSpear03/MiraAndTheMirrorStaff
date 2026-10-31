@@ -54,8 +54,6 @@ void UMIR_ElementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UMIR_ElementComponent::SetElementDetails(EElements ENewElement)

@@ -16,19 +16,7 @@ void UMIR_Combat_Component::ExecuteMeleeAttack()
 	bAttackFinished = false; // Lock the task loop.
 	bHasSpawnedMagicThisAttack = false;
 
-	if (bUseFallbackSpawnTimer)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			World->GetTimerManager().SetTimer(
-				FallbackSpawnTimerHandle,
-				this,
-				&UMIR_Combat_Component::TriggerMagicSpawnFromNotify,
-				FallbackMagicSpawnDelay,
-				false
-			);
-		}
-	}
+	FallbackTimer();
 
 	OnMeleeAttackTriggered.Broadcast();
 }
@@ -38,21 +26,28 @@ void UMIR_Combat_Component::ExecuteMagicAttack()
 	bAttackFinished = false; // Lock the task loop.
 	bHasSpawnedMagicThisAttack = false;
 
-	if (bUseFallbackSpawnTimer)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			World->GetTimerManager().SetTimer(
-				FallbackSpawnTimerHandle,
-				this,
-				&UMIR_Combat_Component::TriggerMagicSpawnFromNotify,
-				FallbackMagicSpawnDelay,
-				false
-			);
-		}
-	}
+	FallbackTimer();
 
 	OnMagicAttackTriggered.Broadcast();
+}
+
+void UMIR_Combat_Component::FallbackTimer()
+{
+	if (!bUseFallbackSpawnTimer)
+	{
+		return;
+	}
+
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(
+			FallbackSpawnTimerHandle,
+			this,
+			&UMIR_Combat_Component::TriggerMagicSpawnFromNotify,
+			FallbackMagicSpawnDelay,
+			false
+		);
+	}
 }
 
 void UMIR_Combat_Component::TriggerMagicSpawnFromNotify()
@@ -83,12 +78,15 @@ void UMIR_Combat_Component::FinishCurrentAttack()
 void UMIR_Combat_Component::SetDeactivated(bool bNewDeactivated)
 {
 	bIsDeactivated = bNewDeactivated;
-	if (bIsDeactivated)
+	
+	if (!bIsDeactivated)
 	{
-		if (UWorld* World = GetWorld())
-		{
-			World->GetTimerManager().ClearTimer(FallbackSpawnTimerHandle);
-		}
+		return;
+	}
+
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(FallbackSpawnTimerHandle);
 	}
 }
 

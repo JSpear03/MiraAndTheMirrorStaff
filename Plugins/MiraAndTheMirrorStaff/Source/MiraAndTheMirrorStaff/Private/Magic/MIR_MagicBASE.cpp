@@ -153,7 +153,6 @@ void AMIR_MagicBASE::ReenableMainAttack()
     if (PlayerCont)
     {
         PlayerCont->AllowMainAttack();  // Allows main attack again.
-        GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Emerald, TEXT("Main Attack ALLOWED!"));
     }
 }
 

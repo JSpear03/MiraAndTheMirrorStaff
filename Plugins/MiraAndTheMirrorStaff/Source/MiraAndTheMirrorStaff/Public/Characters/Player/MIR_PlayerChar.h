@@ -160,18 +160,33 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	// Called when player contacts an object. 
+	/*
+	* Called when player contacts an object. 
+	* 
+	* @param OtherActor: Is used to get the enemy base.
+	*/
 	UFUNCTION()
 		void HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
 			const FHitResult& Hit);
 
-	// Called when player overlaps with incoming magic / projectiles.
+	/*
+	* Called when player overlaps with incoming magic / projectiles.
+	* 
+	* @param OtherActor: Is used to get the magic base.
+	*/
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 			const FHitResult& SweepResult);
 
 private:
+	/*
+	* Sets attack element to flame, ice, or thunder.
+	* 
+	* Incoming magic is used to get the string of the class name.
+	*/
+	EElements GetAttackElement(AMIR_MagicBASE* IncomingMagic);
+
 	// Stars the timer for the hit event cooldown.
 	void StartCooldownTimer();
 

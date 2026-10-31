@@ -11,8 +11,6 @@ UMIR_HealthComponent::UMIR_HealthComponent()
 	// Set this component to be initialized when the game starts and to be ticked every frame.  
 	// You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
 }
 
 #if WITH_EDITOR
@@ -30,10 +28,6 @@ void UMIR_HealthComponent::PostEditChangeProperty(FPropertyChangedEvent& Propert
 		PropertyName == GET_MEMBER_NAME_CHECKED(UMIR_HealthComponent, TotalHealth) ||
 		PropertyName == GET_MEMBER_NAME_CHECKED(UMIR_HealthComponent, MaxHealth))
 	{
-		// TODO: Include cases for `TotalHealth` and `MaxHealth` to avoid clamp-related
-		// issues. However, these might have to be done in AMIR_PlayerChar and
-		// AMIR_EnemyBASE individually since they need to go by different rules.
-
 		// `Health` must be clamped to `TotalHealth`.
 		if (Health > TotalHealth) { SetHealth(Health); }
 	}
@@ -44,9 +38,6 @@ void UMIR_HealthComponent::PostEditChangeProperty(FPropertyChangedEvent& Propert
 void UMIR_HealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 // Called every frame
@@ -54,8 +45,6 @@ void UMIR_HealthComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 /*********************************************************************************************
