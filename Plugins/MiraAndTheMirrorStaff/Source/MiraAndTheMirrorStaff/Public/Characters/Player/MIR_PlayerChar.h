@@ -160,18 +160,45 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	// Called when player contacts an object. 
+	/**
+	 * Called when the player overlaps with another actor.
+	 *
+	 * @param SelfActor The player character itself.
+	 * @param OtherActor The actor that began the overlap.
+	 * @param NormalImpulse The total impulse applied along the collision normal
+	 * during the physics-simulation step.
+	 * @param Hit Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
 		void HitEvent(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, 
 			const FHitResult& Hit);
 
-	// Called when player overlaps with incoming magic / projectiles.
+	/**
+	 * Called when the player overlaps with incoming magic.
+	 *
+	 * @param OverlappedComponent The component that began the overlap.
+	 * @param OtherActor The actor that began the overlap (ideally a player character).
+	 * @param OtherComponent The specific primitive that began the overlap.
+	 * @param OtherBodyIndex The index of the body within `OtherComponent` that began
+	 * the overlap.
+	 * @param bFromSweep Whether the overlap was the result of a sweep.
+	 * @param SweepResult Detailed collision info if a sweep did occur.
+	 */
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 			const FHitResult& SweepResult);
 
 private:
+	/**
+	 * Gets the element of a magic attack by parsing its name.
+	 * 
+	 * @param IncomingMagic The magic whose element is evaluated.
+	 * 
+	 * @returns The element evaluated from `IncomingMagic`.
+	 */
+	EElements GetAttackElement(AMIR_MagicBASE* IncomingMagic);
+
 	// Stars the timer for the hit event cooldown.
 	void StartCooldownTimer();
 

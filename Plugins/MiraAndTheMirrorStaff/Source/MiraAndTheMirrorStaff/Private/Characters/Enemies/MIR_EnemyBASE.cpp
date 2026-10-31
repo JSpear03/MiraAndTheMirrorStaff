@@ -64,7 +64,7 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 
 	if (!OtherActor || !PlayerCharacter) { return; }
 
-	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>();
+	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>(), bMagicCopy = false;
 
 	if (!bIsChildOfMagic) { return; }
 
@@ -81,6 +81,7 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	}
 
 	AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
+
 	if (!IncomingMagic) { return; }
 
 	// Prevent the same magic instance from affecting this enemy more than once
@@ -90,7 +91,6 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 
 	if (IncomingMagic->AttackTypeComponent && IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Do Copy"));
 		// This enemy is the copy source, so it is the interface receiver. Execute_CopyMagic is a
 		// static function: the object it dispatches on is the first argument, not the "->" prefix.
 		IIMIR_Copiable::Execute_CopyMagic(this, PlayerCharacter, GetStoredMagic());
@@ -98,43 +98,32 @@ void AMIR_EnemyBASE::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	// Incoming magic is a real attack — apply damage using the element/attack-type system.
 	else if (IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
 	{
-		// The `IncomingMagic`'s Element Name.
-		EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
-
-		if (AttackerElementName == EElements::None)
-		{
-			AttackerElementName = IncomingMagic->ElementComponent->GetCurrentElement();
-		}
-
-		if (AttackerElementName == EElements::None)
-		{
-			const FString MagicClassName = IncomingMagic->GetClass()->GetName();
-			if (MagicClassName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) ||
-				MagicClassName.Contains(TEXT("Fire"),  ESearchCase::IgnoreCase))
-			{
-				AttackerElementName = EElements::Flame;
-			}
-			else if (MagicClassName.Contains(TEXT("Ice"),   ESearchCase::IgnoreCase) ||
-					 MagicClassName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
-			{
-				AttackerElementName = EElements::Ice;
-			}
-			else if (MagicClassName.Contains(TEXT("Thunder"),   ESearchCase::IgnoreCase) ||
-					 MagicClassName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
-			{
-				AttackerElementName = EElements::Thunder;
-			}
-		}
-
-		// The receiver's Element Name.
-		EElements ReceiverElementName = ElementComponent ? ElementComponent->GetElementName() : EElements::None;
-
-		// The `IncomingMagic`'s Damage.
-		int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
-
-		CalculateDamage(AttackerElementName, ReceiverElementName, AttackerDamage);
-		CheckHealth();
+		bMagicCopy = true;
 	}
+
+	if (!bMagicCopy) { return; }
+
+	// The `IncomingMagic`'s Element Name.
+	EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
+
+	if (AttackerElementName == EElements::None)
+	{
+		AttackerElementName = IncomingMagic->ElementComponent->GetCurrentElement();
+	}
+
+	if (AttackerElementName == EElements::None)
+	{
+		AttackerElementName = GetEnemyAttackElement(IncomingMagic);
+	}
+
+	// The receiver's Element Name.
+	EElements ReceiverElementName = ElementComponent ? ElementComponent->GetElementName() : EElements::None;
+
+	// The `IncomingMagic`'s Damage.
+	int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
+
+	CalculateDamage(AttackerElementName, ReceiverElementName, AttackerDamage);
+	CheckHealth();
 }
 
 void AMIR_EnemyBASE::CopyMagic_Implementation(AMIR_PlayerChar* CurrentPlayer,
@@ -244,6 +233,29 @@ FName AMIR_EnemyBASE::GetEffectiveBossID() const
 	ClassName.RemoveFromEnd(TEXT("_C"));
 
 	return FName(*FString::Printf(TEXT("%s_%s"), *CleanLevelName, *ClassName));
+}
+
+EElements AMIR_EnemyBASE::GetEnemyAttackElement(AMIR_MagicBASE* IncomingMagic)
+{
+	const FString MagicClassName = IncomingMagic->GetClass()->GetName();
+
+	if (MagicClassName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) ||
+		MagicClassName.Contains(TEXT("Fire"), ESearchCase::IgnoreCase))
+	{
+		return EElements::Flame;
+	}
+	else if (MagicClassName.Contains(TEXT("Ice"), ESearchCase::IgnoreCase) ||
+		MagicClassName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
+	{
+		return EElements::Ice;
+	}
+	else if (MagicClassName.Contains(TEXT("Thunder"), ESearchCase::IgnoreCase) ||
+		MagicClassName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
+	{
+		return EElements::Thunder;
+	}
+
+	return EElements::None;
 }
 
 // Called every frame.

@@ -78,6 +78,14 @@ protected:
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, 
 			const FHitResult& SweepResult);
 
+private:
+	/*
+	* Sets attack element to flame, ice, or thunder.
+	*
+	* Incoming magic is used to get the string of the class name.
+	*/
+	EElements GetEnemyAttackElement(AMIR_MagicBASE* IncomingMagic);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

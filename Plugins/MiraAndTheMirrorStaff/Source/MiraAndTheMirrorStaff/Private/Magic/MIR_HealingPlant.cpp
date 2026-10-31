@@ -53,8 +53,6 @@ void AMIR_HealingPlant::OnHealingPlantOverlap(UPrimitiveComponent* OverlappedCom
 	if (IncomingMagic->AttackTypeComponent &&
 		IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("Plant: Do Copy."));
-
 		OpenEpilogue();
 	}
 }

@@ -265,6 +265,9 @@ protected:
 	 */
 	void HandleSubAttackInput();
 
+	// Stops Player character movement, so player does not move while attacking.
+	void TryToStopMovement();
+
 	// STARTED / COMPLETED INPUT DELEGATES
 	// These support rapid-fire (hold-to-repeat) attacks.
 
@@ -425,6 +428,28 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat|Magic")
 		AMIR_MagicBASE* SpawnMagic(EMagicAttacks AttackSlot);
 	virtual AMIR_MagicBASE* SpawnMagic_Implementation(EMagicAttacks AttackSlot);
+
+private:
+	/**
+	 * Decreases mana after magic is spawned.
+	 * 
+	 * @param AttackSlot Checks if attack is Sub-Attack.
+	 * @param MagicClass Is used to find the Mana cost.
+	 * @param PlayerCharacter Is used to get the ManaComponent.
+	 */
+	void DecreaseManaFromSpawned(EMagicAttacks AttackSlot, TSubclassOf<AMIR_MagicBASE> MagicClass,
+		AMIR_PlayerChar* PlayerCharacter);
+
+	/**
+	 * Plays sound effect after magic attack is spawned.
+	 * 
+	 * @param AttackSlot Checks if attack is coming from the dagger, ranged copy, or magic.
+	 * @param AttackTypes Used to play sound effect depending on the magic attack type.
+	 */
+	void PlaySoundFromSpawned(EMagicAttacks AttackSlot, EAttackTypes AttackType);
+
+
+public:
 
 	// Called from Anim Notify in attack animations to spawn projectile/magic at the proper frame.
 	UFUNCTION(BlueprintCallable, Category = "Combat|Notify")

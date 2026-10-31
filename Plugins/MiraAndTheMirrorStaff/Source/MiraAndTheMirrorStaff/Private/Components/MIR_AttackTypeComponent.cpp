@@ -33,8 +33,6 @@ void UMIR_AttackTypeComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UMIR_AttackTypeComponent::SetAttackTypeDetails(EAttackTypes ENewAttackType, EAttackSubtypes ESubtype)

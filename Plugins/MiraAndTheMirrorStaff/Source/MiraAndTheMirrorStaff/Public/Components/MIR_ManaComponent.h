@@ -109,7 +109,6 @@ public:
 		void IncreaseTotalManaPower(int32 BonusManaPower);
 
 	// Sets up timer for cooldown.
-	// TODO: Call in `ManaReduction()` instead.
 	UFUNCTION(BlueprintCallable, Category = "Mana|Cooldown")
 		void ManaCooldown();
 

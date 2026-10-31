@@ -14,7 +14,6 @@
 #include "Misc/Camera/MIR_CameraMovePoints.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
-//#include "Input/MIR_ArcadeController.h"
 
 
 // Sets default values.
@@ -125,7 +124,6 @@ void AMIR_PlayerChar::HitEvent(AActor* SelfActor, AActor* OtherActor, FVector No
 
 		SetCanGetHit(false);
 
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, TEXT("No Touchy!"));
 		HealthComponent->HealthReduction(CurrentEnemy->ContactDamage);
 
 		// Check for game over and start i-frames.
@@ -138,83 +136,65 @@ void AMIR_PlayerChar::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (!OtherActor || !bCanGetHit)  // Validate
-	{
-		return;
-	}
+	if (!OtherActor || !bCanGetHit) { return; }
 
 	// Represents whether the `OtherActor` is a child of AMIR_MagicBASE.
 	bool bIsChildOfMagic = OtherActor->GetClass()->IsChildOf<AMIR_MagicBASE>();
 
-	if (!bIsChildOfMagic)  // Validate
-	{
-		return;
-	}
+	if (!bIsChildOfMagic) { return; }
 
 	// Ignore player-summoned magic.
-	AActor* MagicInstigator = OtherActor->GetInstigator();  // The Controller that initiated the summon.
+	AActor* MagicInstigator = OtherActor->GetInstigator();  // Controller that initiated the summon.
 	AActor* MagicOwner = OtherActor->GetOwner();			// The actor that summoned the magic.
 
-	if (MagicInstigator == this || MagicOwner == this)
-	{
-		return;
-	}
+	if (MagicInstigator == this || MagicOwner == this) { return; }
 
 	// ========== HANDLE MAGIC OVERLAP =======================================================
 
 	AMIR_MagicBASE* IncomingMagic = Cast<AMIR_MagicBASE>(OtherActor);
-	if (IncomingMagic && IncomingMagic->ElementComponent && IncomingMagic->AttackTypeComponent)
+
+	if (!IncomingMagic || (IncomingMagic && !IncomingMagic->ElementComponent) 
+		|| (IncomingMagic && !IncomingMagic->AttackTypeComponent))
 	{
-		// Ignore copy-mode magic (it's for copying, not damaging)
-		if (IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
-		{
-			return;
-		}
-
-		SetCanGetHit(false);
-
-		// The `IncomingMagic`'s Element Name.
-		EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
-		if (AttackerElementName == EElements::None)
-		{
-			AttackerElementName = IncomingMagic->ElementComponent->GetCurrentElement();
-		}
-		if (AttackerElementName == EElements::None)
-		{
-			const FString MagicClassName = IncomingMagic->GetClass()->GetName();
-			if (MagicClassName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Fire"), ESearchCase::IgnoreCase))
-			{
-				AttackerElementName = EElements::Flame;
-			}
-			else if (MagicClassName.Contains(TEXT("Ice"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
-			{
-				AttackerElementName = EElements::Ice;
-			}
-			else if (MagicClassName.Contains(TEXT("Thunder"), ESearchCase::IgnoreCase) || MagicClassName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
-			{
-				AttackerElementName = EElements::Thunder;
-			}
-		}
-
-		// The receiver's Element Name.
-		EElements ReceiverElementName = ElementComponent ? ElementComponent->GetElementName() : EElements::None;
-
-		// The `IncomingMagic`'s Damage.
-		int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
-
-		if (AttackerDamage <= 0)
-		{
-			AttackerDamage = 1;
-		}
-
-		// Handle damage calculations, check alive status, and start i-frames.
-		CalculateDamage(AttackerElementName, ReceiverElementName, AttackerDamage);
-		LoadingGameOver();
-		StartCooldownTimer();
-
-		// Destroy the projectile upon impact
-		IncomingMagic->Destroy();
+		return;
 	}
+
+	// Ignore copy-mode magic (it's for copying, not damaging)
+	if (IncomingMagic->AttackTypeComponent->GetAttackTypeProperty() == EAttackProperties::Copy)
+	{
+		return;
+	}
+
+	SetCanGetHit(false);
+
+	// The `IncomingMagic`'s Element Name.
+	EElements AttackerElementName = IncomingMagic->ElementComponent->GetElementName();
+
+	if (AttackerElementName == EElements::None)
+	{
+		AttackerElementName = IncomingMagic->ElementComponent->GetCurrentElement();
+	}
+
+	if (AttackerElementName == EElements::None) 
+	{ 
+		AttackerElementName = GetAttackElement(IncomingMagic); 
+	}
+
+	// The receiver's Element Name.
+	EElements ReceiverElementName = ElementComponent ? ElementComponent->GetElementName() : EElements::None;
+
+	// The `IncomingMagic`'s Damage.
+	int32 AttackerDamage = IncomingMagic->AttackTypeComponent->GetDamage();
+
+	if (AttackerDamage <= 0) { AttackerDamage = 1; }
+
+	// Handle damage calculations, check alive status, and start i-frames.
+	CalculateDamage(AttackerElementName, ReceiverElementName, AttackerDamage);
+	LoadingGameOver();
+	StartCooldownTimer();
+
+	// Destroy the projectile upon impact
+	IncomingMagic->Destroy();
 }
 
 void AMIR_PlayerChar::SetStoredMagic(TSubclassOf<class AMIR_MagicBASE> MagicType)
@@ -236,6 +216,30 @@ void AMIR_PlayerChar::ApplyHazardDamage(int32 Damage)
 	HealthComponent->HealthReduction(Damage);
 	LoadingGameOver();
 	StartCooldownTimer();
+}
+
+
+EElements AMIR_PlayerChar::GetAttackElement(AMIR_MagicBASE* IncomingMagic)
+{
+	const FString MagicClassName = IncomingMagic->GetClass()->GetName();
+
+	if (MagicClassName.Contains(TEXT("Flame"), ESearchCase::IgnoreCase) ||
+		MagicClassName.Contains(TEXT("Fire"), ESearchCase::IgnoreCase))
+	{
+		return EElements::Flame;
+	}
+	else if (MagicClassName.Contains(TEXT("Ice"), ESearchCase::IgnoreCase) ||
+		MagicClassName.Contains(TEXT("Frost"), ESearchCase::IgnoreCase))
+	{
+		return EElements::Ice;
+	}
+	else if (MagicClassName.Contains(TEXT("Thunder"), ESearchCase::IgnoreCase) ||
+		MagicClassName.Contains(TEXT("Lightning"), ESearchCase::IgnoreCase))
+	{
+		return EElements::Thunder;
+	}
+
+	return EElements::None;  // Might not be used in the program, but all cases need a return statement.
 }
 
 /************************************************************************************
