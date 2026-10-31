@@ -33,6 +33,7 @@ _Mira and the Mirror Staff_ is a single-player, top-down game where the player e
     - Weapon system (Main Attack + Sub-Attack)
     - Energy system and copy system (_Zero 4_)
     - Element system (Flame, Ice, Thunder)
+
 The trademarks above belong to their respective owners.
 
 ## GitHub Contribution & Version Control
